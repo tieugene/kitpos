@@ -11,13 +11,31 @@ import datetime
 from kitfr import const, exc, util
 
 
-def datime5(v: Tuple[int]):
+def dt_from_ints(v: Tuple[int]) -> datetime.datetime:
     """Convert 5xInt to datetime"""
     return datetime.datetime(2000 + v[0], v[1], v[2], v[3], v[4])
 
 
+def dt2str(dt: datetime.datetime) -> str:
+    """Convert datime to string"""
+    return dt.strftime('%Y-%m-%d %H:%M')
+
+
 class RspBase:
     """Base for response."""
+
+    @property
+    def _cn(self) -> str:
+        """Class name shorthand."""
+        return self.__class__.__name__
+
+    @property
+    def str(self) -> str:
+        """Get object contant as string."""
+        return ''  # Stub
+
+    def __str__(self) -> str:
+        return f"{self._cn}: {self.str}"
 
 
 @dataclass
@@ -25,25 +43,35 @@ class RspGetDeviceStatus(RspBase):
     """Get FR status."""
     sn: str
     datime: datetime.datetime
-    crit_err: int
+    err: int  # Critical errors
     status: int
     is_fs: bool
     phase: int
     wtf: int  # TODO: WTF tail 1 byte?
 
+    @property
+    def str(self) -> str:
+        """String object representation."""
+        return\
+            f"sn={self.sn}, " \
+            f"datime={dt2str(self.datime)}, " \
+            f"err={self.err}, " \
+            f"status={self.status}, " \
+            f"is_fs={self.is_fs}, " \
+            f"phase={self.phase}, " \
+            f"wtf={self.wtf}"
+
     @staticmethod
     def from_bytes(data: bytes):
         """Deserialize object."""
         fmt = '12sBBBBBBB?BB'
-        # print(data.hex().upper())
         if (l_data := len(data)) != struct.calcsize(fmt):
             raise exc.KitFRRspDecodeError(f"RspGetDeviceStatus: bad data len: {l_data}")  # TODO: auto class name
         v = struct.unpack(fmt, data)
-        # print(v)
         return RspGetDeviceStatus(
             sn=v[0].decode(),
-            datime=datime5(v[1:6]),
-            crit_err=v[6],
+            datime=dt_from_ints(v[1:6]),
+            err=v[6],
             status=v[7],
             is_fs=v[8],
             phase=v[9],
@@ -55,6 +83,11 @@ class RspGetDeviceStatus(RspBase):
 class RspGetDeviceModel(RspBase):
     """Get FR sn."""
     name: str
+
+    @property
+    def str(self) -> str:
+        """String object representation."""
+        return f"name={self.name}"
 
     @staticmethod
     def from_bytes(data: bytes):
@@ -73,7 +106,19 @@ class RspGetStorageStatus(RspBase):
     datime: datetime.datetime
     sn: str
     last_doc_no: int
-    # wtf: int
+
+    @property
+    def str(self) -> str:
+        """String object representation."""
+        return\
+            f"phase={self.phase}, " \
+            f"cur_doc={self.cur_doc}, " \
+            f"is_doc={self.is_doc}, " \
+            f"is_session_open={self.is_session_open}, " \
+            f"flags={self.flags}, " \
+            f"datime={dt2str(self.datime)}, " \
+            f"sn={self.sn}, " \
+            f"last_doc_no={self.last_doc_no}"
 
     @staticmethod
     def from_bytes(data: bytes):
@@ -90,7 +135,7 @@ class RspGetStorageStatus(RspBase):
             is_doc=v[2],
             is_session_open=v[3],
             flags=v[4],
-            datime=datime5(v[5:10]),
+            datime=dt_from_ints(v[5:10]),
             sn=v[10].decode(),
             last_doc_no=v[11]
         )

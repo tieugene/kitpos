@@ -8,10 +8,9 @@ FRAME_HEADER = b'\xB6\x29'
 
 class IEnumCmd(enum.IntEnum):
     """Commands."""
-    # Information
-    GetDeviceStatus = 0x01  # Get status
-    GetDeviceModel = 0x04
-    GetStorageStatus = 0x08
+    GetDeviceStatus = 0x01  # [Info] Get status
+    GetDeviceModel = 0x04  # [Info]
+    GetStorageStatus = 0x08  # [Info]
     GetRegisterParms = 0x0A
     CancelDoc = 0x10
     SendReceiptAutomatNum = 0x1F
@@ -30,8 +29,7 @@ class IEnumCmd(enum.IntEnum):
     GetDocByNum = 0x30
     SendCorrReceiptAutomatNum = 0x3F
     GetOFDXchgStatus = 0x50
-    # Settings
-    SetDateTime = 0x72
+    SetDateTime = 0x72  # [Settings]
     GetDateTime = 0x73
     Restart = 0xEF
 

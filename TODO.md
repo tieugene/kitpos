@@ -16,8 +16,9 @@
   + [x] util &times;2
   + [x] cmd &times;4
   + [x] rsp &times;4
-- [ ] CLI:
-  - [ ] rsp.RspX.__str__()  &times;3
+- [&hellip;] CLI:
+  - [x] rsp.RspX.__str__()  &times;3
+  - [ ] err_strings
 - [ ] Async
 - [ ] Packaging
 
