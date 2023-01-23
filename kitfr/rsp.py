@@ -1,4 +1,7 @@
-"""Responses of commands."""
+"""Responses of commands.
+
+:todo: .from_frame(bytes)?
+"""
 # 1. std
 from typing import Tuple, Union
 from dataclasses import dataclass
@@ -51,12 +54,12 @@ class RspGetDeviceStatus(RspBase):
 @dataclass
 class RspGetDeviceModel(RspBase):
     """Get FR sn."""
-    sn: str
+    name: str
 
     @staticmethod
     def from_bytes(data: bytes):
         """Deserialize object."""
-        return RspGetDeviceModel(sn=data.decode())
+        return RspGetDeviceModel(name=data.decode())
 
 
 @dataclass

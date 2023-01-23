@@ -11,12 +11,13 @@
 - [x] Core:
   + [x] util &times;2
   + [x] cmd &times;4
-  + [x] rsp &times;4
-- […] Tests
+  + [x] rsp &times;4:
+- [x] Tests
   + [x] util &times;2
   + [x] cmd &times;4
-  + [ ] rsp &times;4
-- [ ] CLI
+  + [x] rsp &times;4
+- [ ] CLI:
+  - [ ] rsp.RspX.__str__()  &times;3
 - [ ] Async
 - [ ] Packaging
 
