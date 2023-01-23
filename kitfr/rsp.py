@@ -31,9 +31,9 @@ class RspBase:
         return self.__class__.__name__
 
     @property
-    def str(self) -> str:
+    def str(self) -> str:  # TODO: auto
         """Stub."""
-        return ''
+        return ", ".join([f"{f}={self.__dict__[f]}" for f in self.__annotations__])
 
     def __str__(self) -> str:
         return f"{self._cn}: {self.str}"
@@ -66,18 +66,6 @@ class RspGetDeviceStatus(RspBase):
     phase: int
     wtf: int  # TODO: WTF tail 1 byte?
 
-    @property
-    def str(self) -> str:
-        """String object representation."""
-        return\
-            f"sn={self.sn}, " \
-            f"datime={dt2str(self.datime)}, " \
-            f"err={self.err}, " \
-            f"status={self.status}, " \
-            f"is_fs={self.is_fs}, " \
-            f"phase={self.phase}, " \
-            f"wtf={self.wtf}"
-
     @staticmethod
     def from_bytes(data: bytes):
         """Deserialize object."""
@@ -101,11 +89,6 @@ class RspGetDeviceModel(RspBase):
     """FR sn."""
     name: str
 
-    @property
-    def str(self) -> str:
-        """String object representation."""
-        return f"name={self.name}"
-
     @staticmethod
     def from_bytes(data: bytes):
         """Deserialize object."""
@@ -123,19 +106,6 @@ class RspGetStorageStatus(RspBase):
     datime: datetime.datetime
     sn: str
     last_doc_no: int
-
-    @property
-    def str(self) -> str:
-        """String object representation."""
-        return\
-            f"phase={self.phase}, " \
-            f"cur_doc={self.cur_doc}, " \
-            f"is_doc={self.is_doc}, " \
-            f"is_session_open={self.is_session_open}, " \
-            f"flags={self.flags}, " \
-            f"datime={dt2str(self.datime)}, " \
-            f"sn={self.sn}, " \
-            f"last_doc_no={self.last_doc_no}"
 
     @staticmethod
     def from_bytes(data: bytes):
