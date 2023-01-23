@@ -1,4 +1,4 @@
-"""util.py tests."""
+"""`util.py` tests."""
 
 from kitfr import util
 from tests.samples import RAW_Q, RAW_A

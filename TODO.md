@@ -12,9 +12,9 @@
   + [x] util &times;2
   + [x] cmd &times;4
   + [x] rsp &times;4
-- [ ] Tests
+- […] Tests
   + [x] util &times;2
-  + […] cmd &times;4
+  + [x] cmd &times;4
   + [ ] rsp &times;4
 - [ ] CLI
 - [ ] Async
