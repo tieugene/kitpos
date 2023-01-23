@@ -160,22 +160,22 @@ class RspGetStorageStatus(RspBase):
 
 class RspGetRegisterParms(RspStub):
     """FR/FS registering parameters."""
-    ...
+    ...  # 35
 
 
 class RspGetDocByNum(RspStub):
     """FD."""
-    ...
+    ...  # N
 
 
 class RspGetOFDXchgStatus(RspStub):
     """OFD exchange status."""
-    ...
+    ...  # 13
 
 
 class RspGetDateTime(RspStub):
     """FS date/time."""
-    ...
+    ...  # 9
 
 
 # ----
