@@ -163,12 +163,30 @@ class RspGetRegisterParms(RspStub):
     ...
 
 
+class RspGetDocByNum(RspStub):
+    """FD."""
+    ...
+
+
+class RspGetOFDXchgStatus(RspStub):
+    """OFD exchange status."""
+    ...
+
+
+class RspGetDateTime(RspStub):
+    """FS date/time."""
+    ...
+
+
 # ----
 CODE2CLASS = {
     const.IEnumCmd.GetDeviceStatus: RspGetDeviceStatus,
     const.IEnumCmd.GetDeviceModel: RspGetDeviceModel,
     const.IEnumCmd.GetStorageStatus: RspGetStorageStatus,
     const.IEnumCmd.GetRegisterParms: RspGetRegisterParms,
+    const.IEnumCmd.GetDocByNum: RspGetDocByNum,
+    const.IEnumCmd.GetOFDXchgStatus: RspGetOFDXchgStatus,
+    const.IEnumCmd.GetDateTime: RspGetDateTime,
 }
 
 

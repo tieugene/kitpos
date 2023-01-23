@@ -15,8 +15,8 @@ __COMMANDS = {
     'GetStorageStatus': cmd.CmdGetStorageStatus,
     'GetRegisterParms': cmd.CmdGetRegisterParms,
     # # 'GetDocByNum': cmd.CmdGetDocByNum,
-    # 'GetOFDXchgStatus': cmd.CmdGetOFDXchgStatus,
-    # 'GetDateTime': cmd.CmdGetDateTime
+    'GetOFDXchgStatus': cmd.CmdGetOFDXchgStatus,
+    'GetDateTime': cmd.CmdGetDateTime
 }
 
 
