@@ -9,13 +9,13 @@
     - [x] [~~crcelk~~](https://github.com/zeroSteiner/crcelk/) *(no need yet)*
   + [ ] Test 2+ &times; Cmd (sequence)
 - [x] Core:
-  + [x] util &times;3
+  + [x] util &times;2
   + [x] cmd &times;4
-  + [x] rsp &times;3
+  + [x] rsp &times;4
 - [ ] Tests
-  + […] util &times;3
-  + [ ] cmd &times;4
-  + [ ] rsp &times;3
+  + [x] util &times;2
+  + […] cmd &times;4
+  + [ ] rsp &times;4
 - [ ] CLI
 - [ ] Async
 - [ ] Packaging

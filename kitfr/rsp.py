@@ -1,11 +1,11 @@
 """Responses of commands."""
 # 1. std
-from typing import Tuple
+from typing import Tuple, Union
 from dataclasses import dataclass
 import struct
 import datetime
 # 3. local
-from kitfr import const, exc
+from kitfr import const, exc, util
 
 
 def datime5(v: Tuple[int]):
@@ -98,3 +98,17 @@ CODE2CLASS = {
     const.IEnumCmd.GetDeviceModel: RspGetDeviceModel,
     const.IEnumCmd.GetStorageStatus: RspGetStorageStatus,
 }
+
+
+def frame2rsp(cmd_code: const.IEnumCmd, frame: bytes) -> Tuple[bool, Union[int, RspBase]]:
+    """Decode inbound frame into response object."""
+    data = util.frame2bytes(frame)
+    # 5. chk response code
+    if (rsp_code := int(data[0])) == 0:  # 0 == ok
+        return True, CODE2CLASS[cmd_code].from_bytes(data[1:])  # FIXME: class
+    elif rsp_code == 1:  # 1 == err; 1 byte of errcode
+        if (l_err_code := len(data) - 1) != 1:
+            raise exc.KitFRFrameError(f"Bad error payload len: {l_err_code}")
+        return False, int(data[1])
+    else:
+        raise exc.KitFRFrameError(f"Bad response code: {rsp_code}")
