@@ -16,10 +16,16 @@
   + [x] util &times;2
   + [x] cmd &times;4
   + [x] rsp &times;4
-- [ ] CLI:
-  - [ ] rsp.RspX.__str__()  &times;3
+- [x] CLI:
+  + [x] rsp.RspX.__str__()  &times;3
+  + [x] err_strings
+- [ ] Extend commands to:
+  + [ ] Get
+  + [ ] Set
+  + [ ] Sequences
+- [ ] Expand RespX flag (bit array) attributes
 - [ ] Async
-- [ ] Packaging
+- [ ] Packaging (`requirements.txt`, `setup.{py,cfg}`, `kitfr.spec`, `?MANIFEST.in`, `?tox.*`)
 
 ## CLI:
 - get_something

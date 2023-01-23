@@ -1,4 +1,7 @@
-"""Commands to send."""
+"""Commands to send.
+
+:todo: .to_frame()
+"""
 # 3. local
 from kitfr import const
 
