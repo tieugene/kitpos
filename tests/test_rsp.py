@@ -1,6 +1,6 @@
 """`rsp.py` tests."""
 
-from kitfr import util, rsp
+from kitfr import const, util, rsp
 from tests.samples import RAW_A
 
 
@@ -44,4 +44,7 @@ def test_rsp_get_storage_status():
 
 
 def test_frame2rsp():  # TODO:
-    assert False
+    cls_list = (const.IEnumCmd.GetDeviceStatus, const.IEnumCmd.GetDeviceModel, const.IEnumCmd.GetStorageStatus)
+    for i, c in enumerate(cls_list):
+        ok, o = rsp.frame2rsp(c, RAW_A[i])
+        assert ok
