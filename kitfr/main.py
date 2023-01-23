@@ -1,18 +1,22 @@
 #!/usr/bin/env python3
-"""Main CLI module."""
+"""Main CLI module.
+
+:todo: Call commands w/ separate functions.
+"""
 # 1. std
 import sys
 # 3. local
 from kitfr import cmd, net, rsp, util, errs
-
+# x. consts
+TIMEOUT = 3
 __COMMANDS = {
     'GetDeviceStatus': cmd.CmdGetDeviceStatus,
     'GetDeviceModel': cmd.CmdGetDeviceModel,
     'GetStorageStatus': cmd.CmdGetStorageStatus,
     'GetRegisterParms': cmd.CmdGetRegisterParms,
-    # 'GetDocByNum': cmd.CmdGetDocByNum,
-    'GetOFDXchgStatus': cmd.CmdGetOFDXchgStatus,
-    'GetDateTime': cmd.CmdGetDateTime
+    # # 'GetDocByNum': cmd.CmdGetDocByNum,
+    # 'GetOFDXchgStatus': cmd.CmdGetOFDXchgStatus,
+    # 'GetDateTime': cmd.CmdGetDateTime
 }
 
 
@@ -29,7 +33,7 @@ def main():
     cmd_class = __COMMANDS[sys.argv[3]]
     frame_o = util.bytes2frame(cmd_class().to_bytes())  # 1. make command | frame it
     # 2. send
-    frame_i = net.send(sys.argv[1], int(sys.argv[2]), frame_o, 3)
+    frame_i = net.send(sys.argv[1], int(sys.argv[2]), frame_o, TIMEOUT)
     # 3. dispatch response
     ok, rsp_object = rsp.frame2rsp(cmd_class.cmd_id, frame_i)
     if ok:

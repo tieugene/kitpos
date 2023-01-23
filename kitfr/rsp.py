@@ -21,6 +21,7 @@ def dt2str(dt: datetime.datetime) -> str:
     return dt.strftime('%Y-%m-%d %H:%M')
 
 
+@dataclass
 class RspBase:
     """Base for response."""
 
@@ -31,16 +32,32 @@ class RspBase:
 
     @property
     def str(self) -> str:
-        """Get object contant as string."""
-        return ''  # Stub
+        """Stub."""
+        return ''
 
     def __str__(self) -> str:
         return f"{self._cn}: {self.str}"
 
 
 @dataclass
+class RspStub(RspBase):
+    """Stub base for debugging."""
+    payload: bytes
+
+    @property
+    def str(self) -> str:
+        """Just dump payload."""
+        return f"{len(self.payload)}: {self.payload.hex().upper()}"
+
+    @staticmethod
+    def from_bytes(data: bytes):
+        """Just store."""
+        return RspStub(payload=data)
+
+
+@dataclass
 class RspGetDeviceStatus(RspBase):
-    """Get FR status."""
+    """FR status."""
     sn: str
     datime: datetime.datetime
     err: int  # Critical errors
@@ -81,7 +98,7 @@ class RspGetDeviceStatus(RspBase):
 
 @dataclass
 class RspGetDeviceModel(RspBase):
-    """Get FR sn."""
+    """FR sn."""
     name: str
 
     @property
@@ -97,7 +114,7 @@ class RspGetDeviceModel(RspBase):
 
 @dataclass
 class RspGetStorageStatus(RspBase):
-    """Get FR status."""
+    """FS status."""
     phase: int
     cur_doc: int
     is_doc: bool
@@ -141,10 +158,17 @@ class RspGetStorageStatus(RspBase):
         )
 
 
+class RspGetRegisterParms(RspStub):
+    """FR/FS registering parameters."""
+    ...
+
+
+# ----
 CODE2CLASS = {
     const.IEnumCmd.GetDeviceStatus: RspGetDeviceStatus,
     const.IEnumCmd.GetDeviceModel: RspGetDeviceModel,
     const.IEnumCmd.GetStorageStatus: RspGetStorageStatus,
+    const.IEnumCmd.GetRegisterParms: RspGetRegisterParms,
 }
 
 

@@ -44,7 +44,7 @@ def test_rsp_get_storage_status():
     )
 
 
-def test_frame2rsp():  # TODO:
+def test_frame2rsp():  # TODO: on err returns
     cls_list = (const.IEnumCmd.GetDeviceStatus, const.IEnumCmd.GetDeviceModel, const.IEnumCmd.GetStorageStatus)
     for i, c in enumerate(cls_list):
         ok, o = rsp.frame2rsp(c, RAW_A[i])
