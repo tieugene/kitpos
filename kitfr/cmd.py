@@ -30,6 +30,11 @@ class CmdGetStorageStatus(_CmdBase):
     cmd_id = const.IEnumCmd.GetStorageStatus
 
 
+class CmdGetRegisterParms(_CmdBase):
+    """Get FR/FS registering parameters."""
+    cmd_id = const.IEnumCmd.GetRegisterParms
+
+
 class CmdGetDocByNum(_CmdBase):
     """Find document by its number."""
     cmd_id = const.IEnumCmd.GetDocByNum
@@ -42,3 +47,13 @@ class CmdGetDocByNum(_CmdBase):
     def to_bytes(self) -> bytes:
         """Serialize to bytes."""
         return super().to_bytes() + self.num.to_bytes(4, 'little')
+
+
+class CmdGetOFDXchgStatus(_CmdBase):
+    """Get OFD exchange status."""
+    cmd_id = const.IEnumCmd.GetOFDXchgStatus
+
+
+class CmdGetDateTime(_CmdBase):
+    """Get FS date/time."""
+    cmd_id = const.IEnumCmd.GetDateTime
