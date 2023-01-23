@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Main CLI module."""
-import cmd
 # 1. std
 import sys
 # 3. local
@@ -30,12 +29,13 @@ def main():
     # 3. dispatch response
     ok, rsp_object = rsp.frame2rsp(cmd_class.cmd_id, frame_i)
     if ok:
-        print(rsp_object)
+        print(rsp_object.str)
     else:
         print("Err: %02x '%s'" % (rsp_object, errs.ERR_TEXT['ru'].get(rsp_object, '<Unknown>.')))
-    # 4. handle exceptions:
+    # TODO: handle exceptions:
     # - TimeoutError (no host for socket.create_connection())
-    # TODO: verbosity (e.g. `print(frame.hex().upper())`), dry_run
+    # TODO: verbosity (e.g. `print(frame.hex().upper())`)
+    # TODO: dry_run
 
 
 if __name__ == '__main__':
