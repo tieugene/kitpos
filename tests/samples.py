@@ -17,7 +17,7 @@ __raw_a_s = (  # raw responses
 __rsp_s = (  # RspX.from_bytes() inputs
     '30303030303030303030303338303435202020203738303631393732373420200C0440',  # 0x0A: GetRegisterParms
     '02000A000100000016031C0929',  # 0x50: GetOFDXchgStatus
-    '307505001701171334',  # 0x73: GetDateTime
+    '307505001701171334',  # 0x73: GetDateTime (TLV; TAG=30000 (UINT16LE); LEN=5 (UINT16LE); TYPE=DATETIME(5))
 )
 
 RAW_Q = [bytes.fromhex(s) for s in __raw_q_s]  # raw commands

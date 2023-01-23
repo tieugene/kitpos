@@ -3,7 +3,7 @@
 :todo: .from_frame(bytes)?
 """
 # 1. std
-from typing import Tuple, Union
+from typing import Tuple, Union, Any
 from dataclasses import dataclass
 import struct
 import datetime
@@ -19,6 +19,13 @@ def dt_from_ints(v: Tuple[int]) -> datetime.datetime:
 def dt2str(dt: datetime.datetime) -> str:
     """Convert datime to string"""
     return dt.strftime('%Y-%m-%d %H:%M')
+
+
+def data_decode(data: bytes, fmt: str, cls) -> Tuple[Any]:
+    """Check data length against struct format."""
+    if (l_data := len(data)) != struct.calcsize(fmt):
+        raise exc.KitFRRspDecodeError(f"{cls.__name__}: bad data len: {l_data}")
+    return struct.unpack(fmt, data)
 
 
 @dataclass
@@ -69,10 +76,7 @@ class RspGetDeviceStatus(RspBase):
     @staticmethod
     def from_bytes(data: bytes):
         """Deserialize object."""
-        fmt = '12sBBBBBBB?BB'
-        if (l_data := len(data)) != struct.calcsize(fmt):
-            raise exc.KitFRRspDecodeError(f"RspGetDeviceStatus: bad data len: {l_data}")  # TODO: auto class name
-        v = struct.unpack(fmt, data)
+        v = data_decode(data, '12sBBBBBBB?BB', RspGetDeviceStatus)
         return RspGetDeviceStatus(
             sn=v[0].decode(),
             datime=dt_from_ints(v[1:6]),
@@ -110,12 +114,7 @@ class RspGetStorageStatus(RspBase):
     @staticmethod
     def from_bytes(data: bytes):
         """Deserialize object."""
-        fmt = '<BB??BBBBBB16sI'
-        # print(data.hex().upper())
-        if (l_data := len(data)) != struct.calcsize(fmt):
-            raise exc.KitFRRspDecodeError(f"RspGetStorageStatus: bad data len: {l_data}")  # TODO: auto class name
-        v = struct.unpack(fmt, data)
-        # print(v)
+        v = data_decode(data, '<BB??BBBBBB16sI', RspGetStorageStatus)
         return RspGetStorageStatus(
             phase=v[0],
             cur_doc=v[1],
@@ -128,9 +127,26 @@ class RspGetStorageStatus(RspBase):
         )
 
 
-class RspGetRegisterParms(RspStub):
+@dataclass
+class RspGetRegisterParms(RspBase):
     """FR/FS registering parameters."""
-    ...  # 35
+    rn: str
+    inn: str
+    mode: int
+    tax: int
+    agent: int
+
+    @staticmethod
+    def from_bytes(data: bytes):
+        """Deserialize object."""
+        v = data_decode(data, '20s12sBBB', RspGetRegisterParms)
+        return RspGetRegisterParms(
+            rn=v[0].decode().rstrip(),
+            inn=v[1].decode().rstrip(),
+            mode=v[2],
+            tax=v[3],
+            agent=v[4]
+        )
 
 
 class RspGetDocByNum(RspStub):
@@ -138,9 +154,26 @@ class RspGetDocByNum(RspStub):
     ...  # N
 
 
-class RspGetOFDXchgStatus(RspStub):
+@dataclass
+class RspGetOFDXchgStatus(RspBase):
     """OFD exchange status."""
-    ...  # 13
+    status: int
+    state_ofd: int
+    out_count: int
+    next_doc_n: int
+    next_doc_d: datetime.datetime
+
+    @staticmethod
+    def from_bytes(data: bytes):
+        """Deserialize object."""
+        v = data_decode(data, '<BBHIBBBBB', RspGetOFDXchgStatus)  # 13
+        return RspGetOFDXchgStatus(
+            status=v[0],
+            state_ofd=v[1],
+            out_count=v[2],
+            next_doc_n=v[3],
+            next_doc_d=dt_from_ints(v[4:])
+        )
 
 
 class RspGetDateTime(RspStub):
