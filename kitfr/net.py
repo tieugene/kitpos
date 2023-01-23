@@ -6,9 +6,9 @@ import time
 from kitfr import exc
 
 
-def send(host: str, port: int, data_out: bytes) -> bytes:
+def send(host: str, port: int, data_out: bytes, timeout=None) -> bytes:
     """Communicate with net host."""
-    with socket.create_connection((host, port)) as sock:
+    with socket.create_connection((host, port), timeout=timeout if timeout else socket.getdefaulttimeout()) as sock:
         sock.sendall(data_out)  # or .send()
         time.sleep(0.05)  # TODO: ?
         data_in = sock.recv(1031)

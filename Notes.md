@@ -39,3 +39,9 @@ raw = b'\xB6\x29\x00\x05\x30\x01\x00\x00\x00\x95\xС8'
 ## QA
 Q: Can I send 2+ commands per connection?
 A: Standalone - no, sequences - &hellip;
+
+Q: Can I send interlaced commands:
+A: &hellip;
+
+Q: Can I get 2+ connections?
+A: &hellip;
