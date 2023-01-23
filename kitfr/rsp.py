@@ -1,8 +1,8 @@
 """Responses of commands."""
-import struct
 # 1. std
 from typing import Tuple
 from dataclasses import dataclass
+import struct
 import datetime
 # 3. local
 from kitfr import const, exc

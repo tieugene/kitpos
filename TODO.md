@@ -8,9 +8,14 @@
     - [x] [crcmod](https://crcmod.sourceforge.net)
     - [x] [~~crcelk~~](https://github.com/zeroSteiner/crcelk/) *(no need yet)*
   + [ ] Test 2+ &times; Cmd (sequence)
-- […] Core:
-  + [ ] &hellip;
+- [x] Core:
+  + [x] util &times;3
+  + [x] cmd &times;4
+  + [x] rsp &times;3
 - [ ] Tests
+  + […] util &times;3
+  + [ ] cmd &times;4
+  + [ ] rsp &times;3
 - [ ] CLI
 - [ ] Async
 - [ ] Packaging

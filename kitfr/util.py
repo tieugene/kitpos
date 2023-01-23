@@ -1,22 +1,20 @@
 """Utility things."""
+# 1. std
 from typing import Union, Tuple
-
+# 2. 3rd
 import crcmod  # or crcelk
-
+# 3. local
 from kitfr import const, exc, rsp
+
 
 crc = crcmod.predefined.mkCrcFun('crc-ccitt-false')  # CRC16-CCITT, LE, polynom = 0x1021, initValue=0xFFFF.
 
 
 def bytes2frame(data: bytes) -> bytes:
-    """Wrap data into frame: <header><len><cmd>[data]<crc>.
-
-    :todo: use struct
-    """
+    """Wrap data into frame: <header><len><cmd>[data]<crc>."""
     if (l := len(data)) > 1024:  # cmd[1] + payload[1023]
         raise exc.KitFRFrameError(f"Data too long: {l} bytes.")
-    inner = (len(data)).to_bytes(2, 'big') + data
-    return const.FRAME_HEADER + inner + crc(inner).to_bytes(2, 'little')
+    return const.FRAME_HEADER + (inner := (len(data)).to_bytes(2, 'big') + data) + crc(inner).to_bytes(2, 'little')
 
 
 def frame2bytes(data: bytes) -> bytes:
