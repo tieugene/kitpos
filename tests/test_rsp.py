@@ -1,12 +1,13 @@
 """`rsp.py` tests."""
 
-from kitfr import const, util, rsp
+from kitfr import const, rsp
 from tests.samples import RAW_A
 
 
 def __x(i: int) -> bytes:
     """Extract frame payload for RspX.from_bytes()."""
-    return util.frame2bytes(RAW_A[i])[1:]
+    # return util.frame2bytes(RAW_A[i])[1:]
+    return RAW_A[i][5:-2]
 
 
 def test_rsp_get_device_status():
@@ -14,7 +15,7 @@ def test_rsp_get_device_status():
     assert cls.from_bytes(__x(0)) == cls(
         sn='550101006105',
         datime=rsp.dt_from_ints((23, 1, 21, 18, 1)),
-        crit_err=0,
+        err=0,
         status=0,
         is_fs=True,
         phase=3,

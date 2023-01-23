@@ -2,7 +2,7 @@
 """Main CLI module."""
 # 1. std
 # 3. local
-# from kitfr import cmd, util, const
+# from kitfr import cmd, util, const, errs
 
 
 def main():

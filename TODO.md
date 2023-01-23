@@ -18,7 +18,7 @@
   + [x] rsp &times;4
 - [&hellip;] CLI:
   - [x] rsp.RspX.__str__()  &times;3
-  - [ ] err_strings
+  - [x] err_strings
 - [ ] Async
 - [ ] Packaging
 
