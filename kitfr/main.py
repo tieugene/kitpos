@@ -32,22 +32,21 @@ def main():
         return
     cmd_class = __COMMANDS[sys.argv[3]]
     cmd_object = cmd_class(int(sys.argv[4])) if cmd_class == cmd.CmdGetDocByNum else cmd_class()  # FIXME: hack
-    frame_o = util.bytes2frame(cmd_object.to_bytes())  # 1. make command | frame it
+    bytes_o = cmd_object.to_bytes()  # 1. make command...
+    frame_o = util.bytes2frame(bytes_o)  # ..., frame it
     # print(frame_o.hex().upper())
-    # return
-    # 2. send
-    frame_i = net.send(sys.argv[1], int(sys.argv[2]), frame_o, TIMEOUT)
+    frame_i = net.send(sys.argv[1], int(sys.argv[2]), frame_o, TIMEOUT)    # 2. send
     # 3. dispatch response
     # - unwrap frame
-    payload = util.frame2bytes(frame_i)
+    payload_i = util.frame2bytes(frame_i)
     # - ok/err
-    ok, data = util.bytes_as_response(payload)
+    ok, bytes_i = util.bytes_as_response(payload_i)
     # - dispatch last
     if ok:
-        rsp_object = rsp.bytes2rsp(cmd_class.cmd_id, data)
+        rsp_object = rsp.bytes2rsp(cmd_class.cmd_id, bytes_i)
         print(rsp_object.str)
     else:
-        print("Err: %02x '%s'" % (data, errs.ERR_TEXT['ru'].get(data, '<Unknown>.')))
+        print("Err: %02x '%s'" % (bytes_i, errs.ERR_TEXT['ru'].get(bytes_i, '<Unknown>.')))
     # TODO: handle exceptions:
     # - TimeoutError (no host for socket.create_connection())
     # TODO: verbosity (e.g. `print(frame.hex().upper())`)

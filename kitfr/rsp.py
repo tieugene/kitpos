@@ -1,7 +1,4 @@
-"""Responses of commands.
-
-:todo: .from_frame(bytes)?
-"""
+"""Responses of commands."""
 # 1. std
 from typing import Tuple, Union, Any
 from dataclasses import dataclass
@@ -351,5 +348,7 @@ _CODE2CLASS = {
 
 
 def bytes2rsp(cmd_code: const.IEnumCmd, data: bytes) -> RspBase:
-    """Decode inbound bytes into response object."""
-    return _CODE2CLASS[cmd_code].from_bytes(data)  # FIXME: class
+    """Decode inbound bytes into RspX object."""
+    if (rsp := _CODE2CLASS.get(cmd_code)) is not None:
+        return rsp.from_bytes(data)
+    raise exc.KitFRRspDecodeError(f"Unknown response object (cmd {cmd_code}): {util.b2h(data)}")
