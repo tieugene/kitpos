@@ -22,6 +22,7 @@ def frame2bytes(data: bytes) -> bytes:
     """
     # 1. chk whole len
     if not (7 <= (l_raw := len(data)) <= 1030):
+        # FIXME: 2 bytes (bulk 3342 × GetDocByNum from .88)
         raise exc.KitFRFrameError(f"Raw data bad len: {l_raw} bytes.")
     # 2. chk header
     if h := data[:2] != const.FRAME_HEADER:

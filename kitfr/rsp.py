@@ -28,8 +28,8 @@ def _dt2str(dt: datetime.datetime) -> str:
 
 def _data_decode(data: bytes, fmt: str, cls) -> Tuple[Any]:
     """Check and decode data length against struct format."""
-    if (l_data := len(data)) != struct.calcsize(fmt):
-        raise exc.KitFRRspDecodeError(f"{cls.__name__}: bad data len: {l_data}")
+    if (l_data := len(data)) != (l_fmt := struct.calcsize(fmt)):
+        raise exc.KitFRRspDecodeError(f"{cls.__name__}: bad data len: {l_data} (must be {l_fmt}).")
     return struct.unpack(fmt, data)
 
 
@@ -155,9 +155,86 @@ class RspGetRegisterParms(RspBase):
         )
 
 
-class RspGetDocByNum(_RspStub):
+@dataclass
+class ADoc(RspBase):
+    """Archive document."""
+
+
+@dataclass
+class ADocRegRpt(ADoc):
+    """Archive document. Registration report."""
+    datime: datetime.datetime
+    no: str
+    fp: int  # repeate because of auto __str__
+    inn: str
+    rn: str
+    tax: int
+    mode: int
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        v = _data_decode(data, '<BBBBBII12s20sBB', cls)  # 49
+        return cls(
+            datime=_b2dt(v[0:5]),
+            no=v[5],
+            fp=v[6],
+            inn=_b2s(v[7]).rstrip(),
+            rn=_b2s(v[8]).rstrip(),
+            tax=v[9],
+            mode=v[10]
+        )
+
+
+@dataclass
+class ADocReRegRpt(ADoc):
+    """Archive document. Re-Registration report."""
+    datime: datetime.datetime
+    no: str
+    fp: int
+    inn: str
+    rn: str
+    tax: int
+    mode: int
+    reason: int
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        v = _data_decode(data, '<BBBBBII12s20sBBB', cls)  # 50
+        return cls(
+            datime=_b2dt(v[0:5]),
+            no=v[5],
+            fp=v[6],
+            inn=_b2s(v[7]).rstrip(),
+            rn=_b2s(v[8]).rstrip(),
+            tax=v[9],
+            mode=v[10],
+            reason=v[11]
+        )
+
+
+ADOC_CLASS = {1: ADocRegRpt, 11: ADocReRegRpt}
+
+
+@dataclass
+class RspGetDocByNum(RspBase):
     """FD."""
-    ...  # N
+    doc_type: int  # 1 byte, enum
+    ofd: bool  # 1 byte
+    doc: ADoc
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        if (l_data := len(data)) <= 3:
+            raise exc.KitFRRspDecodeError(f"{cls.__name__}: too few data: {l_data} bytes.")
+        # 1. decode last
+        if (doc_class := ADOC_CLASS.get(doc_type := data[0])) is None:
+            raise exc.KitFRRspDecodeError(f"{cls.__name__}: unknown doc type={doc_type}.")
+        doc = doc_class.from_bytes(data[2:])
+        # 2. init self
+        return cls(doc_type=doc_type, ofd=bool(data[1]), doc=doc)
 
 
 @dataclass
