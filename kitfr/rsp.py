@@ -164,7 +164,7 @@ class ADoc(RspBase):
 class ADocRegRpt(ADoc):
     """Archive document. Registration report."""
     datime: datetime.datetime
-    no: str
+    no: int
     fp: int  # repeate because of auto __str__
     inn: str
     rn: str
@@ -174,7 +174,7 @@ class ADocRegRpt(ADoc):
     @classmethod
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
-        v = _data_decode(data, '<BBBBBII12s20sBB', cls)  # 49
+        v = _data_decode(data, '<BBBBBII12s20sBB', cls)  # 47
         return cls(
             datime=_b2dt(v[0:5]),
             no=v[5],
@@ -190,7 +190,7 @@ class ADocRegRpt(ADoc):
 class ADocReRegRpt(ADoc):
     """Archive document. Re-Registration report."""
     datime: datetime.datetime
-    no: str
+    no: int
     fp: int
     inn: str
     rn: str
@@ -201,7 +201,7 @@ class ADocReRegRpt(ADoc):
     @classmethod
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
-        v = _data_decode(data, '<BBBBBII12s20sBBB', cls)  # 50
+        v = _data_decode(data, '<BBBBBII12s20sBBB', cls)  # 48
         return cls(
             datime=_b2dt(v[0:5]),
             no=v[5],
@@ -218,31 +218,27 @@ class ADocReRegRpt(ADoc):
 class ADocSesOpenRpt(ADoc):
     """Archive document. Session open report."""
     datime: datetime.datetime
-    no: str
+    no: int
     fp: int
-    inn: str
-    rn: str
-    tax: int
-    mode: int
-    reason: int
+    sno: int
 
     @classmethod
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
-        v = _data_decode(data, '<BBBBBII12s20sBBB', cls)  # 50
+        v = _data_decode(data, '<BBBBBIIH', cls)  # 15
         return cls(
             datime=_b2dt(v[0:5]),
             no=v[5],
             fp=v[6],
-            inn=_b2s(v[7]).rstrip(),
-            rn=_b2s(v[8]).rstrip(),
-            tax=v[9],
-            mode=v[10],
-            reason=v[11]
+            sno=v[7]
         )
 
 
-ADOC_CLASS = {1: ADocRegRpt, 11: ADocReRegRpt}
+ADOC_CLASS = {
+    1: ADocRegRpt,
+    11: ADocReRegRpt,
+    2: ADocSesOpenRpt
+}
 
 
 @dataclass
