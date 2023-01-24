@@ -28,6 +28,7 @@ class IEnumCmd(enum.IntEnum):
     SendCorrReceiptData = 0x2E  # [CorRcpt]
     GetDocByNum = 0x30  # [Archive]
     SendCorrReceiptAutomatNum = 0x3F  # [CorRcpt]
+    # ResetMGM = 0x40
     GetOFDXchgStatus = 0x50  # [Info]
     SetDateTime = 0x72  # [Settings]
     GetDateTime = 0x73  # [Settings]

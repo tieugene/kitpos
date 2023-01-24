@@ -3,7 +3,7 @@
 :todo: .from_frame(bytes)?
 """
 # 1. std
-from typing import Tuple, Union
+from typing import Tuple, Union, Any
 from dataclasses import dataclass
 import struct
 import datetime
@@ -11,16 +11,29 @@ import datetime
 from kitfr import const, exc, util
 
 
-def dt_from_ints(v: Tuple[int]) -> datetime.datetime:
+def _b2s(v: bytes) -> str:
+    """Convert bytes of CP866 insto string."""
+    return v.decode()  # FIXME: CP866
+
+
+def _b2dt(v: Tuple[int, int, int, int, int]) -> datetime.datetime:
     """Convert 5xInt to datetime"""
     return datetime.datetime(2000 + v[0], v[1], v[2], v[3], v[4])
 
 
-def dt2str(dt: datetime.datetime) -> str:
+def _dt2str(dt: datetime.datetime) -> str:
     """Convert datime to string"""
     return dt.strftime('%Y-%m-%d %H:%M')
 
 
+def _data_decode(data: bytes, fmt: str, cls) -> Tuple[Any]:
+    """Check and decode data length against struct format."""
+    if (l_data := len(data)) != struct.calcsize(fmt):
+        raise exc.KitFRRspDecodeError(f"{cls.__name__}: bad data len: {l_data}")
+    return struct.unpack(fmt, data)
+
+
+@dataclass
 class RspBase:
     """Base for response."""
 
@@ -30,17 +43,33 @@ class RspBase:
         return self.__class__.__name__
 
     @property
-    def str(self) -> str:
-        """Get object contant as string."""
-        return ''  # Stub
+    def str(self) -> str:  # TODO: auto
+        """Stub."""
+        return ", ".join([f"{f}={self.__dict__[f]}" for f in self.__annotations__])
 
     def __str__(self) -> str:
         return f"{self._cn}: {self.str}"
 
 
 @dataclass
+class _RspStub(RspBase):
+    """Stub base for debugging."""
+    payload: bytes
+
+    @property
+    def str(self) -> str:
+        """Just dump payload."""
+        return f"{len(self.payload)}: {self.payload.hex().upper()}"
+
+    @staticmethod
+    def from_bytes(data: bytes):
+        """Just store."""
+        return _RspStub(payload=data)
+
+
+@dataclass
 class RspGetDeviceStatus(RspBase):
-    """Get FR status."""
+    """FR status."""
     sn: str
     datime: datetime.datetime
     err: int  # Critical errors
@@ -49,28 +78,13 @@ class RspGetDeviceStatus(RspBase):
     phase: int
     wtf: int  # TODO: WTF tail 1 byte?
 
-    @property
-    def str(self) -> str:
-        """String object representation."""
-        return\
-            f"sn={self.sn}, " \
-            f"datime={dt2str(self.datime)}, " \
-            f"err={self.err}, " \
-            f"status={self.status}, " \
-            f"is_fs={self.is_fs}, " \
-            f"phase={self.phase}, " \
-            f"wtf={self.wtf}"
-
     @staticmethod
     def from_bytes(data: bytes):
         """Deserialize object."""
-        fmt = '12sBBBBBBB?BB'
-        if (l_data := len(data)) != struct.calcsize(fmt):
-            raise exc.KitFRRspDecodeError(f"RspGetDeviceStatus: bad data len: {l_data}")  # TODO: auto class name
-        v = struct.unpack(fmt, data)
+        v = _data_decode(data, '12sBBBBBBB?BB', RspGetDeviceStatus)
         return RspGetDeviceStatus(
-            sn=v[0].decode(),
-            datime=dt_from_ints(v[1:6]),
+            sn=_b2s(v[0]),
+            datime=_b2dt(v[1:6]),
             err=v[6],
             status=v[7],
             is_fs=v[8],
@@ -81,23 +95,19 @@ class RspGetDeviceStatus(RspBase):
 
 @dataclass
 class RspGetDeviceModel(RspBase):
-    """Get FR sn."""
+    """FR sn."""
     name: str
-
-    @property
-    def str(self) -> str:
-        """String object representation."""
-        return f"name={self.name}"
 
     @staticmethod
     def from_bytes(data: bytes):
         """Deserialize object."""
-        return RspGetDeviceModel(name=data.decode())
+        # FIXME: chk len
+        return RspGetDeviceModel(name=_b2s(data))
 
 
 @dataclass
 class RspGetStorageStatus(RspBase):
-    """Get FR status."""
+    """FS status."""
     phase: int
     cur_doc: int
     is_doc: bool
@@ -107,44 +117,103 @@ class RspGetStorageStatus(RspBase):
     sn: str
     last_doc_no: int
 
-    @property
-    def str(self) -> str:
-        """String object representation."""
-        return\
-            f"phase={self.phase}, " \
-            f"cur_doc={self.cur_doc}, " \
-            f"is_doc={self.is_doc}, " \
-            f"is_session_open={self.is_session_open}, " \
-            f"flags={self.flags}, " \
-            f"datime={dt2str(self.datime)}, " \
-            f"sn={self.sn}, " \
-            f"last_doc_no={self.last_doc_no}"
-
     @staticmethod
     def from_bytes(data: bytes):
         """Deserialize object."""
-        fmt = '<BB??BBBBBB16sI'
-        # print(data.hex().upper())
-        if (l_data := len(data)) != struct.calcsize(fmt):
-            raise exc.KitFRRspDecodeError(f"RspGetStorageStatus: bad data len: {l_data}")  # TODO: auto class name
-        v = struct.unpack(fmt, data)
-        # print(v)
+        v = _data_decode(data, '<BB??BBBBBB16sI', RspGetStorageStatus)
         return RspGetStorageStatus(
             phase=v[0],
             cur_doc=v[1],
             is_doc=v[2],
             is_session_open=v[3],
             flags=v[4],
-            datime=dt_from_ints(v[5:10]),
-            sn=v[10].decode(),
+            datime=_b2dt(v[5:10]),
+            sn=_b2s(v[10]),
             last_doc_no=v[11]
         )
 
 
+@dataclass
+class RspGetRegisterParms(RspBase):
+    """FR/FS registering parameters."""
+    rn: str
+    inn: str
+    mode: int
+    tax: int
+    agent: int
+
+    @staticmethod
+    def from_bytes(data: bytes):
+        """Deserialize object."""
+        v = _data_decode(data, '20s12sBBB', RspGetRegisterParms)
+        return RspGetRegisterParms(
+            rn=_b2s(v[0]).rstrip(),
+            inn=_b2s(v[1]).rstrip(),
+            mode=v[2],
+            tax=v[3],
+            agent=v[4]
+        )
+
+
+class RspGetDocByNum(_RspStub):
+    """FD."""
+    ...  # N
+
+
+@dataclass
+class RspGetOFDXchgStatus(RspBase):
+    """OFD exchange status."""
+    status: int
+    state_ofd: int
+    out_count: int
+    next_doc_n: int
+    next_doc_d: datetime.datetime
+
+    @staticmethod
+    def from_bytes(data: bytes):
+        """Deserialize object."""
+        v = _data_decode(data, '<BBHIBBBBB', RspGetOFDXchgStatus)  # 13
+        return RspGetOFDXchgStatus(
+            status=v[0],
+            state_ofd=v[1],
+            out_count=v[2],
+            next_doc_n=v[3],
+            next_doc_d=_b2dt(v[4:])
+        )
+
+
+@dataclass
+class RspGetDateTime(RspBase):
+    """FS date/time."""
+    datime: datetime.datetime
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        v = _data_decode(data, '<HHBBBBB', cls)  # 9; TODO: quick hack of TLV
+        if v[0] != 30000:
+            raise exc.KitFRRspDecodeError(f"{cls.__name__}: bad TAG: {v[0]}")
+        if v[1] != 5:
+            raise exc.KitFRRspDecodeError(f"{cls.__name__}: bad TLV len: {v[1]}")
+        return cls(
+            datime=_b2dt(v[2:])
+        )
+
+
+class RspGetSomething(_RspStub):
+    """Something."""
+    ...  # N
+
+
+# ----
 CODE2CLASS = {
     const.IEnumCmd.GetDeviceStatus: RspGetDeviceStatus,
     const.IEnumCmd.GetDeviceModel: RspGetDeviceModel,
     const.IEnumCmd.GetStorageStatus: RspGetStorageStatus,
+    const.IEnumCmd.GetRegisterParms: RspGetRegisterParms,
+    const.IEnumCmd.GetDocByNum: RspGetDocByNum,
+    const.IEnumCmd.GetOFDXchgStatus: RspGetOFDXchgStatus,
+    const.IEnumCmd.GetDateTime: RspGetDateTime,
 }
 
 
