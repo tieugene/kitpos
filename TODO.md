@@ -1,10 +1,6 @@
 # TODO
 
 - [ ] Extend commands:
-  + [ ] #1:
-    - [x] Get (&times;6)
-    - [x] GetDocByNum #1 (&times;5)
-    - [ ] Fix tests
   + [ ] #2:
     - [ ] GetDocByNum #2 (&times;2&hellip;6)
       + [ ] 21: SattleRpt (5.7)
@@ -16,6 +12,7 @@
       + [ ]  7: OpConfirm
     - [ ] Set
     - [ ] Sequences
+- [ ] FIXME: Sometimes receives just \xB6\x29 and nothing else
 - [ ] Expand RespX flag (bit array) attributes
 - [ ] Online tests
 - [ ] Async
