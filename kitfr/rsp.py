@@ -11,18 +11,18 @@ import datetime
 from kitfr import const, exc, util
 
 
-def dt_from_ints(v: Tuple[int]) -> datetime.datetime:
+def _dt_from_ints(v: Tuple[int, int, int, int, int]) -> datetime.datetime:
     """Convert 5xInt to datetime"""
     return datetime.datetime(2000 + v[0], v[1], v[2], v[3], v[4])
 
 
-def dt2str(dt: datetime.datetime) -> str:
+def _dt2str(dt: datetime.datetime) -> str:
     """Convert datime to string"""
     return dt.strftime('%Y-%m-%d %H:%M')
 
 
-def data_decode(data: bytes, fmt: str, cls) -> Tuple[Any]:
-    """Check data length against struct format."""
+def _data_decode(data: bytes, fmt: str, cls) -> Tuple[Any]:
+    """Check and decode data length against struct format."""
     if (l_data := len(data)) != struct.calcsize(fmt):
         raise exc.KitFRRspDecodeError(f"{cls.__name__}: bad data len: {l_data}")
     return struct.unpack(fmt, data)
@@ -47,7 +47,7 @@ class RspBase:
 
 
 @dataclass
-class RspStub(RspBase):
+class _RspStub(RspBase):
     """Stub base for debugging."""
     payload: bytes
 
@@ -59,7 +59,7 @@ class RspStub(RspBase):
     @staticmethod
     def from_bytes(data: bytes):
         """Just store."""
-        return RspStub(payload=data)
+        return _RspStub(payload=data)
 
 
 @dataclass
@@ -76,10 +76,10 @@ class RspGetDeviceStatus(RspBase):
     @staticmethod
     def from_bytes(data: bytes):
         """Deserialize object."""
-        v = data_decode(data, '12sBBBBBBB?BB', RspGetDeviceStatus)
+        v = _data_decode(data, '12sBBBBBBB?BB', RspGetDeviceStatus)
         return RspGetDeviceStatus(
             sn=v[0].decode(),
-            datime=dt_from_ints(v[1:6]),
+            datime=_dt_from_ints(v[1:6]),
             err=v[6],
             status=v[7],
             is_fs=v[8],
@@ -114,14 +114,14 @@ class RspGetStorageStatus(RspBase):
     @staticmethod
     def from_bytes(data: bytes):
         """Deserialize object."""
-        v = data_decode(data, '<BB??BBBBBB16sI', RspGetStorageStatus)
+        v = _data_decode(data, '<BB??BBBBBB16sI', RspGetStorageStatus)
         return RspGetStorageStatus(
             phase=v[0],
             cur_doc=v[1],
             is_doc=v[2],
             is_session_open=v[3],
             flags=v[4],
-            datime=dt_from_ints(v[5:10]),
+            datime=_dt_from_ints(v[5:10]),
             sn=v[10].decode(),
             last_doc_no=v[11]
         )
@@ -139,7 +139,7 @@ class RspGetRegisterParms(RspBase):
     @staticmethod
     def from_bytes(data: bytes):
         """Deserialize object."""
-        v = data_decode(data, '20s12sBBB', RspGetRegisterParms)
+        v = _data_decode(data, '20s12sBBB', RspGetRegisterParms)
         return RspGetRegisterParms(
             rn=v[0].decode().rstrip(),
             inn=v[1].decode().rstrip(),
@@ -149,7 +149,7 @@ class RspGetRegisterParms(RspBase):
         )
 
 
-class RspGetDocByNum(RspStub):
+class RspGetDocByNum(_RspStub):
     """FD."""
     ...  # N
 
@@ -166,13 +166,13 @@ class RspGetOFDXchgStatus(RspBase):
     @staticmethod
     def from_bytes(data: bytes):
         """Deserialize object."""
-        v = data_decode(data, '<BBHIBBBBB', RspGetOFDXchgStatus)  # 13
+        v = _data_decode(data, '<BBHIBBBBB', RspGetOFDXchgStatus)  # 13
         return RspGetOFDXchgStatus(
             status=v[0],
             state_ofd=v[1],
             out_count=v[2],
             next_doc_n=v[3],
-            next_doc_d=dt_from_ints(v[4:])
+            next_doc_d=_dt_from_ints(v[4:])
         )
 
 
@@ -184,17 +184,17 @@ class RspGetDateTime(RspBase):
     @classmethod
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
-        v = data_decode(data, '<HHBBBBB', cls)  # 9; TODO: quick hack of TLV
+        v = _data_decode(data, '<HHBBBBB', cls)  # 9; TODO: quick hack of TLV
         if v[0] != 30000:
             raise exc.KitFRRspDecodeError(f"{cls.__name__}: bad TAG: {v[0]}")
         if v[1] != 5:
             raise exc.KitFRRspDecodeError(f"{cls.__name__}: bad TLV len: {v[1]}")
         return cls(
-            datime=dt_from_ints(v[2:])
+            datime=_dt_from_ints(v[2:])
         )
 
 
-class RspGetSomething(RspStub):
+class RspGetSomething(_RspStub):
     """Something."""
     ...  # N
 
