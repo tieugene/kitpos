@@ -3,7 +3,7 @@
 import datetime
 # 3. local
 from kitfr import const, rsp
-from tests.samples import RAW_A
+from tests.samples import RAW_A, RSP
 
 
 def __x(i: int) -> bytes:
@@ -77,7 +77,7 @@ def test_rsp_get_date_time():
 # TODO: RspGetDocByNum
 
 
-def test_frame2rsp():
+def test_bytes2rsp():
     cls_list = (
         const.IEnumCmd.GetDeviceStatus,
         const.IEnumCmd.GetDeviceModel,
@@ -87,8 +87,6 @@ def test_frame2rsp():
         const.IEnumCmd.GetDateTime
     )
     for i, c in enumerate(cls_list):
-        ok, r = rsp.frame2rsp(c, RAW_A[i])
-        print(r)
-        assert ok
+        assert rsp.bytes2rsp(c, RSP[i]) is not None  # compare type
 
 # TODO: add errors

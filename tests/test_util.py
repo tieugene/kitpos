@@ -16,4 +16,5 @@ def test_frame2bytes():
         for b in b_list:
             assert util.frame2bytes(b) == b[4:-2]
 
+# TODO: bytes_as_response
 # TODO: err

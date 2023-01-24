@@ -339,7 +339,7 @@ class RspGetSomething(_RspStub):
 
 
 # ----
-CODE2CLASS = {
+_CODE2CLASS = {
     const.IEnumCmd.GetDeviceStatus: RspGetDeviceStatus,
     const.IEnumCmd.GetDeviceModel: RspGetDeviceModel,
     const.IEnumCmd.GetStorageStatus: RspGetStorageStatus,
@@ -350,15 +350,6 @@ CODE2CLASS = {
 }
 
 
-def frame2rsp(cmd_code: const.IEnumCmd, frame: bytes) -> Tuple[bool, Union[int, RspBase]]:
-    """Decode inbound frame into response object."""
-    data = util.frame2bytes(frame)
-    # 5. chk response code
-    if (rsp_code := int(data[0])) == 0:  # 0 == ok
-        return True, CODE2CLASS[cmd_code].from_bytes(data[1:])  # FIXME: class
-    elif rsp_code == 1:  # 1 == err; 1 byte of errcode
-        if (l_err_code := len(data) - 1) != 1:
-            raise exc.KitFRFrameError(f"Bad error payload len: {l_err_code}")
-        return False, int(data[1])
-    else:
-        raise exc.KitFRFrameError(f"Bad response code: {rsp_code}")
+def bytes2rsp(cmd_code: const.IEnumCmd, data: bytes) -> RspBase:
+    """Decode inbound bytes into response object."""
+    return _CODE2CLASS[cmd_code].from_bytes(data)  # FIXME: class

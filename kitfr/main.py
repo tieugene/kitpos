@@ -38,11 +38,16 @@ def main():
     # 2. send
     frame_i = net.send(sys.argv[1], int(sys.argv[2]), frame_o, TIMEOUT)
     # 3. dispatch response
-    ok, rsp_object = rsp.frame2rsp(cmd_class.cmd_id, frame_i)
+    # - unwrap frame
+    payload = util.frame2bytes(frame_i)
+    # - ok/err
+    ok, data = util.bytes_as_response(payload)
+    # - dispatch last
     if ok:
+        rsp_object = rsp.bytes2rsp(cmd_class.cmd_id, data)
         print(rsp_object.str)
     else:
-        print("Err: %02x '%s'" % (rsp_object, errs.ERR_TEXT['ru'].get(rsp_object, '<Unknown>.')))
+        print("Err: %02x '%s'" % (data, errs.ERR_TEXT['ru'].get(data, '<Unknown>.')))
     # TODO: handle exceptions:
     # - TimeoutError (no host for socket.create_connection())
     # TODO: verbosity (e.g. `print(frame.hex().upper())`)

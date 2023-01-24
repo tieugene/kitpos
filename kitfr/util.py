@@ -1,4 +1,6 @@
 """Utility things."""
+from typing import Union, Tuple
+
 # 1. std
 # 2. 3rd
 import crcmod  # or crcelk
@@ -34,3 +36,15 @@ def frame2bytes(data: bytes) -> bytes:
     if (crc_bandled := int.from_bytes(data[-2:], 'little')) != (crc_calced := crc(data[2:-2])):
         raise exc.KitFRFrameError(f"CRC bundled ({hex(crc_bandled)}) != CRC calculated ({hex(crc_calced)}).")
     return data[4:-2]
+
+
+def bytes_as_response(data: bytes) -> Tuple[bool, Union[int, bytes]]:
+    """Expand response into ok/err and data/err_code"""
+    if (rsp_code := int(data[0])) == 0:  # 0 == ok
+        return True, data[1:]
+    elif rsp_code == 1:  # 1 == err; 1 byte of errcode
+        if (l_err_code := len(data) - 1) != 1:
+            raise exc.KitFRFrameError(f"Bad error payload len: {l_err_code}")
+        return False, int(data[1])
+    else:
+        raise exc.KitFRFrameError(f"Bad response code: {rsp_code}")
