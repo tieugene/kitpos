@@ -7,18 +7,18 @@ __frame_q_s = (  # raw command (Question) frames
     'B6290001018CEF',  # 0x01: GetDeviceStatus
     'B62900010429BF',  # 0x04: GetDeviceModel
     'B629000108A57E',  # 0x08: GetStorageStatus
-    'B62900010AE75E',  # : GetRegisterParms
-    'B62900015058A5',  # : GetOFDXchgStatus
-    'B62900017359B1'  # : GetDateTime
+    'B62900010AE75E',  # 0x0A: GetRegisterParms
+    'B62900015058A5',  # 0x50: GetOFDXchgStatus
+    'B62900017359B1'   # 0x73: GetDateTime
 )
 __frame_a_s = (  # raw response (Answer) frames
     #    len.ok<..........................................>crc.
     'B62900170035353031303130303631303517011512010000010300D9B8',  # 0x01: GetDeviceStatus
     'B629000C005465726D696E616C2D46412D01',  # 0x04: GetDeviceModel
     'B629001F0003000001081604120C29393939393037383930323030333836370A0000008749',  # 0x08: GetStorageStatus
-    'B62900240030303030303030303030303338303435202020203738303631393732373420200C044037EB',  # : GetRegisterParms
-    'B629000E0002000A000100000016031C09292E93',  # GetOFDXchgStatus
-    'B629000A00307505001701180E2E88EA'  # : GetDateTime
+    'B62900240030303030303030303030303338303435202020203738303631393732373420200C044037EB',  # 0x0A: GetRegisterParms
+    'B629000E0002000A000100000016031C09292E93',  # 0x50: GetOFDXchgStatus
+    'B629000A00307505001701180E2E88EA'  # 0x73: GetDateTime
 )
 # TODO: convert to __data_*
 # TODO: add error response
@@ -45,5 +45,6 @@ __data_a_dbn_s = (  # 0x30: RspGetDocByNum(n).from_bytes(data)
 
 RAW_Q = [bytes.fromhex(s) for s in __frame_q_s]  # raw commands
 RAW_A = [bytes.fromhex(s) for s in __frame_a_s]  # raw responses
+CMD = [bytes.fromhex(s)[4:-2] for s in __frame_q_s]
 RSP = [bytes.fromhex(s) for s in __data_a_s]  # responce objects dumps
 RSP_DBN = [bytes.fromhex(s) for s in __data_a_dbn_s]  # RspGetDocByNum.from_bytes(data)

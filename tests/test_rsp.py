@@ -43,9 +43,17 @@ def test_rsp_get_storage_status():
         last_doc_no=10
     )
 
+# TODO: RspGetRegisterParms
+# TODO: RspGetOFDXchgStatus
+# TODO: RspGetDocByNum
+
 
 def test_frame2rsp():  # TODO: on err returns
-    cls_list = (const.IEnumCmd.GetDeviceStatus, const.IEnumCmd.GetDeviceModel, const.IEnumCmd.GetStorageStatus)
+    cls_list = (
+        const.IEnumCmd.GetDeviceStatus,
+        const.IEnumCmd.GetDeviceModel,
+        const.IEnumCmd.GetStorageStatus
+    )
     for i, c in enumerate(cls_list):
         ok, o = rsp.frame2rsp(c, RAW_A[i])
         assert ok

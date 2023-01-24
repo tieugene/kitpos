@@ -16,5 +16,17 @@ def test_cmd_get_storage_status():
     assert util.bytes2frame(cmd.CmdGetStorageStatus().to_bytes()) == RAW_Q[2]
 
 
-def test_cmd_get_doc_by_num():
-    assert util.bytes2frame(cmd.CmdGetDocByNum(1).to_bytes()) == RAW_Q[3]
+def test_cmd_get_register_params():
+    assert util.bytes2frame(cmd.CmdGetRegisterParms().to_bytes()) == RAW_Q[3]
+
+
+def test_cmd_get_ofd_xchg_status():
+    assert util.bytes2frame(cmd.CmdGetOFDXchgStatus().to_bytes()) == RAW_Q[4]
+
+
+def test_cmd_get_date_time():
+    assert util.bytes2frame(cmd.CmdGetDateTime().to_bytes()) == RAW_Q[5]
+
+
+# def test_cmd_get_doc_by_num():
+#    assert util.bytes2frame(cmd.CmdGetDocByNum(1).to_bytes()) == RAW_Q[3]
