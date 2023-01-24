@@ -215,8 +215,8 @@ class ADocReRegRpt(ADoc):
 
 
 @dataclass
-class ADocSesOpenRpt(ADoc):
-    """Archive document. Session open report."""
+class _ADocSesRpt(ADoc):
+    """Archive document. Session open/close report."""
     datime: datetime.datetime
     no: int
     fp: int
@@ -234,10 +234,19 @@ class ADocSesOpenRpt(ADoc):
         )
 
 
+class ADocSesOpenRpt(_ADocSesRpt):
+    """Archive document. Session open report"""
+
+
+class ADocSesCloseRpt(_ADocSesRpt):
+    """Archive document. Session close report"""
+
+
 ADOC_CLASS = {
     1: ADocRegRpt,
     11: ADocReRegRpt,
-    2: ADocSesOpenRpt
+    2: ADocSesOpenRpt,
+    5: ADocSesCloseRpt
 }
 
 
