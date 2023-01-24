@@ -242,11 +242,34 @@ class ADocSesCloseRpt(_ADocSesRpt):
     """Archive document. Session close report"""
 
 
+@dataclass
+class ADocReceipt(ADoc):
+    """Archive document. Receipt."""
+    datime: datetime.datetime
+    no: int
+    fp: int
+    op_type: int
+    amount: int
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        v = _data_decode(data, '<BBBBBIIBBBBBB', cls)  # 19
+        return cls(
+            datime=_b2dt(v[0:5]),
+            no=v[5],
+            fp=v[6],
+            op_type=v[7],
+            amount=(int.from_bytes(v[8:], 'little'))
+        )
+
+
 ADOC_CLASS = {
     1: ADocRegRpt,
     11: ADocReRegRpt,
     2: ADocSesOpenRpt,
-    5: ADocSesCloseRpt
+    5: ADocSesCloseRpt,
+    3: ADocReceipt
 }
 
 
