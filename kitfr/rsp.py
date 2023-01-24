@@ -214,6 +214,34 @@ class ADocReRegRpt(ADoc):
         )
 
 
+@dataclass
+class ADocSesOpenRpt(ADoc):
+    """Archive document. Session open report."""
+    datime: datetime.datetime
+    no: str
+    fp: int
+    inn: str
+    rn: str
+    tax: int
+    mode: int
+    reason: int
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        v = _data_decode(data, '<BBBBBII12s20sBBB', cls)  # 50
+        return cls(
+            datime=_b2dt(v[0:5]),
+            no=v[5],
+            fp=v[6],
+            inn=_b2s(v[7]).rstrip(),
+            rn=_b2s(v[8]).rstrip(),
+            tax=v[9],
+            mode=v[10],
+            reason=v[11]
+        )
+
+
 ADOC_CLASS = {1: ADocRegRpt, 11: ADocReRegRpt}
 
 
