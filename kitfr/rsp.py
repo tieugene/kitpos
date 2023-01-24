@@ -11,7 +11,12 @@ import datetime
 from kitfr import const, exc, util
 
 
-def _dt_from_ints(v: Tuple[int, int, int, int, int]) -> datetime.datetime:
+def _b2s(v: bytes) -> str:
+    """Convert bytes of CP866 insto string."""
+    return v.decode()  # FIXME: CP866
+
+
+def _b2dt(v: Tuple[int, int, int, int, int]) -> datetime.datetime:
     """Convert 5xInt to datetime"""
     return datetime.datetime(2000 + v[0], v[1], v[2], v[3], v[4])
 
@@ -78,8 +83,8 @@ class RspGetDeviceStatus(RspBase):
         """Deserialize object."""
         v = _data_decode(data, '12sBBBBBBB?BB', RspGetDeviceStatus)
         return RspGetDeviceStatus(
-            sn=v[0].decode(),
-            datime=_dt_from_ints(v[1:6]),
+            sn=_b2s(v[0]),
+            datime=_b2dt(v[1:6]),
             err=v[6],
             status=v[7],
             is_fs=v[8],
@@ -96,7 +101,8 @@ class RspGetDeviceModel(RspBase):
     @staticmethod
     def from_bytes(data: bytes):
         """Deserialize object."""
-        return RspGetDeviceModel(name=data.decode())
+        # FIXME: chk len
+        return RspGetDeviceModel(name=_b2s(data))
 
 
 @dataclass
@@ -121,8 +127,8 @@ class RspGetStorageStatus(RspBase):
             is_doc=v[2],
             is_session_open=v[3],
             flags=v[4],
-            datime=_dt_from_ints(v[5:10]),
-            sn=v[10].decode(),
+            datime=_b2dt(v[5:10]),
+            sn=_b2s(v[10]),
             last_doc_no=v[11]
         )
 
@@ -141,8 +147,8 @@ class RspGetRegisterParms(RspBase):
         """Deserialize object."""
         v = _data_decode(data, '20s12sBBB', RspGetRegisterParms)
         return RspGetRegisterParms(
-            rn=v[0].decode().rstrip(),
-            inn=v[1].decode().rstrip(),
+            rn=_b2s(v[0]).rstrip(),
+            inn=_b2s(v[1]).rstrip(),
             mode=v[2],
             tax=v[3],
             agent=v[4]
@@ -172,7 +178,7 @@ class RspGetOFDXchgStatus(RspBase):
             state_ofd=v[1],
             out_count=v[2],
             next_doc_n=v[3],
-            next_doc_d=_dt_from_ints(v[4:])
+            next_doc_d=_b2dt(v[4:])
         )
 
 
@@ -190,7 +196,7 @@ class RspGetDateTime(RspBase):
         if v[1] != 5:
             raise exc.KitFRRspDecodeError(f"{cls.__name__}: bad TLV len: {v[1]}")
         return cls(
-            datime=_dt_from_ints(v[2:])
+            datime=_b2dt(v[2:])
         )
 
 
