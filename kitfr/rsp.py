@@ -176,9 +176,27 @@ class RspGetOFDXchgStatus(RspBase):
         )
 
 
-class RspGetDateTime(RspStub):
+@dataclass
+class RspGetDateTime(RspBase):
     """FS date/time."""
-    ...  # 9
+    datime: datetime.datetime
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        v = data_decode(data, '<HHBBBBB', cls)  # 9; TODO: quick hack of TLV
+        if v[0] != 30000:
+            raise exc.KitFRRspDecodeError(f"{cls.__name__}: bad TAG: {v[0]}")
+        if v[1] != 5:
+            raise exc.KitFRRspDecodeError(f"{cls.__name__}: bad TLV len: {v[1]}")
+        return cls(
+            datime=dt_from_ints(v[2:])
+        )
+
+
+class RspGetSomething(RspStub):
+    """Something."""
+    ...  # N
 
 
 # ----
