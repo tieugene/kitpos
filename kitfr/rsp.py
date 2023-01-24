@@ -1,7 +1,4 @@
-"""Responses of commands.
-
-:todo: .from_frame(bytes)?
-"""
+"""Responses of commands."""
 # 1. std
 from typing import Tuple, Union, Any
 from dataclasses import dataclass
@@ -28,8 +25,8 @@ def _dt2str(dt: datetime.datetime) -> str:
 
 def _data_decode(data: bytes, fmt: str, cls) -> Tuple[Any]:
     """Check and decode data length against struct format."""
-    if (l_data := len(data)) != struct.calcsize(fmt):
-        raise exc.KitFRRspDecodeError(f"{cls.__name__}: bad data len: {l_data}")
+    if (l_data := len(data)) != (l_fmt := struct.calcsize(fmt)):
+        raise exc.KitFRRspDecodeError(f"{cls.__name__}: bad data len: {l_data} (must be {l_fmt}).")
     return struct.unpack(fmt, data)
 
 
@@ -155,9 +152,142 @@ class RspGetRegisterParms(RspBase):
         )
 
 
-class RspGetDocByNum(_RspStub):
+@dataclass
+class ADoc(RspBase):
+    """Archive document."""
+
+
+@dataclass
+class ADocRegRpt(ADoc):
+    """Archive document. Registration report."""
+    datime: datetime.datetime
+    no: int
+    fp: int  # repeate because of auto __str__
+    inn: str
+    rn: str
+    tax: int
+    mode: int
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        v = _data_decode(data, '<BBBBBII12s20sBB', cls)  # 47
+        return cls(
+            datime=_b2dt(v[0:5]),
+            no=v[5],
+            fp=v[6],
+            inn=_b2s(v[7]).rstrip(),
+            rn=_b2s(v[8]).rstrip(),
+            tax=v[9],
+            mode=v[10]
+        )
+
+
+@dataclass
+class ADocReRegRpt(ADoc):
+    """Archive document. Re-Registration report."""
+    datime: datetime.datetime
+    no: int
+    fp: int
+    inn: str
+    rn: str
+    tax: int
+    mode: int
+    reason: int
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        v = _data_decode(data, '<BBBBBII12s20sBBB', cls)  # 48
+        return cls(
+            datime=_b2dt(v[0:5]),
+            no=v[5],
+            fp=v[6],
+            inn=_b2s(v[7]).rstrip(),
+            rn=_b2s(v[8]).rstrip(),
+            tax=v[9],
+            mode=v[10],
+            reason=v[11]
+        )
+
+
+@dataclass
+class _ADocSesRpt(ADoc):
+    """Archive document. Session open/close report."""
+    datime: datetime.datetime
+    no: int
+    fp: int
+    sno: int
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        v = _data_decode(data, '<BBBBBIIH', cls)  # 15
+        return cls(
+            datime=_b2dt(v[0:5]),
+            no=v[5],
+            fp=v[6],
+            sno=v[7]
+        )
+
+
+class ADocSesOpenRpt(_ADocSesRpt):
+    """Archive document. Session open report"""
+
+
+class ADocSesCloseRpt(_ADocSesRpt):
+    """Archive document. Session close report"""
+
+
+@dataclass
+class ADocReceipt(ADoc):
+    """Archive document. Receipt."""
+    datime: datetime.datetime
+    no: int
+    fp: int
+    op_type: int
+    amount: int
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        v = _data_decode(data, '<BBBBBIIBBBBBB', cls)  # 19
+        return cls(
+            datime=_b2dt(v[0:5]),
+            no=v[5],
+            fp=v[6],
+            op_type=v[7],
+            amount=(int.from_bytes(v[8:], 'little'))
+        )
+
+
+ADOC_CLASS = {
+    1: ADocRegRpt,
+    11: ADocReRegRpt,
+    2: ADocSesOpenRpt,
+    5: ADocSesCloseRpt,
+    3: ADocReceipt
+}
+
+
+@dataclass
+class RspGetDocByNum(RspBase):
     """FD."""
-    ...  # N
+    doc_type: int  # 1 byte, enum
+    ofd: bool  # 1 byte
+    doc: ADoc
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        if (l_data := len(data)) <= 3:
+            raise exc.KitFRRspDecodeError(f"{cls.__name__}: too few data: {l_data} bytes.")
+        # 1. decode last
+        if (doc_class := ADOC_CLASS.get(doc_type := data[0])) is None:
+            raise exc.KitFRRspDecodeError(f"{cls.__name__}: unknown doc type={doc_type}.")
+        doc = doc_class.from_bytes(data[2:])
+        # 2. init self
+        return cls(doc_type=doc_type, ofd=bool(data[1]), doc=doc)
 
 
 @dataclass
@@ -206,7 +336,7 @@ class RspGetSomething(_RspStub):
 
 
 # ----
-CODE2CLASS = {
+_CODE2CLASS = {
     const.IEnumCmd.GetDeviceStatus: RspGetDeviceStatus,
     const.IEnumCmd.GetDeviceModel: RspGetDeviceModel,
     const.IEnumCmd.GetStorageStatus: RspGetStorageStatus,
@@ -217,15 +347,8 @@ CODE2CLASS = {
 }
 
 
-def frame2rsp(cmd_code: const.IEnumCmd, frame: bytes) -> Tuple[bool, Union[int, RspBase]]:
-    """Decode inbound frame into response object."""
-    data = util.frame2bytes(frame)
-    # 5. chk response code
-    if (rsp_code := int(data[0])) == 0:  # 0 == ok
-        return True, CODE2CLASS[cmd_code].from_bytes(data[1:])  # FIXME: class
-    elif rsp_code == 1:  # 1 == err; 1 byte of errcode
-        if (l_err_code := len(data) - 1) != 1:
-            raise exc.KitFRFrameError(f"Bad error payload len: {l_err_code}")
-        return False, int(data[1])
-    else:
-        raise exc.KitFRFrameError(f"Bad response code: {rsp_code}")
+def bytes2rsp(cmd_code: const.IEnumCmd, data: bytes) -> RspBase:
+    """Decode inbound bytes into RspX object."""
+    if (rsp := _CODE2CLASS.get(cmd_code)) is not None:
+        return rsp.from_bytes(data)
+    raise exc.KitFRRspDecodeError(f"Unknown response object (cmd {cmd_code}): {util.b2h(data)}")

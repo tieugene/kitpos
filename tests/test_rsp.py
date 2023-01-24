@@ -1,7 +1,9 @@
 """`rsp.py` tests."""
-
+# 1. std
+import datetime
+# 3. local
 from kitfr import const, rsp
-from tests.samples import RAW_A
+from tests.samples import RAW_A, RSP
 
 
 def __x(i: int) -> bytes:
@@ -44,8 +46,47 @@ def test_rsp_get_storage_status():
     )
 
 
-def test_frame2rsp():  # TODO: on err returns
-    cls_list = (const.IEnumCmd.GetDeviceStatus, const.IEnumCmd.GetDeviceModel, const.IEnumCmd.GetStorageStatus)
+def test_rsp_get_register_params():
+    cls = rsp.RspGetRegisterParms
+    assert cls.from_bytes(__x(3)) == cls(
+        rn='0000000000038045',
+        inn='7806197274',
+        mode=12,
+        tax=4,
+        agent=64
+    )
+
+
+def test_rsp_get_ofd_xchg_status():
+    cls = rsp.RspGetOFDXchgStatus
+    assert cls.from_bytes(__x(4)) == cls(
+        status=2,
+        state_ofd=0,
+        out_count=10,
+        next_doc_n=1,
+        next_doc_d=datetime.datetime(2022, 3, 28, 9, 41)
+    )
+
+
+def test_rsp_get_date_time():
+    cls = rsp.RspGetDateTime
+    assert cls.from_bytes(__x(5)) == cls(
+        datime=datetime.datetime(2023, 1, 24, 14, 46)
+    )
+
+# TODO: RspGetDocByNum
+
+
+def test_bytes2rsp():
+    cls_list = (
+        const.IEnumCmd.GetDeviceStatus,
+        const.IEnumCmd.GetDeviceModel,
+        const.IEnumCmd.GetStorageStatus,
+        const.IEnumCmd.GetRegisterParms,
+        const.IEnumCmd.GetOFDXchgStatus,
+        const.IEnumCmd.GetDateTime
+    )
     for i, c in enumerate(cls_list):
-        ok, o = rsp.frame2rsp(c, RAW_A[i])
-        assert ok
+        assert rsp.bytes2rsp(c, RSP[i]) is not None  # compare type
+
+# TODO: add errors
