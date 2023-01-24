@@ -15,3 +15,5 @@ def test_frame2bytes():
     for b_list in (RAW_Q, RAW_A):
         for b in b_list:
             assert util.frame2bytes(b) == b[4:-2]
+
+# TODO: err

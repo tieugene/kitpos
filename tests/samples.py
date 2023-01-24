@@ -48,3 +48,5 @@ RAW_A = [bytes.fromhex(s) for s in __frame_a_s]  # raw responses
 CMD = [bytes.fromhex(s)[4:-2] for s in __frame_q_s]
 RSP = [bytes.fromhex(s) for s in __data_a_s]  # responce objects dumps
 RSP_DBN = [bytes.fromhex(s) for s in __data_a_dbn_s]  # RspGetDocByNum.from_bytes(data)
+
+# TODO: add errs

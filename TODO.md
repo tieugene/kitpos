@@ -17,6 +17,7 @@
     - [ ] Set
     - [ ] Sequences
 - [ ] Expand RespX flag (bit array) attributes
+- [ ] Online tests
 - [ ] Async
 - [ ] Packaging (`requirements.txt`, `setup.{py,cfg}`, `kitfr.spec`, `?MANIFEST.in`, `?tox.*`)
 - [ ] Try:

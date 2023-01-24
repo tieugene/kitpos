@@ -30,3 +30,5 @@ def test_cmd_get_date_time():
 
 # def test_cmd_get_doc_by_num():
 #    assert util.bytes2frame(cmd.CmdGetDocByNum(1).to_bytes()) == RAW_Q[3]
+
+# TODO: err
