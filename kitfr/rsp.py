@@ -5,7 +5,7 @@ from dataclasses import dataclass
 import struct
 import datetime
 # 3. local
-from kitfr import const, exc, util
+from kitfr import const, exc, util, flag
 
 
 def _b2s(v: bytes) -> str:
@@ -66,33 +66,33 @@ class _RspStub(RspBase):
 
 @dataclass
 class RspGetDeviceStatus(RspBase):
-    """FR status."""
+    """FR status (0x01)."""
     sn: str
     datime: datetime.datetime
-    err: int  # Critical errors
-    status: int
-    is_fs: bool
-    phase: int
+    err: bool  # Critical errors; TODO: chk 0/1
+    prn_status: const.IEnumPrnStatus
+    is_fs: bool  # TODO: chk 0/1
+    fs_phase: const.IEnumFSphase
     wtf: int  # TODO: WTF tail 1 byte?
 
     @staticmethod
     def from_bytes(data: bytes):
         """Deserialize object."""
-        v = _data_decode(data, '12sBBBBBBB?BB', RspGetDeviceStatus)
+        v = _data_decode(data, '12sBBBBB?B?BB', RspGetDeviceStatus)
         return RspGetDeviceStatus(
             sn=_b2s(v[0]),
             datime=_b2dt(v[1:6]),
             err=v[6],
-            status=v[7],
+            prn_status=const.IEnumPrnStatus(v[7]),
             is_fs=v[8],
-            phase=v[9],
+            fs_phase=const.IEnumFSphase(v[9]),
             wtf=v[10]
         )
 
 
 @dataclass
 class RspGetDeviceModel(RspBase):
-    """FR sn."""
+    """FR sn (0x04)."""
     name: str
 
     @staticmethod
@@ -104,8 +104,8 @@ class RspGetDeviceModel(RspBase):
 
 @dataclass
 class RspGetStorageStatus(RspBase):
-    """FS status."""
-    phase: int
+    """FS status (0x08)."""
+    phase: const.IEnumFSphase
     cur_doc: int
     is_doc: bool
     is_session_open: bool
@@ -119,8 +119,8 @@ class RspGetStorageStatus(RspBase):
         """Deserialize object."""
         v = _data_decode(data, '<BB??BBBBBB16sI', RspGetStorageStatus)
         return RspGetStorageStatus(
-            phase=v[0],
-            cur_doc=v[1],
+            phase=const.IEnumFSphase(v[0]),
+            cur_doc=const.IEnumFSCurDoc(v[1]),
             is_doc=v[2],
             is_session_open=v[3],
             flags=v[4],
@@ -132,7 +132,7 @@ class RspGetStorageStatus(RspBase):
 
 @dataclass
 class RspGetRegisterParms(RspBase):
-    """FR/FS registering parameters."""
+    """FR/FS registering parameters (0x0A)."""
     rn: str
     inn: str
     mode: int
@@ -272,7 +272,7 @@ ADOC_CLASS = {
 
 @dataclass
 class RspGetDocByNum(RspBase):
-    """FD."""
+    """FD (0x30)."""
     doc_type: int  # 1 byte, enum
     ofd: bool  # 1 byte
     doc: ADoc
@@ -292,7 +292,7 @@ class RspGetDocByNum(RspBase):
 
 @dataclass
 class RspGetOFDXchgStatus(RspBase):
-    """OFD exchange status."""
+    """OFD exchange status (0x50)."""
     status: int
     state_ofd: int
     out_count: int
@@ -314,7 +314,7 @@ class RspGetOFDXchgStatus(RspBase):
 
 @dataclass
 class RspGetDateTime(RspBase):
-    """FS date/time."""
+    """FS date/time (0x73)."""
     datime: datetime.datetime
 
     @classmethod

@@ -6,6 +6,7 @@ import enum
 FRAME_HEADER = b'\xB6\x29'
 
 
+@enum.unique
 class IEnumCmd(enum.IntEnum):
     """Commands."""
     GetDeviceStatus = 0x01  # [Info] Get status, ~args~
@@ -38,3 +39,73 @@ class IEnumCmd(enum.IntEnum):
 class IEnumErr(enum.IntEnum):
     """Response error codes."""
     ...  # TODO
+
+
+@enum.unique
+class _IEnumPrintable(enum.IntEnum):
+    def __str__(self):
+        return f"{self.name}({self.value})"
+
+
+@enum.unique
+class IEnumPrnStatus(_IEnumPrintable):
+    """Printing device status."""
+    OK = 0
+    Offline = 1  # Prn device is not connected
+    NoPaper = 2  # Out of paper
+    PaperJam = 3
+    CoverOpened = 5
+    CutErr = 6
+    HWErr = 7
+
+
+@enum.unique
+class IEnumFSphase(_IEnumPrintable):
+    """FS live phase."""
+    Ready = 1  # Ready for fiscalization
+    Fisc = 3  # Fiscalization mode
+    Post = 7  # Post-fiscal mode (sending FD to OFD)
+    Arch = 5  # Reading data from archive
+
+
+@enum.unique
+class IEnumFSCurDoc(_IEnumPrintable):
+    """FS current document type."""
+    Empty = 0x00
+    RegRpt = 0x01  # FR registration report
+    SesOpenRpt = 0x02  # Session opening report
+    Receipt = 0x04
+    SesCloseRpt = 0x08  # Session closing report
+    FSCloseRpt = 0x10  # Fiscal mode close report
+    FSChgRpt = 0x12  # Re-registration due FS replacing report
+    ReRegRpt = 0x13  # Reregistration report
+    CorReceipt = 0x14  # Corr. receipt
+    SattleRpt = 0x17  # Sattlement report
+
+
+class FEnumFSErr(enum.IntFlag):
+    """FS errors and warnings"""
+    Exp3d = 1  # Expired 3 days
+    Exp30d = 2  # Expired 30 days
+    Fill90 = 4  # FS filled upt to 90%
+    Timeout = 8  # OFD timeout
+    Crit = 0x80  # Critical error
+
+
+class IEnumPR(enum.IntEnum):
+    """PR"""
+    ...
+
+class IEnumReRegR(enum.IntEnum):
+    ...
+
+class IEnumDocType(enum.IntEnum):
+    ...
+
+class IEnumMode(enum.IntEnum):
+    """FR job mode."""
+    ...
+
+
+# tax: flag
+# pa: flag

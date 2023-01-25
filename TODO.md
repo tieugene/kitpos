@@ -13,7 +13,11 @@
     - [ ] Set
     - [ ] Sequences
 - [ ] FIXME: Sometimes receives just \xB6\x29 and nothing else
-- [ ] Expand RespX flag (bit array) attributes
+- [ ] Expand RespX flag (bit array) attributes:
+  + [x] 0x01 (2)
+  + […] 0x08 (3)
+  + [ ] 0x0A (3)
+  + [ ] 0x30 (1+): &hellip;
 - [ ] Online tests
 - [ ] Async
 - [ ] Packaging (`requirements.txt`, `setup.{py,cfg}`, `kitfr.spec`, `?MANIFEST.in`, `?tox.*`)
