@@ -95,6 +95,27 @@ class IEnumFSCurDoc(_IEnumPrintable):
     SattleRpt = 0x17  # Sattlement report
 
 
+@enum.unique
+class IEnumADocType(enum.IntEnum):
+    """Archive document types.
+
+    Used:
+    - RspGetDocByNum
+    """
+    RegRpt = 1  # FR registration report
+    ReRegRpt = 11  # Reregistration report
+    SesOpenRpt = 2  # Session opening report
+    SattleRpt = 21  # Sattlement report
+    Receipt = 3
+    CorReceipt = 31  # Corr. receipt
+    BSO = 4
+    CorBSO = 41
+    SesCloseRpt = 5  # Session closing report
+    FSCloseRpt = 6  # Fiscal mode close report
+    OpConfirm = 7  # Operator's confirmation
+
+
+
 class IFlagFSErr(enum.IntFlag):
     """FS errors and warnings.
 
@@ -142,9 +163,6 @@ class IFlagAgent(enum.IntEnum):
 
 
 class IEnumReRegReason(enum.IntEnum):
-    ...
-
-class IEnumDocType(enum.IntEnum):
     ...
 
 

@@ -262,19 +262,19 @@ class ADocReceipt(ADoc):
 
 
 ADOC_CLASS = {
-    1: ADocRegRpt,
-    11: ADocReRegRpt,
-    2: ADocSesOpenRpt,
-    5: ADocSesCloseRpt,
-    3: ADocReceipt
+    const.IEnumADocType.RegRpt: ADocRegRpt,
+    const.IEnumADocType.ReRegRpt: ADocReRegRpt,
+    const.IEnumADocType.SesOpenRpt: ADocSesOpenRpt,
+    const.IEnumADocType.SesCloseRpt: ADocSesCloseRpt,
+    const.IEnumADocType.Receipt: ADocReceipt
 }
 
 
 @dataclass
 class RspGetDocByNum(RspBase):
     """FD (0x30)."""
-    doc_type: int  # 1 byte, enum
-    ofd: bool  # 1 byte
+    doc_type: const.IEnumADocType
+    ofd: bool  # TODO: chk 0/1
     doc: ADoc
 
     @classmethod
@@ -283,8 +283,9 @@ class RspGetDocByNum(RspBase):
         if (l_data := len(data)) <= 3:
             raise exc.KitFRRspDecodeError(f"{cls.__name__}: too few data: {l_data} bytes.")
         # 1. decode last
-        if (doc_class := ADOC_CLASS.get(doc_type := data[0])) is None:
-            raise exc.KitFRRspDecodeError(f"{cls.__name__}: unknown doc type={doc_type}.")
+        doc_type = const.IEnumADocType(data[0])  # ValueSomething exception if unknown
+        if (doc_class := ADOC_CLASS.get(doc_type)) is None:
+            raise exc.KitFRRspDecodeError(f"{cls.__name__}: Doc type={doc_type} unprocessable yet.")
         doc = doc_class.from_bytes(data[2:])
         # 2. init self
         return cls(doc_type=doc_type, ofd=bool(data[1]), doc=doc)
@@ -293,8 +294,6 @@ class RspGetDocByNum(RspBase):
 @dataclass
 class RspGetOFDXchgStatus(RspBase):
     """OFD exchange status (0x50)."""
-    status: int
-    state_ofd: int
     out_count: int
     next_doc_n: int
     next_doc_d: datetime.datetime
@@ -303,9 +302,7 @@ class RspGetOFDXchgStatus(RspBase):
     def from_bytes(data: bytes):
         """Deserialize object."""
         v = _data_decode(data, '<BBHIBBBBB', RspGetOFDXchgStatus)  # 13
-        return RspGetOFDXchgStatus(
-            status=v[0],
-            state_ofd=v[1],
+        return RspGetOFDXchgStatus(  # Note: v[0..1] skipped as service
             out_count=v[2],
             next_doc_n=v[3],
             next_doc_d=_b2dt(v[4:])

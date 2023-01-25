@@ -1,7 +1,8 @@
 # TODO
 
-- RspX.str => ster(splitter: str = ', ')
-- Flag.__str__: 
+- [ ] RspX.str => ster(splitter: str = ', ')
+- [x] Flag.__str__: bin
+- [ ] flag._Flags: metaclass
 
 ## &hellip;
 - [ ] Extend commands:
@@ -21,7 +22,9 @@
   + [x] 0x01 (2)
   + [x] 0x08 (3)
   + [x] 0x0A (3)
-  + [ ] 0x30 (1+): &hellip;
+  + […] 0x30 (1+):
+    - [x] 0x30 itself (1)
+    - [ ] ADocX (&hellip;)
 - [ ] Online tests
 - [ ] Async
 - [ ] Wrap exceptions (all => `exc.Kit&hellip(e)`)
