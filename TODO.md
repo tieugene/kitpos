@@ -1,10 +1,9 @@
 # TODO
 
-- [x] Flag.__str__: bin
-- [ ] RspX.str => str(splitter: str = ', ')
-- [ ] flag._Flags: metaclass
-
 ## &hellip;
+- [ ] FIXME: Broken rx (#7)
+- [ ] RspX.str => str(splitter: str = ', ')
+- [ ] Fiscal-CS Activity Diagram
 - [ ] Extend commands:
   + [ ] #2:
     - [ ] GetDocByNum #2 (&times;2&hellip;6)
@@ -17,14 +16,13 @@
       + [ ]  7: OpConfirm
     - [ ] Set
     - [ ] Sequences
-- [ ] FIXME: Sometimes receives just \xB6\x29 and nothing else
-- [ ] Fiscal-CS Activity Diagram
 - [ ] Mk online tests (w/ live FRs)
 - [ ] Async
 - [ ] Wrap exceptions (all => `exc.Kit&hellip(e)`)
 - [ ] Packaging (`requirements.txt`, `setup.{py,cfg}`, `kitfr.spec`, `?MANIFEST.in`, `?tox.*`)
-- [ ] Try:
-  + [ ] 2+ &times; Cmd (sequence) @ 1 connection
+- [ ] Try: 2+ &times; Cmd (sequence) @ 1 connection
+- [ ] Maybe:
+  + [ ] flag._Flags: metaclass
 
 ## CLI:
 - get_something

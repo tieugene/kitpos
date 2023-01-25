@@ -7,6 +7,12 @@ FRAME_HEADER = b'\xB6\x29'
 
 
 @enum.unique
+class _IEnumPrintable(enum.IntEnum):
+    def __str__(self):
+        return f"{self.name}({self.value})"
+
+
+@enum.unique
 class IEnumCmd(enum.IntEnum):
     """Commands."""
     GetDeviceStatus = 0x01  # [Info] Get status, ~args~
@@ -34,17 +40,6 @@ class IEnumCmd(enum.IntEnum):
     SetDateTime = 0x72  # [Settings]
     GetDateTime = 0x73  # [Settings]
     Restart = 0xEF
-
-
-class IEnumErr(enum.IntEnum):
-    """Response error codes."""
-    ...  # TODO
-
-
-@enum.unique
-class _IEnumPrintable(enum.IntEnum):
-    def __str__(self):
-        return f"{self.name}({self.value})"
 
 
 @enum.unique
@@ -115,6 +110,22 @@ class IEnumADocType(_IEnumPrintable):
     OpConfirm = 7  # Operator's confirmation
 
 
+class IEnumReRegReason(_IEnumPrintable):
+    """Reason for reregistration."""
+    FS = enum.auto()  # Changing FS
+    OFD = enum.auto()  # Changing OFD
+    User = enum.auto()  # Changing user's requisitions
+    FR = enum.auto()  # Changing FR settings (OFD INN + place/user)
+
+
+class IEnumReceiptType(_IEnumPrintable):
+    """Receipt type."""
+    In = enum.auto()  # Incoming
+    InRet = enum.auto()  # Incoming return
+    Out = enum.auto()  # Outcome
+    OutRet = enum.auto()  # Outcom return
+
+
 class IFlagFSErr(enum.IntFlag):
     """FS errors and warnings.
 
@@ -159,19 +170,3 @@ class IFlagAgent(enum.IntFlag):
     Mode3 = enum.auto()
     Mode4 = enum.auto()
     Mode5 = enum.auto()
-
-
-class IEnumReRegReason(_IEnumPrintable):
-    """Reason for reregistration."""
-    FS = enum.auto()  # Changing FS
-    OFD = enum.auto()  # Changing OFD
-    User = enum.auto()  # Changing user's requisitions
-    FR = enum.auto()  # Changing FR settings (OFD INN + place/user)
-
-
-class IEnumReceiptType(_IEnumPrintable):
-    """Receipt type."""
-    In = enum.auto()  # Incoming
-    InRet = enum.auto()  # Incoming return
-    Out = enum.auto()  # Outcome
-    OutRet = enum.auto()  # Outcom return
