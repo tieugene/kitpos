@@ -162,11 +162,12 @@ class ADocRegRpt(ADoc):
     """Archive document. Registration report."""
     datime: datetime.datetime
     no: int
-    fp: int  # repeate because of auto __str__
+    fp: int
+    # ^^^ repeate because of auto __str__
     inn: str
     rn: str
-    tax: int
-    mode: int
+    tax: flag.TaxModes  # TODO: really?
+    mode: flag.FRModes  # TODO: really?
 
     @classmethod
     def from_bytes(cls, data: bytes):
@@ -178,8 +179,8 @@ class ADocRegRpt(ADoc):
             fp=v[6],
             inn=_b2s(v[7]).rstrip(),
             rn=_b2s(v[8]).rstrip(),
-            tax=v[9],
-            mode=v[10]
+            tax=flag.TaxModes(v[9]),
+            mode=flag.FRModes(v[10])
         )
 
 
@@ -191,9 +192,9 @@ class ADocReRegRpt(ADoc):
     fp: int
     inn: str
     rn: str
-    tax: int
-    mode: int
-    reason: int
+    tax: flag.TaxModes  # TODO: really?
+    mode: flag.FRModes  # TODO: really
+    reason: const.IEnumReRegReason
 
     @classmethod
     def from_bytes(cls, data: bytes):
@@ -205,9 +206,9 @@ class ADocReRegRpt(ADoc):
             fp=v[6],
             inn=_b2s(v[7]).rstrip(),
             rn=_b2s(v[8]).rstrip(),
-            tax=v[9],
-            mode=v[10],
-            reason=v[11]
+            tax=flag.TaxModes(v[9]),
+            mode=flag.FRModes(v[10]),
+            reason=const.IEnumReRegReason(v[11])
         )
 
 
@@ -245,7 +246,7 @@ class ADocReceipt(ADoc):
     datime: datetime.datetime
     no: int
     fp: int
-    op_type: int
+    req_type: const.IEnumReceiptType
     amount: int
 
     @classmethod
@@ -256,7 +257,7 @@ class ADocReceipt(ADoc):
             datime=_b2dt(v[0:5]),
             no=v[5],
             fp=v[6],
-            op_type=v[7],
+            req_type=const.IEnumReceiptType(v[7]),
             amount=(int.from_bytes(v[8:], 'little'))
         )
 

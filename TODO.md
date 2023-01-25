@@ -1,7 +1,7 @@
 # TODO
 
-- [ ] RspX.str => ster(splitter: str = ', ')
 - [x] Flag.__str__: bin
+- [ ] RspX.str => str(splitter: str = ', ')
 - [ ] flag._Flags: metaclass
 
 ## &hellip;
@@ -18,14 +18,8 @@
     - [ ] Set
     - [ ] Sequences
 - [ ] FIXME: Sometimes receives just \xB6\x29 and nothing else
-- [ ] Expand RespX flag (bit array) attributes:
-  + [x] 0x01 (2)
-  + [x] 0x08 (3)
-  + [x] 0x0A (3)
-  + […] 0x30 (1+):
-    - [x] 0x30 itself (1)
-    - [ ] ADocX (&hellip;)
-- [ ] Online tests
+- [ ] Fiscal-CS Activity Diagram
+- [ ] Mk online tests (w/ live FRs)
 - [ ] Async
 - [ ] Wrap exceptions (all => `exc.Kit&hellip(e)`)
 - [ ] Packaging (`requirements.txt`, `setup.{py,cfg}`, `kitfr.spec`, `?MANIFEST.in`, `?tox.*`)

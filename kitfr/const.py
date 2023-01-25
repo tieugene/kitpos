@@ -96,7 +96,7 @@ class IEnumFSCurDoc(_IEnumPrintable):
 
 
 @enum.unique
-class IEnumADocType(enum.IntEnum):
+class IEnumADocType(_IEnumPrintable):
     """Archive document types.
 
     Used:
@@ -113,7 +113,6 @@ class IEnumADocType(enum.IntEnum):
     SesCloseRpt = 5  # Session closing report
     FSCloseRpt = 6  # Fiscal mode close report
     OpConfirm = 7  # Operator's confirmation
-
 
 
 class IFlagFSErr(enum.IntFlag):
@@ -142,7 +141,7 @@ class IFlagFRMode(enum.IntFlag):
     iNet = enum.auto()  # FR is Internet device
 
 
-class IFlagTax(enum.IntEnum):
+class IFlagTax(enum.IntFlag):
     """Tax type."""
     General = enum.auto()
     Simple = enum.auto()
@@ -152,7 +151,7 @@ class IFlagTax(enum.IntEnum):
     PSN = enum.auto()
 
 
-class IFlagAgent(enum.IntEnum):
+class IFlagAgent(enum.IntFlag):
     """Agent types."""
     Mode0 = enum.auto()
     Mode1 = enum.auto()
@@ -162,9 +161,17 @@ class IFlagAgent(enum.IntEnum):
     Mode5 = enum.auto()
 
 
-class IEnumReRegReason(enum.IntEnum):
-    ...
+class IEnumReRegReason(_IEnumPrintable):
+    """Reason for reregistration."""
+    FS = enum.auto()  # Changing FS
+    OFD = enum.auto()  # Changing OFD
+    User = enum.auto()  # Changing user's requisitions
+    FR = enum.auto()  # Changing FR settings (OFD INN + place/user)
 
 
-# tax: flag
-# pa: flag
+class IEnumReceiptType(_IEnumPrintable):
+    """Receipt type."""
+    In = enum.auto()  # Incoming
+    InRet = enum.auto()  # Incoming return
+    Out = enum.auto()  # Outcome
+    OutRet = enum.auto()  # Outcom return

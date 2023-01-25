@@ -3,6 +3,8 @@ import enum
 
 from kitfr import const
 
+x_table = str.maketrans({'0': '.', '1': '+'})
+
 
 class _Flags:
     """Base for flag classes.
@@ -20,9 +22,7 @@ class _Flags:
         return bool(f & self._v)
 
     def __str__(self) -> str:
-        return f"{bin(self._v)[2:]} ({self._v:02X}h)"
-        # TODO: lexpand(8) by 0
-        # TODO: replace '01' > '.+'
+        return f"{bin(self._v)[2:].zfill(8).translate(x_table)} ({self._v:02X}h)"
 
 
 class FSErrors(_Flags):

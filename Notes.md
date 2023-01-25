@@ -49,11 +49,14 @@ Stat (docs):
 - 88: 3342 (3317/12'14" ~= 4.5 doc/s)
 
 ## QA
-Q: Can I send 2+ commands per connection?
-A: Standalone - no, sequences - &hellip;
+- Q: Can I send 2+ commands per connection?
+- A: Standalone - no, sequences - &hellip;
 
-Q: Can I send interlaced commands:
-A: &hellip;
+- Q: Can I send interlaced commands:
+- A: &hellip;
 
-Q: Can I get 2+ connections?
-A: &hellip;
+- Q: Can I get 2+ connections?
+- A: &hellip;
+
+- Q: Qu'est-ce que ce "фискальный признак"
+- A: &sime; checksum
