@@ -49,7 +49,11 @@ class _IEnumPrintable(enum.IntEnum):
 
 @enum.unique
 class IEnumPrnStatus(_IEnumPrintable):
-    """Printing device status."""
+    """Printing device status.
+
+    Used:
+    - ...
+    """
     OK = 0
     Offline = 1  # Prn device is not connected
     NoPaper = 2  # Out of paper
@@ -61,7 +65,11 @@ class IEnumPrnStatus(_IEnumPrintable):
 
 @enum.unique
 class IEnumFSphase(_IEnumPrintable):
-    """FS live phase."""
+    """FS live phase.
+
+    Used:
+    - ...
+    """
     Ready = 1  # Ready for fiscalization
     Fisc = 3  # Fiscalization mode
     Post = 7  # Post-fiscal mode (sending FD to OFD)
@@ -70,7 +78,11 @@ class IEnumFSphase(_IEnumPrintable):
 
 @enum.unique
 class IEnumFSCurDoc(_IEnumPrintable):
-    """FS current document type."""
+    """FS current document type.
+
+    Used:
+    - ...
+    """
     Empty = 0x00
     RegRpt = 0x01  # FR registration report
     SesOpenRpt = 0x02  # Session opening report
@@ -83,8 +95,12 @@ class IEnumFSCurDoc(_IEnumPrintable):
     SattleRpt = 0x17  # Sattlement report
 
 
-class FEnumFSErr(enum.IntFlag):
-    """FS errors and warnings"""
+class IFlagFSErr(enum.IntFlag):
+    """FS errors and warnings.
+
+    Used:
+    - flag.FSErr > 0x...
+    """
     Exp3d = 1  # Expired 3 days
     Exp30d = 2  # Expired 30 days
     Full90 = 4  # FS filled upt to 90%
@@ -92,18 +108,43 @@ class FEnumFSErr(enum.IntFlag):
     Crit = 0x80  # Critical error
 
 
-class IEnumPR(enum.IntEnum):
-    """PR"""
-    ...
+class IFlagFRMode(enum.IntFlag):
+    """FR working mode.
+    Used:
+    - flag.FRModes > 0x...
+    """
+    Enc = enum.auto()  # Encryption
+    Alone = enum.auto()  # Autonomous mode
+    Auto = enum.auto()  # Automatic mode
+    Srv = enum.auto()  # Service sector
+    BSO = enum.auto()  # BSO(1)/Receipt(0) mode
+    iNet = enum.auto()  # FR is Internet device
 
-class IEnumReRegR(enum.IntEnum):
+
+class IFlagTax(enum.IntEnum):
+    """Tax type."""
+    General = enum.auto()
+    Simple = enum.auto()
+    SimpleP = enum.auto()
+    ENVD = enum.auto()
+    ESD = enum.auto()
+    PSN = enum.auto()
+
+
+class IFlagAgent(enum.IntEnum):
+    """Agent types."""
+    Mode0 = enum.auto()
+    Mode1 = enum.auto()
+    Mode2 = enum.auto()
+    Mode3 = enum.auto()
+    Mode4 = enum.auto()
+    Mode5 = enum.auto()
+
+
+class IEnumReRegReason(enum.IntEnum):
     ...
 
 class IEnumDocType(enum.IntEnum):
-    ...
-
-class IEnumMode(enum.IntEnum):
-    """FR job mode."""
     ...
 
 

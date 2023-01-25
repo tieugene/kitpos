@@ -1,5 +1,9 @@
 # TODO
 
+- RspX.str => ster(splitter: str = ', ')
+- Flag.__str__: 
+
+## &hellip;
 - [ ] Extend commands:
   + [ ] #2:
     - [ ] GetDocByNum #2 (&times;2&hellip;6)
@@ -16,10 +20,11 @@
 - [ ] Expand RespX flag (bit array) attributes:
   + [x] 0x01 (2)
   + [x] 0x08 (3)
-  + [ ] 0x0A (3)
+  + [x] 0x0A (3)
   + [ ] 0x30 (1+): &hellip;
 - [ ] Online tests
 - [ ] Async
+- [ ] Wrap exceptions (all => `exc.Kit&hellip(e)`)
 - [ ] Packaging (`requirements.txt`, `setup.{py,cfg}`, `kitfr.spec`, `?MANIFEST.in`, `?tox.*`)
 - [ ] Try:
   + [ ] 2+ &times; Cmd (sequence) @ 1 connection

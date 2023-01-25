@@ -1,49 +1,61 @@
 """Flags."""
+import enum
+
 from kitfr import const
 
 
-class FSerr:
-    """FS errors and warnings."""
-    __v: int
+class _Flags:
+    """Base for flag classes.
+
+    :todo: Metaclass
+    """
+    _v: int
+    _v_cls: enum.IntEnum
 
     def __init__(self, b: int):
-        self.__v = b
+        self._v = b
 
-    def __f(self, f: const.FEnumFSErr) -> bool:
-        return bool(f & self.__v)
+    def is_set(self, f: enum.IntFlag) -> bool:
+        """Check the flag is set."""
+        return bool(f & self._v)
 
     def __str__(self) -> str:
-        def __b2c(__i: int) -> str:
-            return '+' if __i else '.'
-        return ''.join([__b2c(f & self.__v) for f in (
-            const.FEnumFSErr.Crit,
-            const.FEnumFSErr.Timeout,
-            const.FEnumFSErr.Full90,
-            const.FEnumFSErr.Exp30d,
-            const.FEnumFSErr.Exp3d
-        )])
+        return f"{bin(self._v)[2:]} ({self._v:02X}h)"
+        # TODO: lexpand(8) by 0
+        # TODO: replace '01' > '.+'
 
-    @property
-    def has_exp3d(self) -> bool:
-        """Is expired on 3 days."""
-        return self.__f(const.FEnumFSErr.Exp3d)
 
-    @property
-    def has_exp30d(self) -> bool:
-        """Is expired on 30 days."""
-        return self.__f(const.FEnumFSErr.Exp30d)
+class FSErrors(_Flags):
+    """FS errors and warnings.
 
-    @property
-    def has_full90(self) -> bool:
-        """FS is 90% filled."""
-        return self.__f(const.FEnumFSErr.Full90)
+    Used:
+    - ...
+    """
+    _v_cls: const.IFlagFSErr
 
-    @property
-    def has_timeout(self) -> bool:
-        """OFD timeout."""
-        return self.__f(const.FEnumFSErr.Timeout)
 
-    @property
-    def has_crit(self) -> bool:
-        """FS Critical error."""
-        return self.__f(const.FEnumFSErr.Crit)
+class FRModes(_Flags):
+    """FR work mode.
+
+    Used:
+    - ...
+    """
+    _v_cls: const.IFlagFRMode
+
+
+class TaxModes(_Flags):
+    """Tax modes.
+
+    Used:
+    - ...
+    """
+    _v_cls: const.IFlagTax
+
+
+class AgentModes(_Flags):
+    """Agent modes.
+
+    Used:
+    - ...
+    """
+    _v_cls: const.IFlagAgent

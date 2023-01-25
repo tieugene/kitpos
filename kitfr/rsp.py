@@ -109,7 +109,7 @@ class RspGetStorageStatus(RspBase):
     cur_doc: int
     is_doc: bool
     is_session_open: bool
-    flags: flag.FSerr
+    flags: flag.FSErrors
     datime: datetime.datetime
     sn: str
     last_doc_no: int
@@ -123,7 +123,7 @@ class RspGetStorageStatus(RspBase):
             cur_doc=const.IEnumFSCurDoc(v[1]),
             is_doc=v[2],
             is_session_open=v[3],
-            flags=flag.FSerr(v[4]),
+            flags=flag.FSErrors(v[4]),
             datime=_b2dt(v[5:10]),
             sn=_b2s(v[10]),
             last_doc_no=v[11]
@@ -135,9 +135,9 @@ class RspGetRegisterParms(RspBase):
     """FR/FS registering parameters (0x0A)."""
     rn: str
     inn: str
-    mode: int
-    tax: int
-    agent: int
+    fr_mode: flag.FRModes
+    tax: flag.TaxModes
+    agent: flag.AgentModes
 
     @staticmethod
     def from_bytes(data: bytes):
@@ -146,9 +146,9 @@ class RspGetRegisterParms(RspBase):
         return RspGetRegisterParms(
             rn=_b2s(v[0]).rstrip(),
             inn=_b2s(v[1]).rstrip(),
-            mode=v[2],
-            tax=v[3],
-            agent=v[4]
+            fr_mode=flag.FRModes(v[2]),
+            tax=flag.TaxModes(v[3]),
+            agent=flag.AgentModes(v[4])
         )
 
 
