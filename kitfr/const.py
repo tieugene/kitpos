@@ -87,7 +87,7 @@ class FEnumFSErr(enum.IntFlag):
     """FS errors and warnings"""
     Exp3d = 1  # Expired 3 days
     Exp30d = 2  # Expired 30 days
-    Fill90 = 4  # FS filled upt to 90%
+    Full90 = 4  # FS filled upt to 90%
     Timeout = 8  # OFD timeout
     Crit = 0x80  # Critical error
 

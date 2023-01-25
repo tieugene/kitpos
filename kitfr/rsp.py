@@ -109,7 +109,7 @@ class RspGetStorageStatus(RspBase):
     cur_doc: int
     is_doc: bool
     is_session_open: bool
-    flags: int
+    flags: flag.FSerr
     datime: datetime.datetime
     sn: str
     last_doc_no: int
@@ -123,7 +123,7 @@ class RspGetStorageStatus(RspBase):
             cur_doc=const.IEnumFSCurDoc(v[1]),
             is_doc=v[2],
             is_session_open=v[3],
-            flags=v[4],
+            flags=flag.FSerr(v[4]),
             datime=_b2dt(v[5:10]),
             sn=_b2s(v[10]),
             last_doc_no=v[11]
