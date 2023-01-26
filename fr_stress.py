@@ -47,7 +47,7 @@ def main():
     max_i = len(SAMPLES) - 1
     random.seed()
     for i in range(retries):
-        r = _send(sys.argv[1], int(sys.argv[1]), SAMPLES[random.randint(0, max_i)])
+        r = _send(sys.argv[1], int(sys.argv[2]), SAMPLES[random.randint(0, max_i)])
         l_r = len(r)
         if l_r > 1030:
             print(f"#{i}: Data too big: {l_r} bytes.")
