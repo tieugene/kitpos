@@ -43,13 +43,12 @@ raw = b'\xB6\x29\x00\x05\x30\x01\x00\x00\x00\x95\xС8'
 - 5: 17 = 2 + 15 (5+4+4+2)  # 5.5
 - B: 50 = 2 + 48 (5+4+4+12+20+1+1+1)  # 5.2
 
-Stat (docs):
-- 36: 10
-- 70: 56
-- 88: 3342 (3317/12'14" ~= 4.5 doc/s)
-
 ## Net
 - if recv() right after send: get header and that's all
+- tests:
+  + 36: 13 tickets, 10x1000 &check; (32")
+  + 77: 56 tickets; 50x1000 &check; (31")
+  + 80: 3342 tickets; 3000x2000 &hellip; ()
 
 ## QA
 - Q: Can I send 2+ commands per connection?
