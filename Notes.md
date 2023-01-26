@@ -50,7 +50,7 @@ Stat (docs):
 
 ## QA
 - Q: Can I send 2+ commands per connection?
-- A: Standalone - no, sequences - &hellip;
+- A: Standalone - no, sequences - maybe but not recommended
 
 - Q: Can I send interlaced commands:
 - A: &hellip;
