@@ -1,7 +1,6 @@
 """Utility things."""
-from typing import Union, Tuple
-
 # 1. std
+from typing import Union, Tuple
 # 2. 3rd
 import crcmod  # or crcelk
 # 3. local

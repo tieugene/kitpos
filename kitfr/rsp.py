@@ -5,7 +5,7 @@ from dataclasses import dataclass
 import struct
 import datetime
 # 3. local
-from kitfr import const, exc, util
+from kitfr import const, exc, util, flag
 
 
 def _b2s(v: bytes) -> str:
@@ -66,33 +66,33 @@ class _RspStub(RspBase):
 
 @dataclass
 class RspGetDeviceStatus(RspBase):
-    """FR status."""
+    """FR status (0x01)."""
     sn: str
     datime: datetime.datetime
-    err: int  # Critical errors
-    status: int
-    is_fs: bool
-    phase: int
+    err: bool  # Critical errors; TODO: chk 0/1
+    prn_status: const.IEnumPrnStatus
+    is_fs: bool  # TODO: chk 0/1
+    fs_phase: const.IEnumFSphase
     wtf: int  # TODO: WTF tail 1 byte?
 
     @staticmethod
     def from_bytes(data: bytes):
         """Deserialize object."""
-        v = _data_decode(data, '12sBBBBBBB?BB', RspGetDeviceStatus)
+        v = _data_decode(data, '12sBBBBB?B?BB', RspGetDeviceStatus)
         return RspGetDeviceStatus(
             sn=_b2s(v[0]),
             datime=_b2dt(v[1:6]),
             err=v[6],
-            status=v[7],
+            prn_status=const.IEnumPrnStatus(v[7]),
             is_fs=v[8],
-            phase=v[9],
+            fs_phase=const.IEnumFSphase(v[9]),
             wtf=v[10]
         )
 
 
 @dataclass
 class RspGetDeviceModel(RspBase):
-    """FR sn."""
+    """FR sn (0x04)."""
     name: str
 
     @staticmethod
@@ -104,12 +104,12 @@ class RspGetDeviceModel(RspBase):
 
 @dataclass
 class RspGetStorageStatus(RspBase):
-    """FS status."""
-    phase: int
+    """FS status (0x08)."""
+    phase: const.IEnumFSphase
     cur_doc: int
     is_doc: bool
     is_session_open: bool
-    flags: int
+    flags: flag.FSErrors
     datime: datetime.datetime
     sn: str
     last_doc_no: int
@@ -119,11 +119,11 @@ class RspGetStorageStatus(RspBase):
         """Deserialize object."""
         v = _data_decode(data, '<BB??BBBBBB16sI', RspGetStorageStatus)
         return RspGetStorageStatus(
-            phase=v[0],
-            cur_doc=v[1],
+            phase=const.IEnumFSphase(v[0]),
+            cur_doc=const.IEnumFSCurDoc(v[1]),
             is_doc=v[2],
             is_session_open=v[3],
-            flags=v[4],
+            flags=flag.FSErrors(v[4]),
             datime=_b2dt(v[5:10]),
             sn=_b2s(v[10]),
             last_doc_no=v[11]
@@ -132,12 +132,12 @@ class RspGetStorageStatus(RspBase):
 
 @dataclass
 class RspGetRegisterParms(RspBase):
-    """FR/FS registering parameters."""
+    """FR/FS registering parameters (0x0A)."""
     rn: str
     inn: str
-    mode: int
-    tax: int
-    agent: int
+    fr_mode: flag.FRModes
+    tax: flag.TaxModes
+    agent: flag.AgentModes
 
     @staticmethod
     def from_bytes(data: bytes):
@@ -146,9 +146,9 @@ class RspGetRegisterParms(RspBase):
         return RspGetRegisterParms(
             rn=_b2s(v[0]).rstrip(),
             inn=_b2s(v[1]).rstrip(),
-            mode=v[2],
-            tax=v[3],
-            agent=v[4]
+            fr_mode=flag.FRModes(v[2]),
+            tax=flag.TaxModes(v[3]),
+            agent=flag.AgentModes(v[4])
         )
 
 
@@ -162,11 +162,12 @@ class ADocRegRpt(ADoc):
     """Archive document. Registration report."""
     datime: datetime.datetime
     no: int
-    fp: int  # repeate because of auto __str__
+    fp: int
+    # ^^^ repeate because of auto __str__
     inn: str
     rn: str
-    tax: int
-    mode: int
+    tax: flag.TaxModes  # TODO: really?
+    mode: flag.FRModes  # TODO: really?
 
     @classmethod
     def from_bytes(cls, data: bytes):
@@ -178,8 +179,8 @@ class ADocRegRpt(ADoc):
             fp=v[6],
             inn=_b2s(v[7]).rstrip(),
             rn=_b2s(v[8]).rstrip(),
-            tax=v[9],
-            mode=v[10]
+            tax=flag.TaxModes(v[9]),
+            mode=flag.FRModes(v[10])
         )
 
 
@@ -191,9 +192,9 @@ class ADocReRegRpt(ADoc):
     fp: int
     inn: str
     rn: str
-    tax: int
-    mode: int
-    reason: int
+    tax: flag.TaxModes  # TODO: really?
+    mode: flag.FRModes  # TODO: really
+    reason: const.IEnumReRegReason
 
     @classmethod
     def from_bytes(cls, data: bytes):
@@ -205,9 +206,9 @@ class ADocReRegRpt(ADoc):
             fp=v[6],
             inn=_b2s(v[7]).rstrip(),
             rn=_b2s(v[8]).rstrip(),
-            tax=v[9],
-            mode=v[10],
-            reason=v[11]
+            tax=flag.TaxModes(v[9]),
+            mode=flag.FRModes(v[10]),
+            reason=const.IEnumReRegReason(v[11])
         )
 
 
@@ -245,7 +246,7 @@ class ADocReceipt(ADoc):
     datime: datetime.datetime
     no: int
     fp: int
-    op_type: int
+    req_type: const.IEnumReceiptType
     amount: int
 
     @classmethod
@@ -256,25 +257,25 @@ class ADocReceipt(ADoc):
             datime=_b2dt(v[0:5]),
             no=v[5],
             fp=v[6],
-            op_type=v[7],
+            req_type=const.IEnumReceiptType(v[7]),
             amount=(int.from_bytes(v[8:], 'little'))
         )
 
 
 ADOC_CLASS = {
-    1: ADocRegRpt,
-    11: ADocReRegRpt,
-    2: ADocSesOpenRpt,
-    5: ADocSesCloseRpt,
-    3: ADocReceipt
+    const.IEnumADocType.RegRpt: ADocRegRpt,
+    const.IEnumADocType.ReRegRpt: ADocReRegRpt,
+    const.IEnumADocType.SesOpenRpt: ADocSesOpenRpt,
+    const.IEnumADocType.SesCloseRpt: ADocSesCloseRpt,
+    const.IEnumADocType.Receipt: ADocReceipt
 }
 
 
 @dataclass
 class RspGetDocByNum(RspBase):
-    """FD."""
-    doc_type: int  # 1 byte, enum
-    ofd: bool  # 1 byte
+    """FD (0x30)."""
+    doc_type: const.IEnumADocType
+    ofd: bool  # TODO: chk 0/1
     doc: ADoc
 
     @classmethod
@@ -283,8 +284,9 @@ class RspGetDocByNum(RspBase):
         if (l_data := len(data)) <= 3:
             raise exc.KitFRRspDecodeError(f"{cls.__name__}: too few data: {l_data} bytes.")
         # 1. decode last
-        if (doc_class := ADOC_CLASS.get(doc_type := data[0])) is None:
-            raise exc.KitFRRspDecodeError(f"{cls.__name__}: unknown doc type={doc_type}.")
+        doc_type = const.IEnumADocType(data[0])  # ValueSomething exception if unknown
+        if (doc_class := ADOC_CLASS.get(doc_type)) is None:
+            raise exc.KitFRRspDecodeError(f"{cls.__name__}: Doc type={doc_type} unprocessable yet.")
         doc = doc_class.from_bytes(data[2:])
         # 2. init self
         return cls(doc_type=doc_type, ofd=bool(data[1]), doc=doc)
@@ -292,9 +294,7 @@ class RspGetDocByNum(RspBase):
 
 @dataclass
 class RspGetOFDXchgStatus(RspBase):
-    """OFD exchange status."""
-    status: int
-    state_ofd: int
+    """OFD exchange status (0x50)."""
     out_count: int
     next_doc_n: int
     next_doc_d: datetime.datetime
@@ -303,9 +303,7 @@ class RspGetOFDXchgStatus(RspBase):
     def from_bytes(data: bytes):
         """Deserialize object."""
         v = _data_decode(data, '<BBHIBBBBB', RspGetOFDXchgStatus)  # 13
-        return RspGetOFDXchgStatus(
-            status=v[0],
-            state_ofd=v[1],
+        return RspGetOFDXchgStatus(  # Note: v[0..1] skipped as service
             out_count=v[2],
             next_doc_n=v[3],
             next_doc_d=_b2dt(v[4:])
@@ -314,7 +312,7 @@ class RspGetOFDXchgStatus(RspBase):
 
 @dataclass
 class RspGetDateTime(RspBase):
-    """FS date/time."""
+    """FS date/time (0x73)."""
     datime: datetime.datetime
 
     @classmethod
