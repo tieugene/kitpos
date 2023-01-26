@@ -44,7 +44,7 @@ def main():
     # - dispatch last
     if ok:
         rsp_object = rsp.bytes2rsp(cmd_class.cmd_id, bytes_i)
-        print(rsp_object.str)
+        print(rsp_object.str())
     else:
         print("Err: %02x '%s'" % (bytes_i, errs.ERR_TEXT['ru'].get(bytes_i, '<Unknown>.')))
     # TODO: handle exceptions:

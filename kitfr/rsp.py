@@ -39,13 +39,12 @@ class RspBase:
         """Class name shorthand."""
         return self.__class__.__name__
 
-    @property
-    def str(self) -> str:  # TODO: auto
-        """Stub."""
-        return ", ".join([f"{f}={self.__dict__[f]}" for f in self.__annotations__])
+    def str(self, sep: str = ', ') -> str:
+        """Get response attrs as string."""
+        return sep.join([f"{f}={self.__dict__[f]}" for f in self.__annotations__])
 
     def __str__(self) -> str:
-        return f"{self._cn}: {self.str}"
+        return f"{self._cn}: {self.str()}"
 
 
 @dataclass

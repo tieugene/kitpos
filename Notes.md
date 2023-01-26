@@ -48,7 +48,7 @@ raw = b'\xB6\x29\x00\x05\x30\x01\x00\x00\x00\x95\xС8'
 - tests:
   + 36: 13 tickets, 10x1000 &check; (32")
   + 77: 56 tickets; 50x1000 &check; (31")
-  + 80: 3342 tickets; 3000x2000 &hellip; ()
+  + 80: 3342 tickets; 3000x2000 &check; (5'20")
 
 ## QA
 - Q: Can I send 2+ commands per connection?

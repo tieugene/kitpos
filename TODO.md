@@ -1,10 +1,11 @@
 # TODO
 
 ## &hellip;
-- [ ] RspX.str => str(splitter: str = ', ')
 - [ ] Fiscal-CS Activity Diagram
 - [ ] Extend commands #2:
-  + [ ] Set
+  + [ ] Set:
+    - [ ] 0x72 SetDateTime
+    - [ ] 0x40 ResetMLM
   + [ ] GetDocByNum #2 (&times;2&hellip;6)
     - [ ]  3: Receipt (5.3)
     - [ ]  6: FSCloseRpt (5.6?)
@@ -13,7 +14,11 @@
     - [ ]  4: BSO
     - [ ] 41: CorBSO
     - [ ]  7: OpConfirm
-  + [ ] Sequences
+  + [ ] Sequences:
+    + [ ] CancelDoc
+    + [ ] Session
+    + [ ] Receipt
+    + [ ] CorrReceipt
 - [ ] Mk online tests (w/ live FRs)
 - [ ] Async
 - [ ] Wrap exceptions (all => `exc.Kit&hellip(e)`)
