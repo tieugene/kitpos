@@ -48,6 +48,9 @@ Stat (docs):
 - 70: 56
 - 88: 3342 (3317/12'14" ~= 4.5 doc/s)
 
+## Net
+- if recv() right after send: get header and that's all
+
 ## QA
 - Q: Can I send 2+ commands per connection?
 - A: Standalone - no, sequences - maybe but not recommended

@@ -21,7 +21,7 @@ def _send(host: str, port: int, data_out: bytes, timeout=None) -> bytes:
     with socket.create_connection((host, port), timeout=timeout if timeout else socket.getdefaulttimeout()) as sock:
         sock.sendall(data_out)  # or .send()
         # time.sleep(0.05)  # TODO: ?
-        return sock.recv(1031)
+        return sock.recv(2048, socket.MSG_WAITALL)
 
 
 def __gen_commands(tickets: int):
