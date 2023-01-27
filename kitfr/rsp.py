@@ -60,8 +60,8 @@ class RspOK(RspBase):
         """Get response attrs as string."""
         return "OK"
 
-    @staticmethod
-    def from_bytes(data: bytes):
+    @classmethod
+    def from_bytes(cls, data: bytes):
         """Deserialize object."""
         if l_data := len(data):
             raise exc.KitFRRspDecodeError(f"{cls.__name__}: bad data len: {l_data} (must be 0).")
@@ -266,12 +266,20 @@ class ADocReceipt(ADoc):
         )
 
 
+class ADocCorReceipt(ADocReceipt):
+    """Archive document. Corr. Receipt.
+
+    :not: Not documented.
+    """
+
+
 ADOC_CLASS = {
     const.IEnumADocType.RegRpt: ADocRegRpt,
     const.IEnumADocType.ReRegRpt: ADocReRegRpt,
     const.IEnumADocType.SesOpenRpt: ADocSesOpenRpt,
     const.IEnumADocType.SesCloseRpt: ADocSesCloseRpt,
-    const.IEnumADocType.Receipt: ADocReceipt
+    const.IEnumADocType.Receipt: ADocReceipt,
+    const.IEnumADocType.CorReceipt: ADocCorReceipt,
 }
 
 
@@ -290,7 +298,9 @@ class RspGetDocByNum(RspBase):
         # 1. decode last
         doc_type = const.IEnumADocType(data[0])  # ValueSomething exception if unknown
         if (doc_class := ADOC_CLASS.get(doc_type)) is None:
-            raise exc.KitFRRspDecodeError(f"{cls.__name__}: Doc type={doc_type} unprocessable yet.")
+            raise exc.KitFRRspDecodeError(
+                f"{cls.__name__}: Doc type={doc_type} unprocessable yet ({util.b2h(data[1:])})."
+            )
         doc = doc_class.from_bytes(data[2:])
         # 2. init self
         return cls(doc_type=doc_type, ofd=bool(data[1]), doc=doc)
