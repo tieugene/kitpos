@@ -266,12 +266,20 @@ class ADocReceipt(ADoc):
         )
 
 
+class ADocCorReceipt(ADocReceipt):
+    """Archive document. Corr. Receipt.
+
+    :not: Not documented.
+    """
+
+
 ADOC_CLASS = {
     const.IEnumADocType.RegRpt: ADocRegRpt,
     const.IEnumADocType.ReRegRpt: ADocReRegRpt,
     const.IEnumADocType.SesOpenRpt: ADocSesOpenRpt,
     const.IEnumADocType.SesCloseRpt: ADocSesCloseRpt,
-    const.IEnumADocType.Receipt: ADocReceipt
+    const.IEnumADocType.Receipt: ADocReceipt,
+    const.IEnumADocType.CorReceipt: ADocCorReceipt,
 }
 
 
