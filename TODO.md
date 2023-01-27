@@ -1,11 +1,7 @@
 # TODO
 
-## &hellip;
-- [ ] GetDocByNum.CorReceipt
 - [ ] Fiscal-CS Activity Diagram
-- [ ] Extend cmd #2 (GetDocByNum #2 (&times;2&hellip;6)):
-  - [ ]  ~~3: Receipt (5.3)~~
-  - [ ] 31: CorReceipt
+- [ ] Extend cmd #2 (GetDocByNum #2):
   - [ ]  6: FSCloseRpt (5.6?)
   - [ ] 21: SattleRpt (5.7)
   - [ ]  4: BSO
@@ -26,16 +22,7 @@
 - [ ] Wrap exceptions (all => `exc.Kit&hellip(e)`)
 - [ ] Packaging (`requirements.txt`, `setup.{py,cfg}`, `kitfr.spec`, `?MANIFEST.in`, `?tox.*`)
 - [ ] Try: 2+ &times; Cmd (sequence) @ 1 connection
-- [ ] FR: State diagramm
-- [ ] Maybe: flag._Flags: metaclass
 
-## CLI:
-- get_something
-- set_something
-- fs (register/close)
-- session
-- receipt
-- corr_receipt
-- report
-- archive
-- reset
+## Maybe
+- [ ] FR: State diagramm
+- [ ] flag._Flags: metaclass

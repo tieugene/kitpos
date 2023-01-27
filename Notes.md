@@ -50,6 +50,17 @@ raw = b'\xB6\x29\x00\x05\x30\x01\x00\x00\x00\x95\xС8'
   + 77: 56 tickets; 50x1000 &check; (31")
   + 80: 3342 tickets; 3000x2000 &check; (5'20")
 
+## CLI:
+- get_something
+- set_something
+- fs (register/close)
+- session
+- receipt
+- corr_receipt
+- report
+- archive
+- reset
+
 ## QA
 - Q: Can I send 2+ commands per connection?
 - A: Standalone - no, sequences - maybe but not recommended
