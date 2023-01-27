@@ -332,7 +332,7 @@ class RspGetDateTime(RspBase):
         )
 
 
-class RspGetSomething(_RspStub):
+class __RspGetSomething(_RspStub):
     """Something."""
     ...  # N
 

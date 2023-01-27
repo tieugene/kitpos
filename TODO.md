@@ -1,12 +1,13 @@
 # TODO
 
 ## &hellip;
+- [ ] GetDocByNum.CorReceipt
 - [ ] Fiscal-CS Activity Diagram
 - [ ] Extend cmd #2 (GetDocByNum #2 (&times;2&hellip;6)):
   - [ ]  ~~3: Receipt (5.3)~~
+  - [ ] 31: CorReceipt
   - [ ]  6: FSCloseRpt (5.6?)
   - [ ] 21: SattleRpt (5.7)
-  - [ ] 31: CorReceipt
   - [ ]  4: BSO
   - [ ] 41: CorBSO
   - [ ]  7: OpConfirm
