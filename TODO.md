@@ -1,7 +1,6 @@
 # TODO
 
 ## &hellip;
-- [ ] 0x72 SetDateTime
 - [ ] Fiscal-CS Activity Diagram
 - [ ] Extend cmd #2 (GetDocByNum #2 (&times;2&hellip;6)):
   - [ ]  ~~3: Receipt (5.3)~~

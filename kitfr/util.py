@@ -1,6 +1,9 @@
 """Utility things."""
+import datetime
 # 1. std
 from typing import Union, Tuple
+import struct
+import datetime
 # 2. 3rd
 import crcmod  # or crcelk
 # 3. local
@@ -12,6 +15,21 @@ crc = crcmod.predefined.mkCrcFun('crc-ccitt-false')  # CRC16-CCITT, LE, polynom 
 def b2h(v: bytes) -> str:
     """Convert bytes to upper hex."""
     return v.hex().upper()
+
+
+def b2s(v: bytes) -> str:
+    """Convert bytes of CP866 insto string."""
+    return v.decode()  # FIXME: CP866
+
+
+def b2dt(v: Tuple[int, int, int, int, int]) -> datetime.datetime:
+    """Convert 5xInt to datetime"""
+    return datetime.datetime(2000 + v[0], v[1], v[2], v[3], v[4])
+
+
+def dt2b(dt: datetime.datetime) -> bytes:
+    """Convert datetime into 5 bytes."""
+    return struct.pack('BBBBB', dt.year - 2000, dt.month, dt.day, dt.hour, dt.minute)
 
 
 def bytes2frame(data: bytes) -> bytes:

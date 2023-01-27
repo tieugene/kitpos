@@ -1,21 +1,11 @@
 """Responses of commands."""
 # 1. std
-from typing import Tuple, Union, Any
+from typing import Tuple, Any
 from dataclasses import dataclass
 import struct
 import datetime
 # 3. local
 from kitfr import const, exc, util, flag
-
-
-def _b2s(v: bytes) -> str:
-    """Convert bytes of CP866 insto string."""
-    return v.decode()  # FIXME: CP866
-
-
-def _b2dt(v: Tuple[int, int, int, int, int]) -> datetime.datetime:
-    """Convert 5xInt to datetime"""
-    return datetime.datetime(2000 + v[0], v[1], v[2], v[3], v[4])
 
 
 def _dt2str(dt: datetime.datetime) -> str:
@@ -52,15 +42,30 @@ class _RspStub(RspBase):
     """Stub base for debugging."""
     payload: bytes
 
-    @property
-    def str(self) -> str:
+    def str(self, sep: str = ', ') -> str:
         """Just dump payload."""
-        return f"{len(self.payload)}: {self.payload.hex().upper()}"
+        return f"{self.payload.hex().upper()} ({len(self.payload)})"
 
     @staticmethod
     def from_bytes(data: bytes):
         """Just store."""
         return _RspStub(payload=data)
+
+
+@dataclass
+class RspOK(RspBase):
+    """Just OK and nothing else."""
+
+    def str(self, _: str = '') -> str:
+        """Get response attrs as string."""
+        return "OK"
+
+    @staticmethod
+    def from_bytes(data: bytes):
+        """Deserialize object."""
+        if l_data := len(data):
+            raise exc.KitFRRspDecodeError(f"{cls.__name__}: bad data len: {l_data} (must be 0).")
+        return RspOK()
 
 
 @dataclass
@@ -79,8 +84,8 @@ class RspGetDeviceStatus(RspBase):
         """Deserialize object."""
         v = _data_decode(data, '12sBBBBB?B?BB', RspGetDeviceStatus)
         return RspGetDeviceStatus(
-            sn=_b2s(v[0]),
-            datime=_b2dt(v[1:6]),
+            sn=util.b2s(v[0]),
+            datime=util.b2dt(v[1:6]),
             err=v[6],
             prn_status=const.IEnumPrnStatus(v[7]),
             is_fs=v[8],
@@ -98,7 +103,7 @@ class RspGetDeviceModel(RspBase):
     def from_bytes(data: bytes):
         """Deserialize object."""
         # FIXME: chk len
-        return RspGetDeviceModel(name=_b2s(data))
+        return RspGetDeviceModel(name=util.b2s(data))
 
 
 @dataclass
@@ -123,8 +128,8 @@ class RspGetStorageStatus(RspBase):
             is_doc=v[2],
             is_session_open=v[3],
             flags=flag.FSErrors(v[4]),
-            datime=_b2dt(v[5:10]),
-            sn=_b2s(v[10]),
+            datime=util.b2dt(v[5:10]),
+            sn=util.b2s(v[10]),
             last_doc_no=v[11]
         )
 
@@ -143,8 +148,8 @@ class RspGetRegisterParms(RspBase):
         """Deserialize object."""
         v = _data_decode(data, '20s12sBBB', RspGetRegisterParms)
         return RspGetRegisterParms(
-            rn=_b2s(v[0]).rstrip(),
-            inn=_b2s(v[1]).rstrip(),
+            rn=util.b2s(v[0]).rstrip(),
+            inn=util.b2s(v[1]).rstrip(),
             fr_mode=flag.FRModes(v[2]),
             tax=flag.TaxModes(v[3]),
             agent=flag.AgentModes(v[4])
@@ -173,11 +178,11 @@ class ADocRegRpt(ADoc):
         """Deserialize object."""
         v = _data_decode(data, '<BBBBBII12s20sBB', cls)  # 47
         return cls(
-            datime=_b2dt(v[0:5]),
+            datime=util.b2dt(v[0:5]),
             no=v[5],
             fp=v[6],
-            inn=_b2s(v[7]).rstrip(),
-            rn=_b2s(v[8]).rstrip(),
+            inn=util.b2s(v[7]).rstrip(),
+            rn=util.b2s(v[8]).rstrip(),
             tax=flag.TaxModes(v[9]),
             mode=flag.FRModes(v[10])
         )
@@ -200,11 +205,11 @@ class ADocReRegRpt(ADoc):
         """Deserialize object."""
         v = _data_decode(data, '<BBBBBII12s20sBBB', cls)  # 48
         return cls(
-            datime=_b2dt(v[0:5]),
+            datime=util.b2dt(v[0:5]),
             no=v[5],
             fp=v[6],
-            inn=_b2s(v[7]).rstrip(),
-            rn=_b2s(v[8]).rstrip(),
+            inn=util.b2s(v[7]).rstrip(),
+            rn=util.b2s(v[8]).rstrip(),
             tax=flag.TaxModes(v[9]),
             mode=flag.FRModes(v[10]),
             reason=const.IEnumReRegReason(v[11])
@@ -224,7 +229,7 @@ class _ADocSesRpt(ADoc):
         """Deserialize object."""
         v = _data_decode(data, '<BBBBBIIH', cls)  # 15
         return cls(
-            datime=_b2dt(v[0:5]),
+            datime=util.b2dt(v[0:5]),
             no=v[5],
             fp=v[6],
             sno=v[7]
@@ -253,7 +258,7 @@ class ADocReceipt(ADoc):
         """Deserialize object."""
         v = _data_decode(data, '<BBBBBIIBBBBBB', cls)  # 19
         return cls(
-            datime=_b2dt(v[0:5]),
+            datime=util.b2dt(v[0:5]),
             no=v[5],
             fp=v[6],
             req_type=const.IEnumReceiptType(v[7]),
@@ -305,7 +310,7 @@ class RspGetOFDXchgStatus(RspBase):
         return RspGetOFDXchgStatus(  # Note: v[0..1] skipped as service
             out_count=v[2],
             next_doc_n=v[3],
-            next_doc_d=_b2dt(v[4:])
+            next_doc_d=util.b2dt(v[4:])
         )
 
 
@@ -323,7 +328,7 @@ class RspGetDateTime(RspBase):
         if v[1] != 5:
             raise exc.KitFRRspDecodeError(f"{cls.__name__}: bad TLV len: {v[1]}")
         return cls(
-            datime=_b2dt(v[2:])
+            datime=util.b2dt(v[2:])
         )
 
 
@@ -340,6 +345,7 @@ _CODE2CLASS = {
     const.IEnumCmd.GetRegisterParms: RspGetRegisterParms,
     const.IEnumCmd.GetDocByNum: RspGetDocByNum,
     const.IEnumCmd.GetOFDXchgStatus: RspGetOFDXchgStatus,
+    const.IEnumCmd.SetDateTime: RspOK,
     const.IEnumCmd.GetDateTime: RspGetDateTime,
 }
 

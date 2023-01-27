@@ -2,8 +2,10 @@
 
 :todo: .to_frame()
 """
+# 1. std
+import datetime
 # 3. local
-from kitfr import const
+from kitfr import const, util
 
 
 class _CmdBase:
@@ -16,12 +18,12 @@ class _CmdBase:
 
 
 class CmdGetDeviceStatus(_CmdBase):
-    """Get FR status."""
+    """Get POS status."""
     cmd_id = const.IEnumCmd.GetDeviceStatus
 
 
 class CmdGetDeviceModel(_CmdBase):
-    """Get FR model."""
+    """Get POS model."""
     cmd_id = const.IEnumCmd.GetDeviceModel
 
 
@@ -31,7 +33,7 @@ class CmdGetStorageStatus(_CmdBase):
 
 
 class CmdGetRegisterParms(_CmdBase):
-    """Get FR/FS registering parameters."""
+    """Get POS/FS registering parameters."""
     cmd_id = const.IEnumCmd.GetRegisterParms
 
 
@@ -54,6 +56,25 @@ class CmdGetOFDXchgStatus(_CmdBase):
     cmd_id = const.IEnumCmd.GetOFDXchgStatus
 
 
+class CmdSetDateTime(_CmdBase):
+    """Set POS date/time."""
+    cmd_id = const.IEnumCmd.SetDateTime
+    datime: datetime.datetime
+
+    def __init__(self, datime: datetime.datetime):
+        super().__init__()
+        self.datime = datime
+
+    def to_bytes(self) -> bytes:
+        """Serialize to bytes.
+
+        :note: const: TAG=30000 + LEN=5
+        """
+        return super().to_bytes()\
+            + b'\x30\x75\x05\x00'\
+            + util.dt2b(self.datime)
+
+
 class CmdGetDateTime(_CmdBase):
-    """Get FS date/time."""
+    """Get POS date/time."""
     cmd_id = const.IEnumCmd.GetDateTime

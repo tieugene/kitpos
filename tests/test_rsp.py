@@ -1,6 +1,8 @@
 """`rsp.py` tests."""
 # 1. std
 import datetime
+
+import kitfr.util
 # 3. local
 from kitfr import const, rsp
 from tests.samples import RAW_A, RSP
@@ -16,7 +18,7 @@ def test_rsp_get_device_status():
     cls = rsp.RspGetDeviceStatus
     assert cls.from_bytes(__x(0)) == cls(
         sn='550101006105',
-        datime=rsp._b2dt((23, 1, 21, 18, 1)),
+        datime=kitfr.util.b2dt((23, 1, 21, 18, 1)),
         err=0,
         status=0,
         is_fs=True,
@@ -40,7 +42,7 @@ def test_rsp_get_storage_status():
         is_doc=False,
         is_session_open=True,
         flags=8,
-        datime=rsp._b2dt((22, 4, 18, 12, 41)),
+        datime=kitfr.util.b2dt((22, 4, 18, 12, 41)),
         sn='9999078902003867',
         last_doc_no=10
     )
@@ -84,7 +86,8 @@ def test_bytes2rsp():
         const.IEnumCmd.GetStorageStatus,
         const.IEnumCmd.GetRegisterParms,
         const.IEnumCmd.GetOFDXchgStatus,
-        const.IEnumCmd.GetDateTime
+        const.IEnumCmd.SetDateTime,
+        const.IEnumCmd.GetDateTime,
     )
     for i, c in enumerate(cls_list):
         assert rsp.bytes2rsp(c, RSP[i]) is not None  # compare type

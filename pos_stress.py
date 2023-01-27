@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Stress-test of FR networking.
+"""Stress-test of POS networking.
 Try to send random commands and get responses."""
 import os.path
 import sys
@@ -18,9 +18,8 @@ crc = crcmod.predefined.mkCrcFun('crc-ccitt-false')  # CRC16-CCITT, LE, polynom 
 
 def _send(host: str, port: int, data_out: bytes, timeout=None) -> bytes:
     """Send command and get response."""
-    with socket.create_connection((host, port), timeout=timeout if timeout else socket.getdefaulttimeout()) as sock:
-        sock.sendall(data_out)  # or .send()
-        # time.sleep(0.05)  # TODO: ?
+    with socket.create_connection((host, port), timeout=timeout or socket.getdefaulttimeout()) as sock:
+        sock.sendall(data_out)
         return sock.recv(2048, socket.MSG_WAITALL)
 
 
