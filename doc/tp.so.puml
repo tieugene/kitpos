@@ -1,0 +1,49 @@
+@startuml
+
+header TerminalProxy
+
+title OpenSession
+
+start
+:retCode = -1
+sessionnum = null
+fiscalnum = null
+fiscalSign = null
+document = null;
+
+:UpdateDateTime();
+:rsp = Cmd.SessionOpenStart(no print);
+if (rsp.result?) then (ok)
+	:rsp = Cmd.SessionOpen();
+	if (rsp?) then (null)
+		:return ResultItem(
+		  Code = retCode,
+		  Result = null);
+		stop
+	endif;
+	if (rsp.result?) then (ok)
+			:retCode = 0
+			sessionnum = rsp.sessionnum
+			fiscalnum = rsp.fiscalnum
+			fiscalSign = rsp.fiscalSign;
+	else (err)
+		:retCode = rsp.err_code;
+	endif
+else (err)
+	:retCode = rsp.err_code;
+endif
+:session = null;
+if (sessionnum?) then (!null)
+	:info = Cmd.GetFiscalStorageStatus()
+	session = Session(now(), sessionnum)
+	session.FiscalStoragenum = info.Numer | null
+	document = Document(
+		0, 0, now(), fiscalSign, fiscalnum);
+endif
+:return ResultItem(
+	Code = retCode,
+	Result = session,
+	Additional = document);
+stop
+
+@enduml

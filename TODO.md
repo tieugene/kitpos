@@ -6,7 +6,7 @@
   + [ ] TerminalProxy:
     - [x] OpenSession()
     - [x] CloseSession()
-    - [ ] Receipt()
+    - [x] Receipt()
     - [ ] CorrectionReceipt()
 - [ ] Extend cmd #2 (GetDocByNum #2):
   - [ ]  6: FSCloseRpt (5.6?)

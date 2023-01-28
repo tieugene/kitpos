@@ -17,8 +17,7 @@ if (rsp.resilt?) then (ok)
 	:rsp = Cmd.SessionClose();
 	if (rsp?) then (null)
 		:return ResultItem(
-		  Code = retCode
-		);
+		  Code = retCode);
 		stop
 	endif;
 	if (rsp.result?) then (ok)
@@ -29,8 +28,7 @@ if (rsp.resilt?) then (ok)
 			document = Document(
 				0, 1, now(),
 				fiscalSign,
-				fiscalnum
-			);
+				fiscalnum);
 	else (err)
 		:retCode = rsp.err_code;
 	endif
@@ -39,8 +37,7 @@ else (err)
 endif
 :return ResultItem(
 	Code = retCode,
-	Additional = document
-);
+	Additional = document);
 stop
 
 @enduml
