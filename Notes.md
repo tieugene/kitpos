@@ -63,7 +63,7 @@ raw = b'\xB6\x29\x00\x05\x30\x01\x00\x00\x00\x95\xС8'
 
 ## QA
 - Q: Can I send 2+ commands per connection?
-- A: Standalone - no, sequences - maybe but not recommended
+- A: Standalone - no, sequences - maybe but not recommended (due async)
 
 - Q: Can I send interlaced commands:
 - A: &hellip;
@@ -73,3 +73,6 @@ raw = b'\xB6\x29\x00\x05\x30\x01\x00\x00\x00\x95\xС8'
 
 - Q: Qu'est-ce que ce "фискальный признак"
 - A: &sime; checksum
+
+- Q: Receipt or CorReceipt?
+- A: Receipt for today's and yesterday's; CorReceipt for earlier

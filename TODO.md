@@ -1,6 +1,13 @@
 # TODO
 
-- [ ] Fiscal-CS Activity Diagram
+- [ ] Fiscal-CS Activity Diagram:
+  + [ ] QueueController:
+    - [ ] SendTicket 
+  + [ ] TerminalProxy:
+    - [x] OpenSession()
+    - [ ] CloseSession()
+    - [ ] Receipt()
+    - [ ] CorrectionReceipt()
 - [ ] Extend cmd #2 (GetDocByNum #2):
   - [ ]  6: FSCloseRpt (5.6?)
   - [ ] 21: SattleRpt (5.7)
