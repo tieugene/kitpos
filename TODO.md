@@ -5,7 +5,7 @@
     - [ ] SendTicket 
   + [ ] TerminalProxy:
     - [x] OpenSession()
-    - [ ] CloseSession()
+    - [x] CloseSession()
     - [ ] Receipt()
     - [ ] CorrectionReceipt()
 - [ ] Extend cmd #2 (GetDocByNum #2):
