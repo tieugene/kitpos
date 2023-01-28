@@ -72,6 +72,7 @@ endif
 :data = prepared item.Price;
 :rsp = Cmd.MakeReceipt(data, item.id);
 if (rsp.result) then (err)
+	:Cmd.CancelDocument();
 	:return ResultItem(
 		Code = retCode,
 		Result = fItem);

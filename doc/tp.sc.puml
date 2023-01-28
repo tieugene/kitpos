@@ -10,7 +10,7 @@ document = null;
 
 :rsp = Cmd.SessionCloseStart(no print);
 if (rsp.resilt?) then (err)
-	:Cmd.CloseDocument()
+	:Cmd.CancelDocument()
 	rsp = Cmd.SessionCloseStart(no print);
 endif
 if (rsp.resilt?) then (ok)
