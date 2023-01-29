@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Stress-test of POS networking.
-Try to send random commands and get responses."""
+Try to txrx random commands and get responses."""
 import os.path
 import sys
 import time

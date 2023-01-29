@@ -1,0 +1,75 @@
+@startuml
+
+header QueueController
+
+title SendTicket
+caption (item: TicketItem)
+
+start
+
+:fiscalDocument = null;
+if (self.IsRestarting || !self.IsActive) then (ok)
+	:DB.ReturnTicket(t);
+	note right: Long\ncomment
+    :return 0;
+    stop
+endif
+:FixOFDError();
+note right: Restart session\nafter 7430 tickets
+:dateTrip = ticket.DateTrip
+span = now() - dateTrip;
+if (ticket.Status == 0 && span > 1d) then (ok)
+	:ret = POS.CorReceipt(
+		ticket, !CurrentCashbox.avto_device);
+		note right: CorReceipt\nif too late
+else (not)
+	if (ticket.Status == 5) then (ok)
+		:fiscalDocument = POS.GetReceipt(ticket);
+		if (fiscalDocument?) then (null)
+			:return 0;
+			stop
+		endif
+		:ticket.fiscalSign = fiscalDocument.fiscalSign;
+	endif
+	:ret = POS.Receipt(
+		t, !CurrentCashbox.avto_device);
+endif
+if (ret.Code?) then (err)
+	:DB.ReturnTicket(ticket);
+	if (ret.Code == OFDResourceExhausted) then (+)
+		:RestartSession();
+	elseif (CryptoprocessorResourceExhausted) then (+)
+		:DB.UpdateCashboxStatus(
+			CurrentCashbox.Id,
+			CashBoxStatus.ERROR)
+		self.IsActive = False;
+	else (default)
+		:POS.CancelDocument();
+	endif
+else
+	:fiscal = ret.Result;
+	if (fiscal != null && ret.Code == 0) then (+)
+		:fiscal.SessionId = CurrentSession.Id;
+		if (fiscal.ReceiptDate < 2020-12-15) then (+)
+			:fiscal.ReceiptDate = now();
+		endif
+		:DB.AddReceipt(ticket.Id, fiscal)
+        self.CurrentCashbox.lastTicketNum = fiscal.FiscalNum;
+        if (ticket.Status == 5) then (+)
+        	:storno = DB.GetDocumentByTicketId(ticket.Id, 4);
+        	if (storno?) then (null)
+        		:DB.UpdateTicketStatus(ticket.Id, -1);
+        	endif
+        	:DB.BindStorno(
+        		fiscalDocument.documentid,
+        		storno.documentid);
+        endif
+	else
+		:DB.UpdateTicketStatus(ticket.Id, -1);
+	endif
+endif
+:return ret.Code;
+
+stop
+
+@enduml

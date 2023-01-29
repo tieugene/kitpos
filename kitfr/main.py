@@ -87,7 +87,7 @@ def main():
     frame_o = util.bytes2frame(bytes_o)  # ..., frame it
     # print(frame_o.hex().upper())
     # return
-    frame_i = net.send(sys.argv[1], int(sys.argv[2]), frame_o, TIMEOUT)    # 2. send
+    frame_i = net.txrx(sys.argv[1], int(sys.argv[2]), frame_o, TIMEOUT)    # 2. txrx
     # 3. dispatch response
     # - unwrap frame
     payload_i = util.frame2bytes(frame_i)
