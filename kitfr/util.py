@@ -32,6 +32,11 @@ def dt2b(dt: datetime.datetime) -> bytes:
     return struct.pack('BBBBB', dt.year - 2000, dt.month, dt.day, dt.hour, dt.minute)
 
 
+def bool2byte(v: bool) -> bytes:
+    """Convert bool into a byte."""
+    return b'\x01' if v else b'\x00'
+
+
 def bytes2frame(data: bytes) -> bytes:
     """Wrap data into frame: <header><len><cmd>[data]<crc>."""
     if (l := len(data)) > 1024:  # cmd[1] + payload[1023]
