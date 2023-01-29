@@ -1,0 +1,43 @@
+@startuml
+
+header TerminalProxy
+
+title CloseSession
+
+start
+:retCode = -1
+document = null;
+
+:rsp = Cmd.SessionCloseStart(no print);
+if (rsp.resilt?) then (err)
+	:Cmd.CancelDocument()
+	rsp = Cmd.SessionCloseStart(no print);
+endif
+if (rsp.resilt?) then (ok)
+	:rsp = Cmd.SessionClose();
+	if (rsp?) then (null)
+		:return ResultItem(
+		  Code = retCode);
+		stop
+	endif;
+	if (rsp.result?) then (ok)
+			:retCode = 0
+			sessionnum = rsp.sesionnum
+			fiscalnum = rsp.fiscalnum
+			fiscalSign = rsp.fiscalSign
+			document = Document(
+				0, 1, now(),
+				fiscalSign,
+				fiscalnum);
+	else (err)
+		:retCode = rsp.err_code;
+	endif
+else (err)
+	:retCode = rsp.err_code;
+endif
+:return ResultItem(
+	Code = retCode,
+	Additional = document);
+stop
+
+@enduml

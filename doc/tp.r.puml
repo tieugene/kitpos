@@ -1,0 +1,93 @@
+@startuml
+
+header TerminalProxy
+title Receipt
+caption (item: TicketItem, need_device: bool)
+
+start
+
+if (TicketItem.Status in {0, 5}) then (no)
+	:return ResultItem(Code = -1);
+	stop
+endif
+:retCode = -1
+fItem = null
+rsp = Cmd.ReceiptStart();
+if (rsp.result?) then (err)
+	:return ResultItem(
+		Code = rsp.err_core,
+		Result = fItem);
+	stop
+endif
+:TLVPostion = 0
+TLV += Position(item)
+testData = TLV.Take(TLVPostion)
+rsp = Cmd.ReceiptPosition(testData, item.id);
+note right: Услуга\nпассажирские\nперевозки
+if (rsp.result?) then (err)
+	:return ResultItem(
+		Code = rsp.err_core,
+		Result = fItem);
+	stop
+endif
+if (need_device) then (ok)
+	:rsp = Cmd.ReceiptSendAutoDevice(...);
+	note right: Hardcoded
+endif
+if (rsp.result?) then (err)
+	:return ResultItem(
+		Code = rsp.err_core,
+		Result = fItem);
+	stop
+endif
+if (item.PaymentType in {1, 2}) then (no)
+	:return ResultItem(
+		Code = retCode,
+		Result = fItem);
+	stop
+endif
+:TLVPosition = 0
+b = TLV.Take(27)
+TLV += (1055: item.Tax)
+TLV += (1031: cash)
+TLV += (1081: cashless);
+note right: wtf '27'?
+if (item.Status == 5) then (ok)
+	:TLV += (1192: item.fiscalSign)
+	b = TLV.Take(27);
+endif
+:TLV += (1215, 0)
+b = TLV.Take(27)
+TLV += (1216, 0)
+b = TLV.Take(27)
+TLV += (1217, 0)
+b = TLV.Take(27);
+:rsp = Cmd.SendPaymentData(TLV.Take(TLVPosition), item.Id);
+if (rsp.result?) then (err)
+	:return ResultItem(
+		Code = rsp.err_core,
+		Result = fItem);
+	stop
+endif
+:data = prepared item.Price;
+:rsp = Cmd.MakeReceipt(data, item.id);
+if (rsp.result) then (err)
+	:Cmd.CancelDocument();
+	:return ResultItem(
+		Code = retCode,
+		Result = fItem);
+	stop
+endif
+:fItem = ParseReceiptResponse(rsp)
+fItem.ReceiptType = (item.Status == 5 ? 4 : 1)
+retCode = 0;
+if (fItem) then (!null)
+	:fItem.TicketId = item.Id
+	fItem.FiscalStatus = (item.Status == 0 ? 2 : 4)
+	fItem.Ms = <time cutoff>;
+endif
+:return ResultItem(Code = retCode, Result = fItem);
+
+stop
+
+@enduml

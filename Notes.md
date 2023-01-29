@@ -6,17 +6,12 @@
   - In: frame: bytes
   - Out: IP msg
   - Return: rsp frame: bytes
-1. Connection:
-  - Desc: Implements connection
-  - In: bytes
-  - Out: bytes
-  - Return: connection
 1. Logical:
   - Desc: L2 (logical lvl): [De]Packaging bytes into frames
   - In: payload: bytes
   - Out: frame (START, ..., CRC): bytes
   - Ret: refined rsp: bytes
-1. Cmd:
+1. Cmd/Rsp:
   - Desc: Serialize cmd
   - In: cmd: object
   - Out: marshalled cmd: bytes
@@ -27,7 +22,7 @@
   - Out: commands: List[cmd]
   - Ret: rsp payload: object
 
-## Test data:
+## Test frame:
 
 raw = b'\xB6\x29\x00\x05\x30\x01\x00\x00\x00\x95\xС8'
 - b'\xB6\x29': header
@@ -44,11 +39,11 @@ raw = b'\xB6\x29\x00\x05\x30\x01\x00\x00\x00\x95\xС8'
 - B: 50 = 2 + 48 (5+4+4+12+20+1+1+1)  # 5.2
 
 ## Net
-- if recv() right after send: get header and that's all
+- if recv() right after txrx: get header and that's all
 - tests:
-  + 36: 13 tickets, 10x1000 &check; (32")
-  + 77: 56 tickets; 50x1000 &check; (31")
-  + 80: 3342 tickets; 3000x2000 &check; (5'20")
+  + 36: 13 tickets, 10x1000 &check; (32" = 30 ops/s)
+  + 77: 56 tickets; 50x1000 &check; (31" = 30 ops/s)
+  + 80: 3342 tickets; 3000x2000 &check; (5'20" = 6 ops/s)
 
 ## CLI:
 - get_something
@@ -62,14 +57,17 @@ raw = b'\xB6\x29\x00\x05\x30\x01\x00\x00\x00\x95\xС8'
 - reset
 
 ## QA
-- Q: Can I send 2+ commands per connection?
-- A: Standalone - no, sequences - maybe but not recommended
+- Q: Can I txrx 2+ commands per connection?
+- A: Standalone - no, sequences - maybe but not recommended (due timeout)
 
-- Q: Can I send interlaced commands:
+- Q: Qu'est-ce que ce "фискальный признак"
+- A: &sime; checksum
+
+- Q: Receipt or CorReceipt?
+- A: Receipt for today's and yesterday's; CorReceipt for earlier
+
+- Q: Can I txrx interlaced commands:
 - A: &hellip;
 
 - Q: Can I get 2+ connections?
 - A: &hellip;
-
-- Q: Qu'est-ce que ce "фискальный признак"
-- A: &sime; checksum
