@@ -3,7 +3,7 @@
 - [ ] Extend cmd #2 (Sequences, (15)):
   + [ ] 0x10: CancelDoc
   + [ ] Session (4):
-    - [ ] 0x20: GetCurSessio
+    - [ ] 0x20: GetCurSession
     - [ ] 0x21: OpenStart
     - [ ] 0x22: Open
     - [ ] 0x29: CloseStart
