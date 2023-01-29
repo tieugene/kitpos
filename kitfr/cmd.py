@@ -18,27 +18,27 @@ class _CmdBase:
 
 
 class CmdGetDeviceStatus(_CmdBase):
-    """Get POS status."""
+    """0x01: Get POS status."""
     cmd_id = const.IEnumCmd.GetDeviceStatus
 
 
 class CmdGetDeviceModel(_CmdBase):
-    """Get POS model."""
+    """0x04: Get POS model."""
     cmd_id = const.IEnumCmd.GetDeviceModel
 
 
 class CmdGetStorageStatus(_CmdBase):
-    """Get FS status."""
+    """0x08: Get FS status."""
     cmd_id = const.IEnumCmd.GetStorageStatus
 
 
 class CmdGetRegisterParms(_CmdBase):
-    """Get POS/FS registering parameters."""
+    """0x0A: Get POS/FS registering parameters."""
     cmd_id = const.IEnumCmd.GetRegisterParms
 
 
 class CmdGetDocByNum(_CmdBase):
-    """Find document by its number."""
+    """0x30: Find document by its number."""
     cmd_id = const.IEnumCmd.GetDocByNum
     num: int
 
@@ -52,12 +52,12 @@ class CmdGetDocByNum(_CmdBase):
 
 
 class CmdGetOFDXchgStatus(_CmdBase):
-    """Get OFD exchange status."""
+    """0x50: Get OFD exchange status."""
     cmd_id = const.IEnumCmd.GetOFDXchgStatus
 
 
 class CmdSetDateTime(_CmdBase):
-    """Set POS date/time."""
+    """0x72: Set POS date/time."""
     cmd_id = const.IEnumCmd.SetDateTime
     datime: datetime.datetime
 
@@ -76,5 +76,5 @@ class CmdSetDateTime(_CmdBase):
 
 
 class CmdGetDateTime(_CmdBase):
-    """Get POS date/time."""
+    """0x73: Get POS date/time."""
     cmd_id = const.IEnumCmd.GetDateTime
