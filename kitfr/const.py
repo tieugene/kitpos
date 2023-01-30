@@ -45,6 +45,42 @@ class IEnumCmd(enum.IntEnum):
 
 
 @enum.unique
+class IEnumTag(enum.IntEnum):
+    """Tags."""
+    Tag_1009 = 1009    # str[..164], POS address
+    Tag_1021 = 1021    # str[..64] Authorized person's FIO (reg, session)
+    Tag_1023 = 1023    # FVLN, Subj number
+    Tag_1030 = 1030    # str[..128], Subj name
+    Tag_1031 = 1031    #
+    Tag_1036 = 1036    # str[..21], Automatic sale device numer (mandatory for Termainal-FA)
+    Tag_1055 = 1055    #
+    Rcp_Subj = 1059    # STLV (!), includes below
+    Tag_1079 = 1079    # VLN, Subj price
+    Tag_1081 = 1081    #
+    Tag_1103 = 1103    #
+    Tag_1104 = 1104    #
+    Tag_1105 = 1105    #
+    Tag_1106 = 1106    #
+    Tag_1107 = 1107    #
+    Tag_1173 = 1173    #
+    Tag_1174 = 1174    #
+    Tag_1177 = 1177    #
+    Tag_1178 = 1178    #
+    Tag_1179 = 1179    #
+    Tag_1187 = 1187    # str[..64], POS place
+    Tag_1192 = 1192    #
+    Tag_1199 = 1199    # byte[1], Subj VAT (1-6, addon 4)
+    Tag_1203 = 1203    # str[12] Authorized person's INN (reg, session)
+    Tag_1212 = 1212    # byte[1], optional (1-19, addon 4)
+    Tag_1214 = 1214    # byte[1] (1-7, addon 4)
+    Tag_1215 = 1215    #
+    Tag_1216 = 1216    #
+    Tag_1217 = 1217    #
+    # Mode = 9999        # byte[1] bitmap flags (addon 7); Note: Terminal-FA always stay auto
+    Tag_30000 = 30000  # byte[5], DateTime
+
+
+@enum.unique
 class IEnumPrnStatus(_IEnumPrintable):
     """Printing device status.
 

@@ -17,7 +17,7 @@ def txrx(
     with socket.create_connection((host, port), timeout=conn_timeout or socket.getdefaulttimeout()) as sock:
         sock.sendall(data_out)  # or .send()
         retvalue = __rx(sock)
-        if retvalue == b'\xb6\x29' and txrx_timeout:  # hack: wait for slow device
+        if retvalue == b'\xb6\x29' and txrx_timeout:  # hack: wait for slow response after single FRAME_HEADEF
             time.sleep(txrx_timeout)
             retvalue += __rx(sock)
         return retvalue

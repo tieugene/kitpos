@@ -11,21 +11,6 @@ from kitfr import const, exc
 crc = crcmod.predefined.mkCrcFun('crc-ccitt-false')  # CRC16-CCITT, LE, polynom = 0x1021, initValue=0xFFFF.
 
 
-def b2h(v: bytes) -> str:
-    """Convert bytes to upper hex."""
-    return v.hex().upper()
-
-
-def b2s(v: bytes) -> str:
-    """Convert bytes of CP866 into string."""
-    return v.decode()  # FIXME: CP866
-
-
-def b2dt(v: Tuple[int, int, int, int, int]) -> datetime.datetime:
-    """Convert 5xInt to datetime"""
-    return datetime.datetime(2000 + v[0], v[1], v[2], v[3], v[4])
-
-
 def l2b(v: bool) -> bytes:
     """Convert logical (bool) into a byte."""
     return b'\x01' if v else b'\x00'
@@ -41,9 +26,30 @@ def ui2b4(v: int) -> bytes:
     return v.to_bytes(4, 'little')
 
 
-def dt2b(dt: datetime.datetime) -> bytes:
+def dt2b(v: datetime.datetime) -> bytes:
     """Convert datetime into 5 bytes."""
-    return struct.pack('BBBBB', dt.year - 2000, dt.month, dt.day, dt.hour, dt.minute)
+    return struct.pack('BBBBB', v.year - 2000, v.month, v.day, v.hour, v.minute)
+
+
+def b2h(v: bytes) -> str:
+    """Convert bytes to upper hex."""
+    return v.hex().upper()
+
+
+def b2s(v: bytes) -> str:
+    """Convert bytes of CP866 into string."""
+    return v.decode()  # FIXME: CP866
+
+
+def b2dt(v: Tuple[int, int, int, int, int]) -> datetime.datetime:
+    """Convert 5xInt to datetime"""
+    return datetime.datetime(2000 + v[0], v[1], v[2], v[3], v[4])
+
+
+def tlv_unpack(v: bytes) -> ():
+    """Unpack TLV bytes."""
+    if len(v) < 4:
+        raise RuntimeError("tlv too small")  # FIXME: custom exception
 
 
 def bytes2frame(data: bytes) -> bytes:
