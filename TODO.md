@@ -1,10 +1,7 @@
 # TODO
 
 - [ ] Extend cmd #3 (11):
-  + [ ] 0x3A: GetDocData:
-    - [x] TLV[] => Dict[TLV]
-    - [x] TLV decode
-    - [ ] VLN decode
+  + [x] 0x3A: GetDocData
   + [ ] Receipt (6):
     - [ ] 0x23: Begin
     - [ ] 0x2B: Position
