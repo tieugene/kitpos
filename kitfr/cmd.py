@@ -61,7 +61,7 @@ class _CmdSessionAnyBegin(_CmdBase):
         """Serialize to bytes."""
         retvalue = super().to_bytes()
         if self.skip_prn is not None:
-            retvalue += util.bool2byte(self.skip_prn)
+            retvalue += util.l2b(self.skip_prn)
         return retvalue
 
 
@@ -85,9 +85,8 @@ class CmdSessionCloseCommit(_CmdBase):
     cmd_id = const.IEnumCmd.SessionCloseCommit
 
 
-class CmdGetDocByNum(_CmdBase):
-    """0x30: Find document by its number."""
-    cmd_id = const.IEnumCmd.GetDocByNum
+class _CmdGetDocAny(_CmdBase):
+    """Base CmdGetDocByNum/CmdReadDoc."""
     num: int
 
     def __init__(self, num: int):
@@ -96,7 +95,17 @@ class CmdGetDocByNum(_CmdBase):
 
     def to_bytes(self) -> bytes:
         """Serialize to bytes."""
-        return super().to_bytes() + self.num.to_bytes(4, 'little')
+        return super().to_bytes() + util.ui2b4(self.num)
+
+
+class CmdGetDocByNum(_CmdGetDocAny):  # TODO: GetDocInfo/Meta
+    """0x30: Find document by its number."""
+    cmd_id = const.IEnumCmd.GetDocByNum
+
+
+class CmdReadDoc(_CmdGetDocAny):  # TODO: GetDocContent
+    """0x3A: Read document content."""
+    cmd_id = const.IEnumCmd.ReadDoc
 
 
 class CmdGetOFDXchgStatus(_CmdBase):

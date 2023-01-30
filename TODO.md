@@ -23,6 +23,7 @@
   + [ ] 0x40: ResetMLM
   + [ ] FSClose (3):
   + [ ] *Re*Register (3):
+    - [ ] 0x3B: ReadRegDoc
     - [ ] 0x12: RegisterStart
     - [ ] 0x16: RegisterData
     - [ ] 0x13: RegisterFlush

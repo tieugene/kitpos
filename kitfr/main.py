@@ -83,6 +83,13 @@ def __cmd_30(v: List[str]) -> cmd.CmdGetDocByNum:
     print("Doc number required.")
 
 
+def __cmd_3a(v: List[str]) -> cmd.CmdReadDoc:
+    """Get doc <num> content."""
+    if v:
+        return cmd.CmdReadDoc(int(v[0]))
+    print("Doc number required.")
+
+
 def __cmd_50(_) -> cmd.CmdGetOFDXchgStatus:
     """Get OFD exchange status."""
     return cmd.CmdGetOFDXchgStatus()
@@ -114,6 +121,7 @@ __COMMANDS = {
     'SessionCloseBegin': __cmd_29,
     'SessionCloseCommit': __cmd_2a,
     'GetDocByNum': __cmd_30,
+    'GetReadDoc': __cmd_3a,
     'GetOFDXchgStatus': __cmd_50,
     'SetDateTime': __cmd_72,
     'GetDateTime': __cmd_73,

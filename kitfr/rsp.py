@@ -389,9 +389,8 @@ class RspGetDateTime(RspBase):
         )
 
 
-class __RspGetSomething(_RspStub):
+class RspReadDoc(_RspStub):
     """Something."""
-    ...  # N
 
 
 # ----
@@ -407,6 +406,7 @@ _CODE2CLASS = {
     const.IEnumCmd.SessionCloseBegin: RspOK,
     const.IEnumCmd.SessionCloseCommit: RspSessionCloseCommit,
     const.IEnumCmd.GetDocByNum: RspGetDocByNum,
+    const.IEnumCmd.ReadDoc: RspReadDoc,
     const.IEnumCmd.GetOFDXchgStatus: RspGetOFDXchgStatus,
     const.IEnumCmd.SetDateTime: RspOK,
     const.IEnumCmd.GetDateTime: RspGetDateTime,

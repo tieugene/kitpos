@@ -1,5 +1,4 @@
 """Utility things."""
-import datetime
 # 1. std
 from typing import Union, Tuple
 import struct
@@ -18,7 +17,7 @@ def b2h(v: bytes) -> str:
 
 
 def b2s(v: bytes) -> str:
-    """Convert bytes of CP866 insto string."""
+    """Convert bytes of CP866 into string."""
     return v.decode()  # FIXME: CP866
 
 
@@ -27,14 +26,24 @@ def b2dt(v: Tuple[int, int, int, int, int]) -> datetime.datetime:
     return datetime.datetime(2000 + v[0], v[1], v[2], v[3], v[4])
 
 
+def l2b(v: bool) -> bytes:
+    """Convert logical (bool) into a byte."""
+    return b'\x01' if v else b'\x00'
+
+
+def ui2b2(v: int) -> bytes:
+    """Convert uint16 into 2x bytes (LE)."""
+    return v.to_bytes(2, 'little')
+
+
+def ui2b4(v: int) -> bytes:
+    """Convert uint32 into 4x bytes (LE)."""
+    return v.to_bytes(4, 'little')
+
+
 def dt2b(dt: datetime.datetime) -> bytes:
     """Convert datetime into 5 bytes."""
     return struct.pack('BBBBB', dt.year - 2000, dt.month, dt.day, dt.hour, dt.minute)
-
-
-def bool2byte(v: bool) -> bytes:
-    """Convert bool into a byte."""
-    return b'\x01' if v else b'\x00'
 
 
 def bytes2frame(data: bytes) -> bytes:
