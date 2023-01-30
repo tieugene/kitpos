@@ -100,12 +100,12 @@ class _CmdGetDocAny(_CmdBase):
 
 class CmdGetDocByNum(_CmdGetDocAny):  # TODO: GetDocInfo/Meta
     """0x30: Find document by its number."""
-    cmd_id = const.IEnumCmd.GetDocByNum
+    cmd_id = const.IEnumCmd.GetDocInfo
 
 
 class CmdReadDoc(_CmdGetDocAny):  # TODO: GetDocContent
     """0x3A: Read document content."""
-    cmd_id = const.IEnumCmd.ReadDoc
+    cmd_id = const.IEnumCmd.GetDocData
 
 
 class CmdGetOFDXchgStatus(_CmdBase):

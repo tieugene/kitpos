@@ -1,7 +1,10 @@
 # TODO
 
 - [ ] Extend cmd #3 (11):
-  + [ ] 0x3A: ReadDoc [^1]
+  + [ ] 0x3A: GetDocData:
+    - [x] TLV[] => Dict[TLV]
+    - [x] TLV decode
+    - [ ] VLN decode
   + [ ] Receipt (6):
     - [ ] 0x23: Begin
     - [ ] 0x2B: Position
@@ -42,7 +45,7 @@
 - [ ] FR: State diagramm
 - [ ] flag._Flags: metaclass
 
-## [^1]: Tags used:
+## Tags used:
 1009, 1021, 1023, 1030, 1031, 1036, 1055, 1059, 1079, 1081,
 1103, 1104, 1105, 1106, 1107, 1173, 1174, 1177, 1178, 1179,
 1187, 1192, 1199, 1203, 1212, 1214, 1215, 1216, 1217, 30000
