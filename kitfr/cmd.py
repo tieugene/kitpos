@@ -4,6 +4,8 @@
 """
 # 1. std
 import datetime
+from typing import Optional
+
 # 3. local
 from kitfr import const, util
 
@@ -18,27 +20,73 @@ class _CmdBase:
 
 
 class CmdGetDeviceStatus(_CmdBase):
-    """Get POS status."""
+    """0x01: Get POS status."""
     cmd_id = const.IEnumCmd.GetDeviceStatus
 
 
 class CmdGetDeviceModel(_CmdBase):
-    """Get POS model."""
+    """0x04: Get POS model."""
     cmd_id = const.IEnumCmd.GetDeviceModel
 
 
 class CmdGetStorageStatus(_CmdBase):
-    """Get FS status."""
+    """0x08: Get FS status."""
     cmd_id = const.IEnumCmd.GetStorageStatus
 
 
 class CmdGetRegisterParms(_CmdBase):
-    """Get POS/FS registering parameters."""
+    """0x0A: Get POS/FS registering parameters."""
     cmd_id = const.IEnumCmd.GetRegisterParms
 
 
+class CmdDocCancel(_CmdBase):
+    """0x10: Cancel any opened document."""
+    cmd_id = const.IEnumCmd.DocCancel
+
+
+class CmdGetCurSession(_CmdBase):
+    """0x20: Get current session params."""
+    cmd_id = const.IEnumCmd.GetCurSession
+
+
+class _CmdSessionAnyBegin(_CmdBase):
+    """Base for CmdSessionOpenBegin/CmdSessioCloseBegin"""
+    skip_prn: Optional[bool]  # Skip printing report (None = False)
+
+    def __init__(self, skip_prn: Optional[bool] = None):
+        super().__init__()
+        self.skip_prn = skip_prn
+
+    def to_bytes(self) -> bytes:
+        """Serialize to bytes."""
+        retvalue = super().to_bytes()
+        if self.skip_prn is not None:
+            retvalue += util.bool2byte(self.skip_prn)
+        return retvalue
+
+
+class CmdSessionOpenBegin(_CmdSessionAnyBegin):
+    """0x21: Begin opening session."""
+    cmd_id = const.IEnumCmd.SessionOpenBegin
+
+
+class CmdSessionOpenCommit(_CmdBase):
+    """0x22: Commit opening session."""
+    cmd_id = const.IEnumCmd.SessionOpenCommit
+
+
+class CmdSessionCloseBegin(_CmdSessionAnyBegin):
+    """0x29: Begin closing session."""
+    cmd_id = const.IEnumCmd.SessionCloseBegin
+
+
+class CmdSessionCloseCommit(_CmdBase):
+    """0x2A: Commit opening session."""
+    cmd_id = const.IEnumCmd.SessionCloseCommit
+
+
 class CmdGetDocByNum(_CmdBase):
-    """Find document by its number."""
+    """0x30: Find document by its number."""
     cmd_id = const.IEnumCmd.GetDocByNum
     num: int
 
@@ -52,12 +100,12 @@ class CmdGetDocByNum(_CmdBase):
 
 
 class CmdGetOFDXchgStatus(_CmdBase):
-    """Get OFD exchange status."""
+    """0x50: Get OFD exchange status."""
     cmd_id = const.IEnumCmd.GetOFDXchgStatus
 
 
 class CmdSetDateTime(_CmdBase):
-    """Set POS date/time."""
+    """0x72: Set POS date/time."""
     cmd_id = const.IEnumCmd.SetDateTime
     datime: datetime.datetime
 
@@ -76,5 +124,5 @@ class CmdSetDateTime(_CmdBase):
 
 
 class CmdGetDateTime(_CmdBase):
-    """Get POS date/time."""
+    """0x73: Get POS date/time."""
     cmd_id = const.IEnumCmd.GetDateTime

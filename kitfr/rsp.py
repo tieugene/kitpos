@@ -1,4 +1,7 @@
-"""Responses of commands."""
+"""Responses of commands.
+
+:todo: dataclass(frozen=True)
+"""
 # 1. std
 from typing import Tuple, Any
 from dataclasses import dataclass
@@ -154,6 +157,50 @@ class RspGetRegisterParms(RspBase):
             tax=flag.TaxModes(v[3]),
             agent=flag.AgentModes(v[4])
         )
+
+
+@dataclass
+class RspGetCurSession(RspBase):
+    """Get current session params (0x20)."""
+    opened: bool
+    ses_num: int
+    rcp_num: int
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        v = _data_decode(data, '<?HH', cls)
+        return cls(
+            opened=v[0],
+            ses_num=v[1],
+            rcp_num=v[2]
+        )
+
+
+@dataclass
+class _RspSessionAnyCommit(RspBase):
+    """Base for RspSessionOpenCommit/RspSessionCloseCommit."""
+    ses_num: int
+    fd_num: int
+    fp: int
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        v = _data_decode(data, '<HII', cls)
+        return cls(
+            ses_num=v[0],
+            fd_num=v[1],
+            fp=v[2]
+        )
+
+
+class RspSessionOpenCommit(_RspSessionAnyCommit):
+    """Opened session response."""
+
+
+class RspSessionCloseCommit(_RspSessionAnyCommit):
+    """Closed session response."""
 
 
 @dataclass
@@ -313,11 +360,11 @@ class RspGetOFDXchgStatus(RspBase):
     next_doc_n: int
     next_doc_d: datetime.datetime
 
-    @staticmethod
-    def from_bytes(data: bytes):
+    @classmethod
+    def from_bytes(cls, data: bytes):
         """Deserialize object."""
-        v = _data_decode(data, '<BBHIBBBBB', RspGetOFDXchgStatus)  # 13
-        return RspGetOFDXchgStatus(  # Note: v[0..1] skipped as service
+        v = _data_decode(data, '<BBHIBBBBB', cls)  # 13
+        return cls(  # Note: v[0..1] skipped as service
             out_count=v[2],
             next_doc_n=v[3],
             next_doc_d=util.b2dt(v[4:])
@@ -353,6 +400,12 @@ _CODE2CLASS = {
     const.IEnumCmd.GetDeviceModel: RspGetDeviceModel,
     const.IEnumCmd.GetStorageStatus: RspGetStorageStatus,
     const.IEnumCmd.GetRegisterParms: RspGetRegisterParms,
+    const.IEnumCmd.DocCancel: RspOK,
+    const.IEnumCmd.GetCurSession: RspGetCurSession,
+    const.IEnumCmd.SessionOpenBegin: RspOK,
+    const.IEnumCmd.SessionOpenCommit: RspSessionOpenCommit,
+    const.IEnumCmd.SessionCloseBegin: RspOK,
+    const.IEnumCmd.SessionCloseCommit: RspSessionCloseCommit,
     const.IEnumCmd.GetDocByNum: RspGetDocByNum,
     const.IEnumCmd.GetOFDXchgStatus: RspGetOFDXchgStatus,
     const.IEnumCmd.SetDateTime: RspOK,

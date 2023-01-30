@@ -4,12 +4,18 @@
 """
 # ==== Frames ====
 __frame_q_s = (  # raw command (Question) frames
-    'B6290001018CEF',  # 0x01: GetDeviceStatus
-    'B62900010429BF',  # 0x04: GetDeviceModel
-    'B629000108A57E',  # 0x08: GetStorageStatus
-    'B62900010AE75E',  # 0x0A: GetRegisterParms
-    'B62900015058A5',  # 0x50: GetOFDXchgStatus
-    'B62900017359B1'   # 0x73: GetDateTime
+    'B6290001018CEF',    # 0x01: GetDeviceStatus
+    'B62900010429BF',    # 0x04: GetDeviceModel
+    'B629000108A57E',    # 0x08: GetStorageStatus
+    'B62900010AE75E',    # 0x0A: GetRegisterParms
+    'B6290001109CED',    # 0x10: DocCancel
+    'B629000120CFDB',    # 0x20: GetCurSession
+    'B6290002210156CF',  # 0x21: SessionOpenBegin(1)
+    'B6290001228DFB',    # 0x22: SessionOpenCommit
+    'B62900022901FF46',  # 0x29: SessionCloseBegin(1)
+    'B62900012A857A',    # 0x2A: SessionCloseCommit
+    'B62900015058A5',    # 0x50: GetOFDXchgStatus
+    'B62900017359B1'     # 0x73: GetDateTime
 )
 __frame_a_s = (  # raw response (Answer) frames; TODO: add const.IEnumCmd entries
     #    len.ok<..........................................>crc.
