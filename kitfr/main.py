@@ -11,7 +11,7 @@ import datetime
 # 3. local
 from kitfr import cmd, net, rsp, util, errs
 # x. consts
-TIMEOUT = 3  # Too fast; can be 20+
+CONN_TIMEOUT = 3  # Too fast; can be 20+
 
 
 def __cmd_01(_) -> cmd.CmdGetDeviceStatus:
@@ -120,8 +120,8 @@ __COMMANDS = {
     'SessionOpenCommit': __cmd_22,
     'SessionCloseBegin': __cmd_29,
     'SessionCloseCommit': __cmd_2a,
-    'GetDocByNum': __cmd_30,
-    'GetReadDoc': __cmd_3a,
+    'GetDocInfo': __cmd_30,
+    'GetDocContent': __cmd_3a,
     'GetOFDXchgStatus': __cmd_50,
     'SetDateTime': __cmd_72,
     'GetDateTime': __cmd_73,
@@ -143,7 +143,7 @@ def main():
     frame_o = util.bytes2frame(bytes_o)  # ..., frame it
     # print(frame_o.hex().upper())
     # return
-    frame_i = net.txrx(sys.argv[1], int(sys.argv[2]), frame_o, TIMEOUT)    # 2. txrx
+    frame_i = net.txrx(sys.argv[1], int(sys.argv[2]), frame_o, conn_timeout=30, txrx_timeout=20)    # 2. txrx
     # 3. dispatch response
     # - unwrap frame
     payload_i = util.frame2bytes(frame_i)
