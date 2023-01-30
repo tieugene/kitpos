@@ -1,4 +1,7 @@
-"""Responses of commands."""
+"""Responses of commands.
+
+:todo: dataclass(frozen=True)
+"""
 # 1. std
 from typing import Tuple, Any
 from dataclasses import dataclass

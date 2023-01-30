@@ -66,15 +66,7 @@ class _CmdSessionAnyBegin(_CmdBase):
 
 
 class CmdSessionOpenBegin(_CmdSessionAnyBegin):
-    """0x21: Begin opening session.
-
-    Response:
-    - on session opened
-    - on session closed & no printer:
-      + skip_prn not set
-      + skip_prn=0
-    - on session begin opening ^ no printer (None/0/1)
-    """
+    """0x21: Begin opening session."""
     cmd_id = const.IEnumCmd.SessionOpenBegin
 
 
