@@ -143,7 +143,7 @@ def main():
     frame_o = util.bytes2frame(bytes_o)  # ..., frame it
     # print(frame_o.hex().upper())
     # return
-    frame_i = net.txrx(sys.argv[1], int(sys.argv[2]), frame_o, conn_timeout=30, txrx_timeout=20)    # 2. txrx
+    frame_i = net.txrx(sys.argv[1], int(sys.argv[2]), frame_o, conn_timeout=30, txrx_timeout=0.1)    # 2. txrx
     # 3. dispatch response
     # - unwrap frame
     payload_i = util.frame2bytes(frame_i)
