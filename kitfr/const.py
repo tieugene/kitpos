@@ -46,13 +46,14 @@ class IEnumCmd(enum.IntEnum):
 
 TAGS_UNKNOWN = {  # not documented
     1001, 1002, 1012, 1013, 1018, 1020, 1037, 1038, 1040, 1041,
-    1041, 1042, 1050, 1051, 1052, 1053, 1054, 1056, 1060, 1062, 1077,
-    1097, 1098, 1108, 1109, 1110, 1111, 1118, 1188, 1189, 1209, 1221
+    1041, 1042, 1043, 1050, 1051, 1052, 1053, 1054, 1056, 1060,
+    1062, 1077, 1097, 1098, 1108, 1109, 1110, 1111, 1118, 1188,
+    1189, 1209, 1221
 }
 
 
 @enum.unique
-class IEnumTag(enum.IntEnum):
+class IEnumTag(_IEnumPrintable):
     """Tags."""
     Tag_1009 = 1009    # str[..164], POS address
     Tag_1017 = 1017    # ! str[12], OFD INN
@@ -64,7 +65,7 @@ class IEnumTag(enum.IntEnum):
     Tag_1046 = 1046    # ! str[..64], OFD name
     Tag_1048 = 1048    # ! str[..128], User name
     Tag_1055 = 1055    # ! byte[1], Tax mode (addon 7)
-    Rcp_Subj = 1059    # STLV (!), includes other
+    Tag_1059 = 1059    # STLV (!), includes other
     Tag_1079 = 1079    # VLN, Subj price
     Tag_1081 = 1081    # ! VLN, Payment as cashless (kop)
     Tag_1102 = 1102    # ! VLN, Base sum for VAT 18%

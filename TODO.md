@@ -1,14 +1,20 @@
 # TODO
 
 - [ ] Extend cmd #3 (11):
-  + [x] 0x3A: GetDocData
+  + [ ] 0x3A: GetDocData:
+    - [x] STLV (1059, 1174)
+    - [ ] FvlN (1023)
+    - [ ] Multitag
+  + [ ] Specials:
+    + [ ] i2vln (.rstrip(), v.to_bytes(math.ceil(math.log2(v)/8), 'little'))
+    + [ ] fvln
   + [ ] Receipt (6):
     - [ ] 0x23: Begin
     - [ ] 0x2B: Position
     - [ ] 0x2C: Agent
     - [ ] 0x2D: Payment
     - [ ] 0x1F: AutoNum
-    - [ ] 0x24: Comit
+    - [ ] 0x24: Commit
   + [ ] CorrReceipt (4):
     - [ ] 0x25: Begin
     - [ ] 0x2E: Data

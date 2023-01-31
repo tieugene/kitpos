@@ -1,25 +1,22 @@
 """Tags things."""
+import sys
 from typing import Dict, Any, Tuple
 
 from kitfr import const, flag, util
-
-
-def untag_1009():
-    ...
 
 
 _TAG2FUNC = {  # Tag: (v2, b2v)
     const.IEnumTag.Tag_1009: (lambda v: util.s2b(v[:164]), lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1017: (lambda v: util.s2b(v[:12]).ljust(12), lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1021: (lambda v: util.s2b(v[:64]), lambda v: util.b2s(v)),
-    # 1023: FVLN
+    const.IEnumTag.Tag_1023: (None, lambda v: util.b2hex(v)),  # TODO: FVLN
     const.IEnumTag.Tag_1030: (lambda v: util.s2b(v[:128]), lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1031: (None, lambda v: util.b2ui(v)),  # VLN
     const.IEnumTag.Tag_1036: (lambda v: util.s2b(v[:21]), lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1046: (lambda v: util.s2b(v[:64]), lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1048: (lambda v: util.s2b(v[:128]), lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1055: (lambda v: v.b(), lambda v: flag.TaxModes(util.b2ui(v))),
-    # 1059: STLV
+    const.IEnumTag.Tag_1059: (None, lambda v: tag_list_unpack(v)),  # STLV; recur
     const.IEnumTag.Tag_1079: (None, lambda v: util.b2ui(v)),  # VLN
     const.IEnumTag.Tag_1081: (None, lambda v: util.b2ui(v)),  # VLN
     const.IEnumTag.Tag_1102: (None, lambda v: util.b2ui(v)),  # VLN
@@ -30,7 +27,7 @@ _TAG2FUNC = {  # Tag: (v2, b2v)
     const.IEnumTag.Tag_1107: (None, lambda v: util.b2ui(v)),  # VLN
     const.IEnumTag.Tag_1117: (lambda v: util.s2b(v[:64]), lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1173: (lambda v: util.l2b(v), lambda v: util.b2l(v)),
-    const.IEnumTag.Tag_1174: (None, lambda v: util.b2hex(v)),  # STLV
+    const.IEnumTag.Tag_1174: (None, lambda v: tag_list_unpack(v)),  # STLV; recur
     const.IEnumTag.Tag_1177: (lambda v: util.s2b(v[:255]), lambda v: util.b2s(v)),
     # 1178: Unixtime(y,d,m[,h])
     const.IEnumTag.Tag_1179: (lambda v: util.s2b(v[:32]), lambda v: util.b2s(v)),
@@ -61,7 +58,10 @@ def tag_list_unpack(v: bytes) -> Dict[const.IEnumTag, Any]:
         if t_id not in const.TAGS_UNKNOWN:  # skip not documented
             # print(f"{t_id} ({util.b2hex(util.ui2b2(t_id))}): {util.b2hex(t_data)} ({len(t_data)})")
             t = const.IEnumTag(t_id)
-            if t in retvalue:
-                raise RuntimeError(f"{t} already counted.")  # FIXME: RTFM multitags
+            if t in retvalue:  # FIXME: RTFM multitags
+                raise RuntimeError(f"{t} already counted.")
+            if t not in _TAG2FUNC:
+                print(f"Tag {t} not processed.", file=sys.stderr)
+                continue
             retvalue[t] = _TAG2FUNC[t][1](t_data)
     return retvalue

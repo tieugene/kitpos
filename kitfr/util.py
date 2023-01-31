@@ -1,4 +1,5 @@
 """Utility things."""
+import math
 # 1. std
 from typing import Union, Tuple
 import struct
@@ -21,19 +22,29 @@ def s2b(v: str) -> bytes:
     return v.encode('cp866')
 
 
+def _ui2b(v: int, w: int) -> bytes:
+    """Convert uint into w bytes."""
+    return v.to_bytes(w, 'little')
+
+
 def ui2b1(v: int) -> bytes:
     """Convert uint8 into byte."""
-    return v.to_bytes(1, 'little')
+    return _ui2b(v, 1)
 
 
 def ui2b2(v: int) -> bytes:
     """Convert uint16 into 2x bytes (LE)."""
-    return v.to_bytes(2, 'little')
+    return _ui2b(v, 2)
 
 
 def ui2b4(v: int) -> bytes:
     """Convert uint32 into 4x bytes (LE)."""
-    return v.to_bytes(4, 'little')
+    return _ui2b(v, 4)
+
+
+def ui2vln(v: int) -> bytes:
+    """Convert uintX into minimal bytes (LE)."""
+    return _ui2b(v, math.ceil(math.log2(v)/8))
 
 
 def dt2b(v: datetime.datetime) -> bytes:
