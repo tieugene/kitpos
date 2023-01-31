@@ -4,6 +4,7 @@ import math
 from typing import Union, Tuple
 import struct
 import datetime
+from decimal import Decimal
 # 2. 3rd
 import crcmod  # or crcelk
 # 3. local
@@ -70,6 +71,15 @@ def b2s(v: bytes) -> str:
 def b2ui(v: bytes) -> int:
     """Convert bytes into UINT."""
     return int.from_bytes(v, 'little')
+
+
+def fvln2n(v: bytes) -> Union[int, Decimal]:
+    """Convert FVLN bytes into number."""
+    num = b2ui(v[1:])
+    if pos := v[0]:
+        return Decimal(num) / Decimal(pow(10, pos))
+    else:
+        return num
 
 
 def b2dt(v: Tuple[int, int, int, int, int]) -> datetime.datetime:

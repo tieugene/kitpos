@@ -3,7 +3,8 @@
 - [ ] Extend cmd #3 (11):
   + [ ] 0x3A: GetDocData:
     - [x] STLV (1059, 1174)
-    - [ ] FvlN (1023)
+    - [x] FVLN (1023)
+    - [ ] 'Unixtime' (1178)
     - [ ] Multitag
   + [ ] Specials:
     + [ ] i2vln (.rstrip(), v.to_bytes(math.ceil(math.log2(v)/8), 'little'))

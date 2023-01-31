@@ -9,7 +9,7 @@ _TAG2FUNC = {  # Tag: (v2, b2v)
     const.IEnumTag.Tag_1009: (lambda v: util.s2b(v[:164]), lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1017: (lambda v: util.s2b(v[:12]).ljust(12), lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1021: (lambda v: util.s2b(v[:64]), lambda v: util.b2s(v)),
-    const.IEnumTag.Tag_1023: (None, lambda v: util.b2hex(v)),  # TODO: FVLN
+    const.IEnumTag.Tag_1023: (None, lambda v: util.fvln2n(v)),  # FVLN
     const.IEnumTag.Tag_1030: (lambda v: util.s2b(v[:128]), lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1031: (None, lambda v: util.b2ui(v)),  # VLN
     const.IEnumTag.Tag_1036: (lambda v: util.s2b(v[:21]), lambda v: util.b2s(v)),
@@ -61,7 +61,7 @@ def tag_list_unpack(v: bytes) -> Dict[const.IEnumTag, Any]:
             if t in retvalue:  # FIXME: RTFM multitags
                 raise RuntimeError(f"{t} already counted.")
             if t not in _TAG2FUNC:
-                print(f"Tag {t} not processed.", file=sys.stderr)
+                print(f"Tag {t} not processed ({util.b2hex(t_data)}).", file=sys.stderr)
                 continue
             retvalue[t] = _TAG2FUNC[t][1](t_data)
     return retvalue
