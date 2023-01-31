@@ -402,6 +402,9 @@ class RspGetDateTime(RspBase):
 
 class RspCorrReceiptCommit(_RspStub):
     """Commit Corr. Receipt (0x26)."""
+    # doc_num: int  # (16) doc number in session
+    # fd_no: int  # (32) fiscal doc no
+    # fp: int  # (32)
 
 
 # ----

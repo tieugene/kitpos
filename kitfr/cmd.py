@@ -4,7 +4,7 @@
 """
 # 1. std
 import datetime
-from typing import Optional
+from typing import Optional, Dict
 
 # 3. local
 from kitfr import const, util
@@ -127,8 +127,8 @@ class CmdSetDateTime(_CmdBase):
 
         :note: const: TAG=30000 + LEN=5
         """
-        return super().to_bytes()\
-            + b'\x30\x75\x05\x00'\
+        return super().to_bytes() \
+            + b'\x30\x75\x05\x00' \
             + util.dt2b5(self.datime)
 
 
@@ -151,6 +151,31 @@ class CmdCorrReceiptData(_CmdBase):
     Response: RspOK
     """
     cmd_id = const.IEnumCmd.CorrReceiptData
+    t_1021: str
+    t_1203: str
+    t_1173: bool
+    t_1055: bytes  # IntEnum
+    t_1031: int
+    t_1081: int
+    t_1215: int
+    t_1216: int
+    t_1217: int
+    t_1102: int
+    t_1103: int
+    t_1104: int
+    t_1105: int
+    t_1106: int
+    t_1107: int
+    t_1177: str
+    t_1178: datetime.datetime
+    t_1023: str
+
+    def __init__(self, data: Dict):
+        super().__init__()
+
+    def to_bytes(self) -> bytes:
+        """Serialize to bytes."""
+        return super().to_bytes()
 
 
 class CmdCorrReceiptAutomat(_CmdBase):
@@ -159,9 +184,16 @@ class CmdCorrReceiptAutomat(_CmdBase):
     Response: RspOK
     """
     cmd_id = const.IEnumCmd.CorrReceiptAutomat
-    addr: str   # tag 1009
-    place: str  # tag 1187
-    num: str    # tag 1036
+    t_1009: str  # address of sale
+    t_1187: str  # place of sale
+    t_1036: str  # device number
+
+    def __init__(self, data: Dict):
+        super().__init__()
+
+    def to_bytes(self) -> bytes:
+        """Serialize to bytes."""
+        return super().to_bytes()
 
 
 class CmdCorrReceiptCommit(_CmdBase):
@@ -171,4 +203,16 @@ class CmdCorrReceiptCommit(_CmdBase):
     """
     cmd_id = const.IEnumCmd.CorrReceiptCommit
     req_type: const.IEnumReceiptType
-    summary: int
+    sum: int
+
+    def __init__(self, data: Dict):
+        super().__init__()
+        self.req_type = const.IEnumReceiptType(data['type'])
+        self.sum = data['sum']
+
+    def to_bytes(self) -> bytes:
+        """Serialize to bytes."""
+        return\
+            super().to_bytes() \
+            + util.ui2b1(self.req_type) \
+            + util.ui2vln(self.sum)

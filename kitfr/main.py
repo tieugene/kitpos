@@ -3,6 +3,7 @@
 
 :todo: Call commands w/ separate functions.
 """
+import json
 # 1. std
 from typing import List
 import sys
@@ -116,17 +117,25 @@ def __cmd_25(_) -> cmd.CmdCorrReceiptBegin:
 
 def __cmd_2e(v: List[str]) -> cmd.CmdCorrReceiptData:
     """0x2E: Corr. Receipt. Step #2 - send data."""
-    return cmd.CmdCorrReceiptData()
+    if v:
+        return cmd.CmdCorrReceiptData(json.loads(v[0]))
+    print("data required ('<json>').")
 
 
 def __cmd_3f(v: List[str]) -> cmd.CmdCorrReceiptAutomat:
     """0x3F: Corr. Receipt. Step #3 - send automat number."""
-    return cmd.CmdCorrReceiptAutomat()
+    if v:
+        return cmd.CmdCorrReceiptAutomat(json.loads(v[0]))
+    print("data required ('<json>').")
 
 
 def __cmd_26(v: List[str]) -> cmd.CmdCorrReceiptCommit:
     """0x26: Corr. Receipt. Step #4 (last) - commit."""
-    return cmd.CmdCorrReceiptCommit()
+    if v:
+        print(v[0])
+        data = json.loads(v[0])
+        return cmd.CmdCorrReceiptCommit(data)
+    print("data required ('<json>').")
 
 
 __COMMANDS = {
@@ -165,8 +174,8 @@ def main():
     cmd_class = type(cmd_object)
     bytes_o = cmd_object.to_bytes()  # 1. make command...
     frame_o = util.bytes2frame(bytes_o)  # ..., frame it
-    # print(frame_o.hex().upper())
-    # return
+    print(frame_o.hex().upper())
+    return
     frame_i = net.txrx(sys.argv[1], int(sys.argv[2]), frame_o, conn_timeout=30, txrx_timeout=0.1)    # 2. txrx
     # 3. dispatch response
     # - unwrap frame
