@@ -16,23 +16,21 @@ if (rsp.result?) then (err)
 		Result = fItem);
 	stop
 endif
-:hexData = List(str)
-TLVPostion = 0
+:TLVPostion = 0
 TLV += (1021, item.company_authorized_person_name)
 TLV += (1203, item.CompanyInn)
-hexData = TLV.Take(TLVPosition).hex()
+TLV += (1173, 0)
 localDate = now() + 3h ' MSK+3? UTC+3?'
-TLV += CorrectionBase(item.DateTrip)
-hexData = TLV.Take(TLVPosition).hex()
+TLV += (1174, (
+    (1177, "выдача билета"),
+    (1178, item.DateTrip),
+    (1179, $"{item.CompanyId}{localDate:yyyyMMdd}"))
 TLV += (1055, item.Tax)
-hexData = TLV.Take(TLVPosition).hex()
 TLV += (1031, item.PaymentType == 1 ? item.Price : 0)
-hexData = TLV.Take(TLVPosition).hex()
 TLV += (1081, item.PaymentType == 2 ? item.Price : 0)
 TLV += (1215, 0)
 TLV += (1216, 0)
 TLV += (1217, 0)
-hexData = TLV.Take(TLVPosition).hex()
 TLV += (1102, (item.Vat == "NDS20" ? item.Price : 0))
 TLV += (1103, (item.Vat == "NDS10" ? item.Price : 0))
 TLV += (1104, (item.Vat == "NDS0" ? item.Price : 0))

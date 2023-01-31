@@ -18,7 +18,7 @@ class IEnumCmd(enum.IntEnum):
     GetDeviceStatus = 0x01            # ✓ [Info] Get status
     GetDeviceModel = 0x04             # ✓ [Info]
     GetStorageStatus = 0x08           # ✓ [Info]
-    GetRegisterParms = 0x0A           # ✓ [Info]
+    GetRegisterParms = 0x0A           # ✓ [Info] not used
     DocCancel = 0x10                  # ✓ [RegFS]
     ReceiptSendAutomatNum = 0x1F      # [Receipt]
     GetCurSession = 0x20              # ✓ [Session]
@@ -31,7 +31,7 @@ class IEnumCmd(enum.IntEnum):
     SessionCloseBegin = 0x29          # ✓ [Session]
     SessionCloseCommit = 0x2A         # ✓ [Session]
     ReceiptSendPos = 0x2B             # [Receipt]
-    ReceiptSendAgent = 0x2C           # [Receipt]
+    # ReceiptSendAgent = 0x2C         # [Receipt] not used
     ReceiptSendPay = 0x2D             # [Receipt]
     CorrReceiptSendData = 0x2E        # [CorRcpt]
     GetDocInfo = 0x30                 # … [Archive]
@@ -39,8 +39,8 @@ class IEnumCmd(enum.IntEnum):
     CorrReceiptSendAutomatNum = 0x3F  # [CorRcpt]
     # ResetMGM = 0x40
     GetOFDXchgStatus = 0x50           # ✓ [Info]
-    SetDateTime = 0x72                # [Settings]
-    GetDateTime = 0x73                # ✓ [Settings]
+    SetDateTime = 0x72                # ✓ [Settings]
+    GetDateTime = 0x73                # ✓ [Settings] not used
     Restart = 0xEF
 
 
