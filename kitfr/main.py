@@ -10,7 +10,7 @@ import sys
 import os
 import datetime
 # 3. local
-from kitfr import cmd, net, rsp, util, errs, const
+from kitfr import cmd, net, rsp, util, errs, const, tag
 
 # x. consts
 CONN_TIMEOUT = 3  # Too fast; can be 20+
@@ -125,8 +125,25 @@ def __cmd_2e(v: List[str]) -> cmd.CmdCorrReceiptData:
 
 def __cmd_3f(v: List[str]) -> cmd.CmdCorrReceiptAutomat:
     """0x3F: Corr. Receipt. Step #3 - send automat number."""
+    __tags = [1009, 1187, 1036]
+    __tags_set = set(__tags)
     if v:
-        return cmd.CmdCorrReceiptAutomat(json.loads(v[0]))
+        # 0. load json
+        raw = json.loads(v[0])
+        # 2. convert raw dict into TagDict
+        if len(raw) != len(__tags):  # - check #1: tags number
+            raise RuntimeError(f"Too few tags: {len(raw)} != {len(__tags)} required.")
+        td = {}
+        for k, val in raw.items():  # or: select keys by __tags iteration
+            ik = int(k)  # - check #2: tag is int
+            if ik not in __tags_set:  # - check #3: tag is in __tags
+                raise RuntimeError(f"Tag {ik} is excess.")
+            t = const.IEnumTag(ik)
+            f = tag.TAG2FUNC[t][0]
+            real_val = f(val)
+            td[t] = real_val
+        # 3. go
+        return cmd.CmdCorrReceiptAutomat(td)
     print("data required ('<json>').")
 
 
@@ -135,6 +152,7 @@ def __cmd_26(v: List[str]) -> cmd.CmdCorrReceiptCommit:
     if v:
         # print(v[0])
         raw = json.loads(v[0])
+        # TODO: chk value types
         return cmd.CmdCorrReceiptCommit(
             req_type=const.IEnumReceiptType(raw['type']),
             total=raw['total']
@@ -175,7 +193,6 @@ def main():
         return
     if (cmd_object := __COMMANDS[sys.argv[3]](sys.argv[4:])) is None:
         return
-    cmd_class = type(cmd_object)
     bytes_o = cmd_object.to_bytes()  # 1. make command...
     frame_o = util.bytes2frame(bytes_o)  # ..., frame it
     print(frame_o.hex().upper())
@@ -188,6 +205,7 @@ def main():
     ok, bytes_i = util.bytes_as_response(payload_i)
     # - dispatch last
     if ok:
+        cmd_class = type(cmd_object)
         rsp_object = rsp.bytes2rsp(cmd_class.cmd_id, bytes_i)
         print(rsp_object.str('\n'))
     else:

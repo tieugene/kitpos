@@ -3,10 +3,10 @@
 - [ ] Extend cmd #3 (10):
   + [x] 0x3A: GetDocData:
   + [ ] CorrReceipt (4):
-    - [ ] 0x25: Begin
+    - [t] 0x25: Begin
     - [ ] 0x2E: Data
-    - [ ] 0x3F: CorAutoNum
-    - [ ] 0x26: Commit
+    - [t] 0x3F: CorAutoNum
+    - [t] 0x26: Commit
   + [ ] Receipt (5):
     - [ ] 0x23: Begin
     - [ ] 0x2B: Position

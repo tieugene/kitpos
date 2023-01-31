@@ -5,9 +5,8 @@
 # 1. std
 import datetime
 from typing import Optional, Dict
-
 # 3. local
-from kitfr import const, util
+from kitfr import const, util, tag
 
 
 class _CmdBase:
@@ -171,12 +170,13 @@ class CmdCorrReceiptData(_CmdBase):
     t_1178: datetime.datetime
     t_1179: str
 
-    def __init__(self, data: Dict):
+    def __init__(self, payload: tag.TagDict):
         super().__init__()
+        self.payload = payload
 
     def to_bytes(self) -> bytes:
         """Serialize to bytes."""
-        return super().to_bytes()
+        return super().to_bytes() + tag.tag_dict_pack(self.payload)
 
 
 class CmdCorrReceiptAutomat(_CmdBase):
@@ -185,16 +185,15 @@ class CmdCorrReceiptAutomat(_CmdBase):
     Response: RspOK
     """
     cmd_id = const.IEnumCmd.CorrReceiptAutomat
-    t_1009: str  # address of sale
-    t_1187: str  # place of sale
-    t_1036: str  # device number
+    payload: tag.TagDict
 
-    def __init__(self, data: Dict):
+    def __init__(self, payload: tag.TagDict):
         super().__init__()
+        self.payload = payload
 
     def to_bytes(self) -> bytes:
         """Serialize to bytes."""
-        return super().to_bytes()
+        return super().to_bytes() + tag.tag_dict_pack(self.payload)
 
 
 class CmdCorrReceiptCommit(_CmdBase):

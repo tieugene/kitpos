@@ -71,3 +71,18 @@ raw = b'\xB6\x29\x00\x05\x30\x01\x00\x00\x00\x95\xС8'
 
 - Q: Can I get 2+ connections?
 - A: &hellip;
+
+## CLI tests
+```sh
+./main.sh 1.1.1.1 7777 CorrReceiptCommit 'json'
+```
+
+CorrReceiptAutomat:
+```json
+{"1009":"addr","1187":"place","1036":"1"}
+```
+
+CorrReceiptCommit:
+```json
+{"type":1,"total":123}
+```

@@ -400,11 +400,22 @@ class RspGetDateTime(RspBase):
         )
 
 
-class RspCorrReceiptCommit(_RspStub):
+@dataclass
+class RspCorrReceiptCommit(RspBase):
     """Commit Corr. Receipt (0x26)."""
-    # doc_num: int  # (16) doc number in session
-    # fd_no: int  # (32) fiscal doc no
-    # fp: int  # (32)
+    doc_num: int  # (16) doc number in session
+    fd_num: int  # (32) fiscal doc no
+    fp: int  # (32)
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        v = _data_decode(data, '<HII', cls)
+        return cls(
+            doc_num=v[0],
+            fd_num=v[1],
+            fp=v[2]
+        )
 
 
 # ----
