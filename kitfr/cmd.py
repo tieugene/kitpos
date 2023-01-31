@@ -86,7 +86,7 @@ class CmdSessionCloseCommit(_CmdBase):
 
 
 class _CmdGetDocAny(_CmdBase):
-    """Base CmdGetDocByNum/CmdReadDoc."""
+    """Base CmdGetDocInfo/CmdGetDocData."""
     num: int
 
     def __init__(self, num: int):
@@ -98,12 +98,12 @@ class _CmdGetDocAny(_CmdBase):
         return super().to_bytes() + util.ui2b4(self.num)
 
 
-class CmdGetDocByNum(_CmdGetDocAny):  # TODO: GetDocInfo/Meta
+class CmdGetDocInfo(_CmdGetDocAny):
     """0x30: Find document by its number."""
     cmd_id = const.IEnumCmd.GetDocInfo
 
 
-class CmdReadDoc(_CmdGetDocAny):  # TODO: GetDocContent
+class CmdGetDocData(_CmdGetDocAny):
     """0x3A: Read document content."""
     cmd_id = const.IEnumCmd.GetDocData
 
@@ -135,3 +135,40 @@ class CmdSetDateTime(_CmdBase):
 class CmdGetDateTime(_CmdBase):
     """0x73: Get POS date/time."""
     cmd_id = const.IEnumCmd.GetDateTime
+
+
+class CmdCorrReceiptBegin(_CmdBase):
+    """0x25: Corr. Receipt. Step #1 - begin.
+
+    Response: RspOK
+    """
+    cmd_id = const.IEnumCmd.CorrReceiptBegin
+
+
+class CmdCorrReceiptData(_CmdBase):
+    """0x2E: Corr. Receipt. Step #2 - send data.
+
+    Response: RspOK
+    """
+    cmd_id = const.IEnumCmd.CorrReceiptData
+
+
+class CmdCorrReceiptAutomat(_CmdBase):
+    """0x3F: Corr. Receipt. Step #3 - send automat number.
+
+    Response: RspOK
+    """
+    cmd_id = const.IEnumCmd.CorrReceiptAutomat
+    addr: str   # tag 1009
+    place: str  # tag 1187
+    num: str    # tag 1036
+
+
+class CmdCorrReceiptCommit(_CmdBase):
+    """0x26: Corr. Receipt. Step #4 (last) - commit.
+
+    Response: RspCorrReceiptCommit
+    """
+    cmd_id = const.IEnumCmd.CorrReceiptCommit
+    req_type: const.IEnumReceiptType
+    summary: int

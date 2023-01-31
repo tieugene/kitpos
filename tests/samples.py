@@ -42,7 +42,7 @@ __frame_q_dbn_s = (  # 0x30: GetDocInfo(n).to_bytes() -> data
     # TODO: add other nums
 )
 # ---- Bytes.GetDocInfo ----
-__data_a_gdi_s = (  # 0x30: RspGetDocByNum(n).from_bytes(data)
+__data_a_gdi_s = (  # 0x30: RspGetDocInfo(n).from_bytes(data)
     '010016031C092901000000874096FE3738303631393732373420203030303030303030303030333830343520202020040C',  # RegRpt (49)
     '020016031C0929020000001259A70B0100',  # SesOpenRpt (17)
     '030016031C092F03000000ECC57C69014006000000',  # Receipt (21)
@@ -81,7 +81,7 @@ RAW_Q = [bytes.fromhex(s) for s in __frame_q_s]  # raw commands
 RAW_A = [bytes.fromhex(s) for s in __frame_a_s]  # raw responses
 CMD = [bytes.fromhex(s)[4:-2] for s in __frame_q_s]
 RSP = [bytes.fromhex(s)[5:-2] for s in __frame_a_s]  # responce objects dumps
-RSP_GDI = [bytes.fromhex(s) for s in __data_a_gdi_s]  # RspGetDocByNum.from_bytes(data)
+RSP_GDI = [bytes.fromhex(s) for s in __data_a_gdi_s]  # RspGetDocInfo.from_bytes(data)
 RSP_GDD = [bytes.fromhex(s) for s in __data_a_gdd_s]  # RspGetDocData.from_bytes(data)
 
 # TODO: add errs

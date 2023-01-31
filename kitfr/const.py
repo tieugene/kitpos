@@ -26,17 +26,17 @@ class IEnumCmd(enum.IntEnum):
     SessionOpenCommit = 0x22          # ✓ [Session]
     ReceiptBegin = 0x23               # [Receipt]
     ReceiptCommit = 0x24              # [Receipt]
-    CorrReceiptBegin = 0x25           # [CorRcpt]
-    CorrReceiptCommit = 0x26          # [CorRcpt]
+    CorrReceiptBegin = 0x25           # … [CorRcpt]
+    CorrReceiptCommit = 0x26          # … [CorRcpt]
     SessionCloseBegin = 0x29          # ✓ [Session]
     SessionCloseCommit = 0x2A         # ✓ [Session]
     ReceiptSendPos = 0x2B             # [Receipt]
     # ReceiptSendAgent = 0x2C         # [Receipt] not used
     ReceiptSendPay = 0x2D             # [Receipt]
-    CorrReceiptSendData = 0x2E        # [CorRcpt]
+    CorrReceiptData = 0x2E            # … [CorRcpt]
     GetDocInfo = 0x30                 # … [Archive]
     GetDocData = 0x3A                 # … [Info]
-    CorrReceiptSendAutomatNum = 0x3F  # [CorRcpt]
+    CorrReceiptAutomat = 0x3F         # … [CorRcpt]
     # ResetMGM = 0x40
     GetOFDXchgStatus = 0x50           # ✓ [Info]
     SetDateTime = 0x72                # ✓ [Settings]
@@ -146,7 +146,7 @@ class IEnumADocType(_IEnumPrintable):
     """Archive document types.
 
     Used:
-    - RspGetDocByNum
+    - RspGetDocInfo
     """
     RegRpt = 1  # FR registration report
     ReRegRpt = 11  # Reregistration report

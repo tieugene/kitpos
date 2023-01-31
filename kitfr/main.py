@@ -76,17 +76,17 @@ def __cmd_2a(_) -> cmd.CmdSessionCloseCommit:
     return cmd.CmdSessionCloseCommit()
 
 
-def __cmd_30(v: List[str]) -> cmd.CmdGetDocByNum:
+def __cmd_30(v: List[str]) -> cmd.CmdGetDocInfo:
     """Find document by its number <num>."""
     if v:
-        return cmd.CmdGetDocByNum(int(v[0]))
+        return cmd.CmdGetDocInfo(int(v[0]))
     print("Doc number required.")
 
 
-def __cmd_3a(v: List[str]) -> cmd.CmdReadDoc:
+def __cmd_3a(v: List[str]) -> cmd.CmdGetDocData:
     """Get doc <num> content."""
     if v:
-        return cmd.CmdReadDoc(int(v[0]))
+        return cmd.CmdGetDocData(int(v[0]))
     print("Doc number required.")
 
 
@@ -109,6 +109,26 @@ def __cmd_73(_) -> cmd.CmdGetDateTime:
     return cmd.CmdGetDateTime()
 
 
+def __cmd_25(_) -> cmd.CmdCorrReceiptBegin:
+    """0x25: Corr. Receipt. Step #1 - begin."""
+    return cmd.CmdCorrReceiptBegin()
+
+
+def __cmd_2e(v: List[str]) -> cmd.CmdCorrReceiptData:
+    """0x2E: Corr. Receipt. Step #2 - send data."""
+    return cmd.CmdCorrReceiptData()
+
+
+def __cmd_3f(v: List[str]) -> cmd.CmdCorrReceiptAutomat:
+    """0x3F: Corr. Receipt. Step #3 - send automat number."""
+    return cmd.CmdCorrReceiptAutomat()
+
+
+def __cmd_26(v: List[str]) -> cmd.CmdCorrReceiptCommit:
+    """0x26: Corr. Receipt. Step #4 (last) - commit."""
+    return cmd.CmdCorrReceiptCommit()
+
+
 __COMMANDS = {
     'GetDeviceStatus': __cmd_01,
     'GetDeviceModel': __cmd_04,
@@ -121,10 +141,14 @@ __COMMANDS = {
     'SessionCloseBegin': __cmd_29,
     'SessionCloseCommit': __cmd_2a,
     'GetDocInfo': __cmd_30,
-    'GetDocContent': __cmd_3a,
+    'GetDocData': __cmd_3a,
     'GetOFDXchgStatus': __cmd_50,
     'SetDateTime': __cmd_72,
     'GetDateTime': __cmd_73,
+    'CorrReceiptBegin': __cmd_25,
+    'CorrReceiptData': __cmd_2e,
+    'CorrReceiptAutomat': __cmd_3f,
+    'CorrReceiptCommit': __cmd_26,
 }
 
 

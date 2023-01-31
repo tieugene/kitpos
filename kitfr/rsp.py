@@ -331,7 +331,7 @@ ADOC_CLASS = {
 
 
 @dataclass
-class RspGetDocByNum(RspBase):
+class RspGetDocInfo(RspBase):
     """FD (0x30)."""
     doc_type: const.IEnumADocType
     ofd: bool  # TODO: chk 0/1
@@ -400,6 +400,10 @@ class RspGetDateTime(RspBase):
         )
 
 
+class RspCorrReceiptCommit(_RspStub):
+    """Commit Corr. Receipt (0x26)."""
+
+
 # ----
 _CODE2CLASS = {
     const.IEnumCmd.GetDeviceStatus: RspGetDeviceStatus,
@@ -412,11 +416,15 @@ _CODE2CLASS = {
     const.IEnumCmd.SessionOpenCommit: RspSessionOpenCommit,
     const.IEnumCmd.SessionCloseBegin: RspOK,
     const.IEnumCmd.SessionCloseCommit: RspSessionCloseCommit,
-    const.IEnumCmd.GetDocInfo: RspGetDocByNum,
+    const.IEnumCmd.GetDocInfo: RspGetDocInfo,
     const.IEnumCmd.GetDocData: RspGetDocData,
     const.IEnumCmd.GetOFDXchgStatus: RspGetOFDXchgStatus,
     const.IEnumCmd.SetDateTime: RspOK,
     const.IEnumCmd.GetDateTime: RspGetDateTime,
+    const.IEnumCmd.CorrReceiptBegin: RspOK,
+    const.IEnumCmd.CorrReceiptData: RspOK,
+    const.IEnumCmd.CorrReceiptAutomat: RspOK,
+    const.IEnumCmd.CorrReceiptCommit: RspCorrReceiptCommit,
 }
 
 

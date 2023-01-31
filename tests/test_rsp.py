@@ -76,7 +76,7 @@ def test_rsp_get_date_time():
         datime=datetime.datetime(2023, 1, 24, 14, 46)
     )
 
-# TODO: RspGetDocByNum
+# TODO: RspGetDocInfo
 
 
 def test_bytes2rsp():
