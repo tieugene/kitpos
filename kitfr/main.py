@@ -118,6 +118,7 @@ def __cmd_25(_) -> cmd.CmdCorrReceiptBegin:
 
 def __cmd_2e(v: List[str]) -> cmd.CmdCorrReceiptData:
     """0x2E: Corr. Receipt. Step #2 - send data."""
+    __tags = [1021, 1203, 1173, 1055, 1031, 1081, 1215, 1216, 1217, 1102, 1103, 1104, 1105, 1106, 1107, 1074]
     if v:
         return cmd.CmdCorrReceiptData(json.loads(v[0]))
     print("data required ('<json>').")
@@ -130,18 +131,10 @@ def __cmd_3f(v: List[str]) -> cmd.CmdCorrReceiptAutomat:
     if v:
         # 0. load json
         raw = json.loads(v[0])
-        # 2. convert raw dict into TagDict
-        if len(raw) != len(__tags):  # - check #1: tags number
+        if len(raw) != len(__tags):  # - check #1: tags number; TODO: rm
             raise RuntimeError(f"Too few tags: {len(raw)} != {len(__tags)} required.")
-        td = {}
-        for k, val in raw.items():  # or: select keys by __tags iteration
-            ik = int(k)  # - check #2: tag is int
-            if ik not in __tags_set:  # - check #3: tag is in __tags
-                raise RuntimeError(f"Tag {ik} is excess.")
-            t = const.IEnumTag(ik)
-            f = tag.TAG2FUNC[t][0]
-            real_val = f(val)
-            td[t] = real_val
+        # 2. convert raw dict into TagDict
+        td = tag.json2tagdict(raw, __tags_set)
         # 3. go
         return cmd.CmdCorrReceiptAutomat(td)
     print("data required ('<json>').")

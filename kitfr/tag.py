@@ -1,6 +1,7 @@
 """Tags things."""
+import datetime
 # 1. std
-from typing import Dict, Any, Tuple
+from typing import Dict, Any, Tuple, Set
 import sys
 # 3. local
 from kitfr import const, flag, util
@@ -13,39 +14,39 @@ TAG2FUNC = {  # Tag: (json_2_value, value_2_bytes (pack), bytes_2_value (unpack)
         lambda v: util.s2b(v[:164]),
         lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1017: (
-        None,
+        lambda v: v[:12].strip(),
         lambda v: util.s2b(v[:12]).ljust(12),
         lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1021: (
-        None,
+        lambda v: v[:64].strip(),
         lambda v: util.s2b(v[:64]),
         lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1023: (
+        lambda v: v,
         None,
-        None,
-        lambda v: util.fvln2n(v)),  # FVLN
+        lambda v: util.fvln2n(v)),  # FVLN; 0x2B
     const.IEnumTag.Tag_1030: (
-        None,
+        lambda v: v[:128].strip(),
         lambda v: util.s2b(v[:128]),
         lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1031: (
-        None,
-        None,
+        lambda v: v,
+        lambda v: util.ui2vln(v),
         lambda v: util.b2ui(v)),  # VLN
     const.IEnumTag.Tag_1036: (
         lambda v: v[:21].strip(),
         lambda v: util.s2b(v[:21]),
         lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1046: (
-        None,
+        lambda v: v[:64].strip(),
         lambda v: util.s2b(v[:64]),
         lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1048: (
-        None,
+        lambda v: v[:128].strip(),
         lambda v: util.s2b(v[:128]),
         lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1055: (
-        None,
+        lambda v: flag.TaxModes(util.b2ui(v)),
         lambda v: v.b(),
         lambda v: flag.TaxModes(util.b2ui(v))),
     const.IEnumTag.Tag_1059: (
@@ -53,43 +54,43 @@ TAG2FUNC = {  # Tag: (json_2_value, value_2_bytes (pack), bytes_2_value (unpack)
         None,
         lambda v: tag_list_unpack(v)),  # STLV; recur
     const.IEnumTag.Tag_1079: (
-        None,
-        None,
+        lambda v: v,
+        lambda v: util.ui2vln(v),
         lambda v: util.b2ui(v)),  # VLN
     const.IEnumTag.Tag_1081: (
-        None,
-        None,
+        lambda v: v,
+        lambda v: util.ui2vln(v),
         lambda v: util.b2ui(v)),  # VLN
     const.IEnumTag.Tag_1102: (
-        None,
-        None,
+        lambda v: v,
+        lambda v: util.ui2vln(v),
         lambda v: util.b2ui(v)),  # VLN
     const.IEnumTag.Tag_1103: (
-        None,
-        None,
+        lambda v: v,
+        lambda v: util.ui2vln(v),
         lambda v: util.b2ui(v)),  # VLN
     const.IEnumTag.Tag_1104: (
-        None,
-        None,
+        lambda v: v,
+        lambda v: util.ui2vln(v),
         lambda v: util.b2ui(v)),  # VLN
     const.IEnumTag.Tag_1105: (
-        None,
-        None,
+        lambda v: v,
+        lambda v: util.ui2vln(v),
         lambda v: util.b2ui(v)),  # VLN
     const.IEnumTag.Tag_1106: (
-        None,
-        None,
+        lambda v: v,
+        lambda v: util.ui2vln(v),
         lambda v: util.b2ui(v)),  # VLN
     const.IEnumTag.Tag_1107: (
-        None,
-        None,
+        lambda v: v,
+        lambda v: util.ui2vln(v),
         lambda v: util.b2ui(v)),  # VLN
     const.IEnumTag.Tag_1117: (
-        None,
+        lambda v: v[:64].strip(),
         lambda v: util.s2b(v[:64]),
         lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1173: (
-        None,
+        lambda v: v,
         lambda v: util.l2b(v),
         lambda v: util.b2l(v)),
     const.IEnumTag.Tag_1174: (
@@ -97,15 +98,15 @@ TAG2FUNC = {  # Tag: (json_2_value, value_2_bytes (pack), bytes_2_value (unpack)
         None,
         lambda v: tag_list_unpack(v)),  # STLV; recur
     const.IEnumTag.Tag_1177: (
-        None,
+        lambda v: v[:255].strip(),
         lambda v: util.s2b(v[:255]),
         lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1178: (
-        None,
-        None,
-        lambda v: util.b2ut(v)),  # Unixtime(y,d,m[,h])
+        lambda v: datetime.datetime.fromisoformat(v),
+        lambda v: util.ui2b4(int(v.timestamp())),  # FIXME: hours
+        lambda v: util.b2ut(v)),  # Unixtime(y,d,m[,h]), bytes[4]; 0x2E
     const.IEnumTag.Tag_1179: (
-        None,
+        lambda v: v[:32].strip(),
         lambda v: util.s2b(v[:32]),
         lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1187: (
@@ -113,39 +114,55 @@ TAG2FUNC = {  # Tag: (json_2_value, value_2_bytes (pack), bytes_2_value (unpack)
         lambda v: util.s2b(v[:64]),
         lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1192: (
-        None,
+        lambda v: v[:16].strip(),
         lambda v: util.s2b(v[:16]),
         lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1199: (
-        None,
+        lambda v: const.IEnumVAT(util.b2ui(v)),
         lambda v: util.ui2b1(v.value),
         lambda v: const.IEnumVAT(util.b2ui(v))),
     const.IEnumTag.Tag_1203: (
-        None,
+        lambda v: v[:12].strip(),
         lambda v: util.s2b(v[:12]).ljust(12),
         lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1212: (
-        None,
+        lambda v: v,
         lambda v: util.l2b(v),
         lambda v: util.b2l(v)),  # TODO: enum
     const.IEnumTag.Tag_1214: (
-        None,
+        lambda v: v,
         lambda v: util.l2b(v),
         lambda v: util.b2l(v)),  # TODO: enum
     const.IEnumTag.Tag_1215: (
-        None,
-        None,
+        lambda v: v,
+        lambda v: util.ui2vln(v),
         lambda v: util.b2ui(v)),  # VLN
     const.IEnumTag.Tag_1216: (
-        None,
-        None,
+        lambda v: v,
+        lambda v: util.ui2vln(v),
         lambda v: util.b2ui(v)),  # VLN
     const.IEnumTag.Tag_1217: (
-        None,
-        None,
+        lambda v: v,
+        lambda v: util.ui2vln(v),
         lambda v: util.b2ui(v)),  # VLN
     # 30000: datetime[5]
 }
+
+
+def json2tagdict(data: dict, required: Set[int]) -> TagDict:
+    """Convert raw json data into TagDict.
+    :todo: check wanted
+    """
+    retvalue = {}
+    for k, val in data.items():  # or: select keys by required iteration
+        ik = int(k)              # - check #1: tag is int
+        if ik not in required:   # - check #2: tag is in required
+            raise RuntimeError(f"Tag {ik} is excess.")
+        t = const.IEnumTag(ik)
+        f = TAG2FUNC[t][0]
+        real_val = f(val)
+        retvalue[t] = real_val
+    return retvalue
 
 
 def tag_list_unpack(tl: bytes) -> TagDict:

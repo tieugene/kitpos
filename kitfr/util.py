@@ -45,7 +45,16 @@ def ui2b4(v: int) -> bytes:
 
 def ui2vln(v: int) -> bytes:
     """Convert uintX into minimal bytes (LE)."""
-    return _ui2b(v, math.ceil(math.log2(v)/8))
+    return _ui2b(v, math.ceil(math.log2(v)/8))  # TODO: use int.bit_count(), int.to_bytes()
+
+
+def n2fvln(v: Union[int, float]) -> bytes:
+    """Convert digit into FVLN."""
+    if isinstance(v, int):
+        return b'\0' + ui2vln(v)
+    else:  # float
+        pos = ...  # point position from right
+        return b'\0'
 
 
 def dt2b5(v: datetime.datetime) -> bytes:
@@ -73,11 +82,11 @@ def b2ui(v: bytes) -> int:
     return int.from_bytes(v, 'little')
 
 
-def fvln2n(v: bytes) -> Union[int, Decimal]:
+def fvln2n(v: bytes) -> Union[int, float]:
     """Convert FVLN bytes into number."""
     num = b2ui(v[1:])
     if pos := v[0]:
-        return Decimal(num) / Decimal(pow(10, pos))
+        return num / pow(10, pos)
     else:
         return num
 
