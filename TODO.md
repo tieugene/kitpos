@@ -2,9 +2,6 @@
 
 - [ ] Extend cmd #3 (11):
   + [x] 0x3A: GetDocData:
-  + [ ] Specials:
-    + [ ] i2vln (.rstrip(), v.to_bytes(math.ceil(math.log2(v)/8), 'little'))
-    + [ ] fvln
   + [ ] Receipt (6):
     - [ ] 0x23: Begin
     - [ ] 0x2B: Position
