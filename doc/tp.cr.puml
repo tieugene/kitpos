@@ -37,6 +37,7 @@ TLV += (1104, (item.Vat == "NDS0" ? item.Price : 0))
 TLV += (1105, (item.Vat == "NONDS" ? item.Price : 0))
 TLV += (1106, (item.Vat == "NDS20_120" ? item.Price : 0))
 TLV += (1007, (item.Vat == "NDS10_110" ? item.Price : 0));
+note right: 1007 <> 1107 ?
 :rsp = Cmd.CorReceiptData, TLV.Take(TLVPosition));
 if (rsp.result?) then (err)
 	:return ResultItem(

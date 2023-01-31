@@ -73,7 +73,7 @@ class IEnumTag(_IEnumPrintable):
     Tag_1104 = 1104    # ! VLN, Base sum for VAT 0%
     Tag_1105 = 1105    # ! VLN, Base sum w/o VAT
     Tag_1106 = 1106    # ! VLN, Base sum for VAT 18/118
-    Tag_1107 = 1107    # VLN, Base sum for VAT 10/110
+    Tag_1107 = 1107    # ! VLN, Base sum for VAT 10/110
     Tag_1117 = 1117    # str[..64], Sender email
     Tag_1173 = 1173    # ! byte[1] = 0/1, Correction type
     Tag_1174 = 1174    # ! STLV(1177,1178,1179)

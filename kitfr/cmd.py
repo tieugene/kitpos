@@ -166,9 +166,10 @@ class CmdCorrReceiptData(_CmdBase):
     t_1105: int
     t_1106: int
     t_1107: int
+    # _v_ t_1074 _v_
     t_1177: str
     t_1178: datetime.datetime
-    t_1023: str
+    t_1179: str
 
     def __init__(self, data: Dict):
         super().__init__()
@@ -203,16 +204,13 @@ class CmdCorrReceiptCommit(_CmdBase):
     """
     cmd_id = const.IEnumCmd.CorrReceiptCommit
     req_type: const.IEnumReceiptType
-    sum: int
+    total: int
 
-    def __init__(self, data: Dict):
+    def __init__(self, req_type: const.IEnumReceiptType, total: int):
         super().__init__()
-        self.req_type = const.IEnumReceiptType(data['type'])
-        self.sum = data['sum']
+        self.req_type = req_type
+        self.total = total
 
     def to_bytes(self) -> bytes:
         """Serialize to bytes."""
-        return\
-            super().to_bytes() \
-            + util.ui2b1(self.req_type) \
-            + util.ui2vln(self.sum)
+        return super().to_bytes() + util.ui2b1(self.req_type) + util.ui2vln(self.total)

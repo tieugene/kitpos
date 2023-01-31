@@ -10,7 +10,8 @@ import sys
 import os
 import datetime
 # 3. local
-from kitfr import cmd, net, rsp, util, errs
+from kitfr import cmd, net, rsp, util, errs, const
+
 # x. consts
 CONN_TIMEOUT = 3  # Too fast; can be 20+
 
@@ -132,9 +133,12 @@ def __cmd_3f(v: List[str]) -> cmd.CmdCorrReceiptAutomat:
 def __cmd_26(v: List[str]) -> cmd.CmdCorrReceiptCommit:
     """0x26: Corr. Receipt. Step #4 (last) - commit."""
     if v:
-        print(v[0])
-        data = json.loads(v[0])
-        return cmd.CmdCorrReceiptCommit(data)
+        # print(v[0])
+        raw = json.loads(v[0])
+        return cmd.CmdCorrReceiptCommit(
+            req_type=const.IEnumReceiptType(raw['type']),
+            total=raw['total']
+        )
     print("data required ('<json>').")
 
 
