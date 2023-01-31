@@ -1,11 +1,7 @@
 # TODO
 
 - [ ] Extend cmd #3 (11):
-  + [ ] 0x3A: GetDocData:
-    - [x] STLV (1059, 1174)
-    - [x] FVLN (1023)
-    - [ ] 'Unixtime' (1178)
-    - [ ] Multitag
+  + [x] 0x3A: GetDocData:
   + [ ] Specials:
     + [ ] i2vln (.rstrip(), v.to_bytes(math.ceil(math.log2(v)/8), 'little'))
     + [ ] fvln
@@ -40,6 +36,7 @@
   - [ ]  4: BSO
   - [ ] 41: CorBSO
   - [ ]  7: OpConfirm
+- [ ] Multitag
 - [ ] Add tests: online tests (w/ live FRs)
 - [ ] Async txrx
 - [ ] Wrap all exceptions with `exc.KitX(e)`

@@ -129,7 +129,7 @@ class CmdSetDateTime(_CmdBase):
         """
         return super().to_bytes()\
             + b'\x30\x75\x05\x00'\
-            + util.dt2b(self.datime)
+            + util.dt2b5(self.datime)
 
 
 class CmdGetDateTime(_CmdBase):

@@ -29,7 +29,7 @@ _TAG2FUNC = {  # Tag: (v2, b2v)
     const.IEnumTag.Tag_1173: (lambda v: util.l2b(v), lambda v: util.b2l(v)),
     const.IEnumTag.Tag_1174: (None, lambda v: tag_list_unpack(v)),  # STLV; recur
     const.IEnumTag.Tag_1177: (lambda v: util.s2b(v[:255]), lambda v: util.b2s(v)),
-    # 1178: Unixtime(y,d,m[,h])
+    const.IEnumTag.Tag_1178: (None, lambda v: util.b2ut(v)),  # Unixtime(y,d,m[,h])
     const.IEnumTag.Tag_1179: (lambda v: util.s2b(v[:32]), lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1187: (lambda v: util.s2b(v[:64]), lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1192: (lambda v: util.s2b(v[:16]), lambda v: util.b2s(v)),

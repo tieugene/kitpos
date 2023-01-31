@@ -48,7 +48,7 @@ def ui2vln(v: int) -> bytes:
     return _ui2b(v, math.ceil(math.log2(v)/8))
 
 
-def dt2b(v: datetime.datetime) -> bytes:
+def dt2b5(v: datetime.datetime) -> bytes:
     """Convert datetime into 5 bytes."""
     return struct.pack('BBBBB', v.year - 2000, v.month, v.day, v.hour, v.minute)
 
@@ -80,6 +80,11 @@ def fvln2n(v: bytes) -> Union[int, Decimal]:
         return Decimal(num) / Decimal(pow(10, pos))
     else:
         return num
+
+
+def b2ut(v: bytes) -> datetime.datetime:
+    """Convert bytes as unixtime into datetime."""
+    return datetime.datetime.fromtimestamp(b2ui(v))  # TODO: tz, date only
 
 
 def b2dt(v: Tuple[int, int, int, int, int]) -> datetime.datetime:
