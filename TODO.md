@@ -1,12 +1,5 @@
 # TODO
 
-- […] Extend cmd #3 (5):
-  + [x] 0x3A: GetDocData:
-  + […] CorrReceipt (4):
-    - […] 0x25: Begin
-    - […] 0x2E: Data
-    - […] 0x3F: CorAutoNum
-    - […] 0x26: Commit
 - [ ] Maintain:
   + [ ] 3..4 CLI args
   + [ ] CLI (`-p[ort]`, `-f`, `--dry-run`[, `-v`])

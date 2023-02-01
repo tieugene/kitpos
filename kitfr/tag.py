@@ -166,7 +166,7 @@ def tag_dict_pack(td: TagDict) -> bytes:
     """Pack TagDict into bytes."""
     retvalue: bytes = b''
     for k, v in td.items():
-        print(k, v)
+        # print(k, v)
         f = TAG2FUNC[k][1]
         out_bytes = f(v)
         retvalue += util.ui2b2(k.value)
