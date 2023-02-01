@@ -4,7 +4,7 @@
 """
 # 1. std
 import datetime
-from typing import Optional, Dict
+from typing import Optional
 # 3. local
 from kitfr import const, util, tag
 
@@ -150,25 +150,7 @@ class CmdCorrReceiptData(_CmdBase):
     Response: RspOK
     """
     cmd_id = const.IEnumCmd.CorrReceiptData
-    t_1021: str
-    t_1203: str
-    t_1173: bool
-    t_1055: bytes  # IntEnum
-    t_1031: int
-    t_1081: int
-    t_1215: int
-    t_1216: int
-    t_1217: int
-    t_1102: int
-    t_1103: int
-    t_1104: int
-    t_1105: int
-    t_1106: int
-    t_1107: int
-    # _v_ t_1074 _v_
-    t_1177: str
-    t_1178: datetime.datetime
-    t_1179: str
+    payload: tag.TagDict
 
     def __init__(self, payload: tag.TagDict):
         super().__init__()

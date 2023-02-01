@@ -1,8 +1,8 @@
 """Tags things."""
-import datetime
 # 1. std
-from typing import Dict, Any, Tuple, Set
+from typing import Dict, Any, Tuple
 import sys
+import datetime
 # 3. local
 from kitfr import const, flag, util
 
@@ -23,7 +23,7 @@ TAG2FUNC = {  # Tag: (json_2_value, value_2_bytes (pack), bytes_2_value (unpack)
         lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1023: (
         lambda v: v,
-        None,
+        lambda v: util.n2fvln(v),
         lambda v: util.fvln2n(v)),  # FVLN; 0x2B
     const.IEnumTag.Tag_1030: (
         lambda v: v[:128].strip(),
@@ -46,12 +46,12 @@ TAG2FUNC = {  # Tag: (json_2_value, value_2_bytes (pack), bytes_2_value (unpack)
         lambda v: util.s2b(v[:128]),
         lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1055: (
-        lambda v: flag.TaxModes(util.b2ui(v)),
+        lambda v: flag.TaxModes(v),  # byte[1] == int
         lambda v: v.b(),
-        lambda v: flag.TaxModes(util.b2ui(v))),
+        lambda v: flag.TaxModes(util.b2ui(v))),  # 0x2D, 0x2E; TODO: .bit_count() == 1
     const.IEnumTag.Tag_1059: (
-        None,
-        None,
+        lambda v: json2tagdict(v),
+        lambda v: tag_dict_pack(v),
         lambda v: tag_list_unpack(v)),  # STLV; recur
     const.IEnumTag.Tag_1079: (
         lambda v: v,
@@ -94,8 +94,8 @@ TAG2FUNC = {  # Tag: (json_2_value, value_2_bytes (pack), bytes_2_value (unpack)
         lambda v: util.l2b(v),
         lambda v: util.b2l(v)),
     const.IEnumTag.Tag_1174: (
-        None,
-        None,
+        lambda v: json2tagdict(v),
+        lambda v: tag_dict_pack(v),
         lambda v: tag_list_unpack(v)),  # STLV; recur
     const.IEnumTag.Tag_1177: (
         lambda v: v[:255].strip(),
@@ -149,19 +149,29 @@ TAG2FUNC = {  # Tag: (json_2_value, value_2_bytes (pack), bytes_2_value (unpack)
 }
 
 
-def json2tagdict(data: dict, required: Set[int]) -> TagDict:
-    """Convert raw json data into TagDict.
-    :todo: check wanted
-    """
+def json2tagdict(data: dict) -> TagDict:
+    """Convert raw json data into TagDict."""
     retvalue = {}
-    for k, val in data.items():  # or: select keys by required iteration
+    for k, v in data.items():  # or: select keys by required iteration
         ik = int(k)              # - check #1: tag is int
-        if ik not in required:   # - check #2: tag is in required
-            raise RuntimeError(f"Tag {ik} is excess.")
-        t = const.IEnumTag(ik)
+        t = const.IEnumTag(ik)  # TODO: exception if not in
         f = TAG2FUNC[t][0]
-        real_val = f(val)
+        # print(t, v)
+        real_val = f(v)
         retvalue[t] = real_val
+    return retvalue
+
+
+def tag_dict_pack(td: TagDict) -> bytes:
+    """Pack TagDict into bytes."""
+    retvalue: bytes = b''
+    for k, v in td.items():
+        print(k, v)
+        f = TAG2FUNC[k][1]
+        out_bytes = f(v)
+        retvalue += util.ui2b2(k.value)
+        retvalue += util.ui2b2(len(out_bytes))
+        retvalue += out_bytes
     return retvalue
 
 
@@ -185,16 +195,4 @@ def tag_list_unpack(tl: bytes) -> TagDict:
                 print(f"Tag {t} not processed ({util.b2hex(t_data)}).", file=sys.stderr)
                 continue
             retvalue[t] = TAG2FUNC[t][1](t_data)
-    return retvalue
-
-
-def tag_dict_pack(td: TagDict) -> bytes:
-    """Pack TagDict into bytes."""
-    retvalue: bytes = b''
-    for k, v in td.items():
-        f = TAG2FUNC[k][1]
-        out_bytes = f(v)
-        retvalue += util.ui2b2(k.value)
-        retvalue += util.ui2b2(len(out_bytes))
-        retvalue += out_bytes
     return retvalue

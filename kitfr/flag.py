@@ -1,6 +1,7 @@
 """Flags."""
+# 1. std
 import enum
-
+# 3. local
 from kitfr import const
 
 x_table = str.maketrans({'0': '.', '1': '+'})

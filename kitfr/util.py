@@ -1,10 +1,9 @@
 """Utility things."""
-import math
 # 1. std
 from typing import Union, Tuple
 import struct
 import datetime
-from decimal import Decimal
+import math
 # 2. 3rd
 import crcmod  # or crcelk
 # 3. local
@@ -45,7 +44,10 @@ def ui2b4(v: int) -> bytes:
 
 def ui2vln(v: int) -> bytes:
     """Convert uintX into minimal bytes (LE)."""
-    return _ui2b(v, math.ceil(math.log2(v)/8))  # TODO: use int.bit_count(), int.to_bytes()
+    if v:
+        return _ui2b(v, math.ceil(v.bit_length()/8))
+    else:
+        return b'\0'
 
 
 def n2fvln(v: Union[int, float]) -> bytes:
@@ -53,8 +55,9 @@ def n2fvln(v: Union[int, float]) -> bytes:
     if isinstance(v, int):
         return b'\0' + ui2vln(v)
     else:  # float
-        pos = ...  # point position from right
-        return b'\0'
+        s = str(v)
+        rpos = len(s) - s.index('.') - 1  # point position from right
+        return ui2b1(rpos) + ui2vln(round(v * pow(10, rpos)))
 
 
 def dt2b5(v: datetime.datetime) -> bytes:

@@ -2,17 +2,21 @@
 
 - [ ] Extend cmd #3 (10):
   + [x] 0x3A: GetDocData:
-  + [ ] CorrReceipt (4):
-    - [t] 0x25: Begin
-    - [ ] 0x2E: Data
-    - [t] 0x3F: CorAutoNum
-    - [t] 0x26: Commit
+  + […] CorrReceipt (4):
+    - […] 0x25: Begin
+    - […] 0x2E: Data
+    - […] 0x3F: CorAutoNum
+    - […] 0x26: Commit
   + [ ] Receipt (5):
     - [ ] 0x23: Begin
     - [ ] 0x2B: Position
     - [ ] 0x2D: Payment
     - [ ] 0x1F: AutoNum
     - [ ] 0x24: Commit
+- [ ] Maintain:
+  + [ ] 3..4 CLI args
+  + [ ] CLI (port, `-f`)
+  + [ ] Load data from `file.json`
 - [ ] Sequences:
   - [ ] SessionOpen
   - [ ] SessionClose

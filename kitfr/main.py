@@ -118,23 +118,29 @@ def __cmd_25(_) -> cmd.CmdCorrReceiptBegin:
 
 def __cmd_2e(v: List[str]) -> cmd.CmdCorrReceiptData:
     """0x2E: Corr. Receipt. Step #2 - send data."""
-    __tags = [1021, 1203, 1173, 1055, 1031, 1081, 1215, 1216, 1217, 1102, 1103, 1104, 1105, 1106, 1107, 1074]
+    __tags = [1021, 1203, 1173, 1055, 1031, 1081, 1215, 1216, 1217, 1102, 1103, 1104, 1105, 1106, 1107, 1174]
     if v:
-        return cmd.CmdCorrReceiptData(json.loads(v[0]))
+        raw = json.loads(v[0])
+        for t in __tags:   # - check: all required tags
+            if str(t) not in raw:
+                raise RuntimeError(f"Tag {t} not found.")
+        # 2. convert raw dict into TagDict
+        td = tag.json2tagdict(raw)
+        return cmd.CmdCorrReceiptData(td)
     print("data required ('<json>').")
 
 
 def __cmd_3f(v: List[str]) -> cmd.CmdCorrReceiptAutomat:
     """0x3F: Corr. Receipt. Step #3 - send automat number."""
     __tags = [1009, 1187, 1036]
-    __tags_set = set(__tags)
     if v:
         # 0. load json
         raw = json.loads(v[0])
-        if len(raw) != len(__tags):  # - check #1: tags number; TODO: rm
-            raise RuntimeError(f"Too few tags: {len(raw)} != {len(__tags)} required.")
+        for t in __tags:   # - check: all required tags
+            if str(t) not in raw:
+                raise RuntimeError(f"Tag {t} not found.")
         # 2. convert raw dict into TagDict
-        td = tag.json2tagdict(raw, __tags_set)
+        td = tag.json2tagdict(raw)
         # 3. go
         return cmd.CmdCorrReceiptAutomat(td)
     print("data required ('<json>').")
@@ -188,8 +194,8 @@ def main():
         return
     bytes_o = cmd_object.to_bytes()  # 1. make command...
     frame_o = util.bytes2frame(bytes_o)  # ..., frame it
-    print(frame_o.hex().upper())
-    return
+    # print(frame_o.hex().upper())
+    # return
     frame_i = net.txrx(sys.argv[1], int(sys.argv[2]), frame_o, conn_timeout=30, txrx_timeout=0.1)    # 2. txrx
     # 3. dispatch response
     # - unwrap frame
