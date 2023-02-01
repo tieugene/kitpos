@@ -154,6 +154,7 @@ class CmdCorrReceiptData(_CmdBase):
 
     def __init__(self, payload: tag.TagDict):
         super().__init__()
+        # TODO: chk 1031+1081+1215+1216+1217 == sum(1102..1107)
         self.payload = payload
 
     def to_bytes(self) -> bytes:

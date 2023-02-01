@@ -116,10 +116,11 @@ class IEnumFSphase(_IEnumPrintable):
     Used:
     - ...
     """
+    Fail = 0   # Impossible, but...
     Ready = 1  # Ready for fiscalization
-    Fisc = 3  # Fiscalization mode
-    Post = 7  # Post-fiscal mode (sending FD to OFD)
-    Arch = 5  # Reading data from archive
+    Fisc = 3   # Fiscalization mode
+    Post = 7   # Post-fiscal mode (sending FD to OFD)
+    Arch = 5   # Reading data from archive
 
 
 @enum.unique

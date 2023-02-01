@@ -1,36 +1,37 @@
 # TODO
 
-- [ ] Extend cmd #3 (10):
+- […] Extend cmd #3 (5):
   + [x] 0x3A: GetDocData:
   + […] CorrReceipt (4):
     - […] 0x25: Begin
     - […] 0x2E: Data
     - […] 0x3F: CorAutoNum
     - […] 0x26: Commit
+- [ ] Maintain:
+  + [ ] 3..4 CLI args
+  + [ ] CLI (`-p[ort]`, `-f`, `--dry-run`[, `-v`])
+  + [ ] Load data from `file.json`
+- [ ] Extend cmd #4 (5):
   + [ ] Receipt (5):
     - [ ] 0x23: Begin
     - [ ] 0x2B: Position
     - [ ] 0x2D: Payment
     - [ ] 0x1F: AutoNum
     - [ ] 0x24: Commit
-- [ ] Maintain:
-  + [ ] 3..4 CLI args
-  + [ ] CLI (port, `-f`)
-  + [ ] Load data from `file.json`
 - [ ] Sequences:
   - [ ] SessionOpen
   - [ ] SessionClose
   - [ ] Receipt
   - [ ] CorReceipt
-- [ ] Extend cmd #4 (FS (7)):
+- [ ] Extend cmd #5 (8):
   + [ ] 0x40: ResetMLM
   + [ ] FSClose (3):
-  + [ ] *Re*Register (3):
+  + [ ] *Re*Register (4):
     - [ ] 0x3B: ReadRegDoc
     - [ ] 0x12: RegisterStart
     - [ ] 0x16: RegisterData
     - [ ] 0x13: RegisterFlush
-- [ ] Extend cmd #5 (GetDocByNum #2):
+- [ ] Extend cmd #6 (GetDocByNum #2):
   - [ ]  6: FSCloseRpt (5.6?)
   - [ ] 21: SattleRpt (5.7)
   - [ ]  4: BSO

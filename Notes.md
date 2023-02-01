@@ -89,5 +89,15 @@ CorrReceiptAutomat:
 
 CorrReceiptCommit:
 ```json
-{"type":1,"total":123}
+{"type":1,"total":5100}
 ```
+
+### Live:
+- SessionOpenBegin
+- SessionOpenCommit
+- CorrReceiptBegin
+- CorrReceiptData '...'
+- CorrReceiptAutomat '...'
+- CorrReceiptCommit '...'
+- SessionCloseBegin
+- SessionCloseCommit
