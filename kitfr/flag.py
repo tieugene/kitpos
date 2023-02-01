@@ -1,6 +1,7 @@
 """Flags."""
+# 1. std
 import enum
-
+# 3. local
 from kitfr import const
 
 x_table = str.maketrans({'0': '.', '1': '+'})
@@ -20,6 +21,10 @@ class _Flags:
     def is_set(self, f: enum.IntFlag) -> bool:
         """Check the flag is set."""
         return bool(f & self._v)
+
+    def b(self) -> bytes:
+        """Get value as byte."""
+        return self._v.to_bytes(1, 'little')
 
     def __str__(self) -> str:
         return f"{bin(self._v)[2:].zfill(8).translate(x_table)} ({self._v:02X}h)"

@@ -3,12 +3,12 @@
 :todo: dataclass(frozen=True)
 """
 # 1. std
-from typing import Tuple, Any
+from typing import Tuple, Any, Dict
 from dataclasses import dataclass
 import struct
 import datetime
 # 3. local
-from kitfr import const, exc, util, flag
+from kitfr import const, flag, exc, util, tag
 
 
 def _dt2str(dt: datetime.datetime) -> str:
@@ -331,7 +331,7 @@ ADOC_CLASS = {
 
 
 @dataclass
-class RspGetDocByNum(RspBase):
+class RspGetDocInfo(RspBase):
     """FD (0x30)."""
     doc_type: const.IEnumADocType
     ofd: bool  # TODO: chk 0/1
@@ -346,11 +346,22 @@ class RspGetDocByNum(RspBase):
         doc_type = const.IEnumADocType(data[0])  # ValueSomething exception if unknown
         if (doc_class := ADOC_CLASS.get(doc_type)) is None:
             raise exc.KitFRRspDecodeError(
-                f"{cls.__name__}: Doc type={doc_type} unprocessable yet ({util.b2h(data[1:])})."
+                f"{cls.__name__}: Doc type={doc_type} unprocessable yet ({util.b2hex(data[1:])})."
             )
         doc = doc_class.from_bytes(data[2:])
         # 2. init self
         return cls(doc_type=doc_type, ofd=bool(data[1]), doc=doc)
+
+
+@dataclass
+class RspGetDocData(RspBase):
+    """Something."""
+    tags: Dict[const.IEnumTag, Any]
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        return cls(tags=tag.tag_list_unpack(data))
 
 
 @dataclass
@@ -389,9 +400,22 @@ class RspGetDateTime(RspBase):
         )
 
 
-class __RspGetSomething(_RspStub):
-    """Something."""
-    ...  # N
+@dataclass
+class RspCorrReceiptCommit(RspBase):
+    """Commit Corr. Receipt (0x26)."""
+    doc_num: int  # (16) doc number in session
+    fd_num: int  # (32) fiscal doc no
+    fp: int  # (32)
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        v = _data_decode(data, '<HII', cls)
+        return cls(
+            doc_num=v[0],
+            fd_num=v[1],
+            fp=v[2]
+        )
 
 
 # ----
@@ -406,10 +430,15 @@ _CODE2CLASS = {
     const.IEnumCmd.SessionOpenCommit: RspSessionOpenCommit,
     const.IEnumCmd.SessionCloseBegin: RspOK,
     const.IEnumCmd.SessionCloseCommit: RspSessionCloseCommit,
-    const.IEnumCmd.GetDocByNum: RspGetDocByNum,
+    const.IEnumCmd.GetDocInfo: RspGetDocInfo,
+    const.IEnumCmd.GetDocData: RspGetDocData,
     const.IEnumCmd.GetOFDXchgStatus: RspGetOFDXchgStatus,
     const.IEnumCmd.SetDateTime: RspOK,
     const.IEnumCmd.GetDateTime: RspGetDateTime,
+    const.IEnumCmd.CorrReceiptBegin: RspOK,
+    const.IEnumCmd.CorrReceiptData: RspOK,
+    const.IEnumCmd.CorrReceiptAutomat: RspOK,
+    const.IEnumCmd.CorrReceiptCommit: RspCorrReceiptCommit,
 }
 
 
@@ -417,4 +446,4 @@ def bytes2rsp(cmd_code: const.IEnumCmd, data: bytes) -> RspBase:
     """Decode inbound bytes into RspX object."""
     if (rsp := _CODE2CLASS.get(cmd_code)) is not None:
         return rsp.from_bytes(data)
-    raise exc.KitFRRspDecodeError(f"Unknown response object (cmd {cmd_code}): {util.b2h(data)}")
+    raise exc.KitFRRspDecodeError(f"Unknown response object (cmd {cmd_code}): {util.b2hex(data)}")

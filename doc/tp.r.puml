@@ -20,10 +20,14 @@ if (rsp.result?) then (err)
 	stop
 endif
 :TLVPostion = 0
-TLV += Position(item)
-testData = TLV.Take(TLVPostion)
-rsp = Cmd.ReceiptPosition(testData, item.id);
-note right: Услуга\nпассажирские\nперевозки
+TLV += (1059, (
+    (1030, "Услуга пассажирские перевозки"),
+    (1079, item.Price),
+    (1023, 1),
+    (1199, "\1\0\item.Vat"),
+    (1214, "\1\0\4"),
+    (1212, "\1\0\4")));
+:rsp = Cmd.ReceiptPosition(TLV.Take(TLVPostion), item.id);
 if (rsp.result?) then (err)
 	:return ResultItem(
 		Code = rsp.err_core,
@@ -47,21 +51,15 @@ if (item.PaymentType in {1, 2}) then (no)
 	stop
 endif
 :TLVPosition = 0
-b = TLV.Take(27)
 TLV += (1055: item.Tax)
 TLV += (1031: cash)
 TLV += (1081: cashless);
-note right: wtf '27'?
 if (item.Status == 5) then (ok)
-	:TLV += (1192: item.fiscalSign)
-	b = TLV.Take(27);
+	:TLV += (1192: item.fiscalSign);
 endif
 :TLV += (1215, 0)
-b = TLV.Take(27)
 TLV += (1216, 0)
-b = TLV.Take(27)
-TLV += (1217, 0)
-b = TLV.Take(27);
+TLV += (1217, 0);
 :rsp = Cmd.SendPaymentData(TLV.Take(TLVPosition), item.Id);
 if (rsp.result?) then (err)
 	:return ResultItem(

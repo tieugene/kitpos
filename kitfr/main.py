@@ -3,15 +3,17 @@
 
 :todo: Call commands w/ separate functions.
 """
+import json
 # 1. std
 from typing import List
 import sys
 import os
 import datetime
 # 3. local
-from kitfr import cmd, net, rsp, util, errs
+from kitfr import cmd, net, rsp, util, errs, const, tag
+
 # x. consts
-TIMEOUT = 3  # Too fast; can be 20+
+CONN_TIMEOUT = 3  # Too fast; can be 20+
 
 
 def __cmd_01(_) -> cmd.CmdGetDeviceStatus:
@@ -76,10 +78,17 @@ def __cmd_2a(_) -> cmd.CmdSessionCloseCommit:
     return cmd.CmdSessionCloseCommit()
 
 
-def __cmd_30(v: List[str]) -> cmd.CmdGetDocByNum:
+def __cmd_30(v: List[str]) -> cmd.CmdGetDocInfo:
     """Find document by its number <num>."""
     if v:
-        return cmd.CmdGetDocByNum(int(v[0]))
+        return cmd.CmdGetDocInfo(int(v[0]))
+    print("Doc number required.")
+
+
+def __cmd_3a(v: List[str]) -> cmd.CmdGetDocData:
+    """Get doc <num> content."""
+    if v:
+        return cmd.CmdGetDocData(int(v[0]))
     print("Doc number required.")
 
 
@@ -102,6 +111,54 @@ def __cmd_73(_) -> cmd.CmdGetDateTime:
     return cmd.CmdGetDateTime()
 
 
+def __cmd_25(_) -> cmd.CmdCorrReceiptBegin:
+    """0x25: Corr. Receipt. Step #1 - begin."""
+    return cmd.CmdCorrReceiptBegin()
+
+
+def __cmd_2e(v: List[str]) -> cmd.CmdCorrReceiptData:
+    """0x2E: Corr. Receipt. Step #2 - send data."""
+    __tags = [1021, 1203, 1173, 1055, 1031, 1081, 1215, 1216, 1217, 1102, 1103, 1104, 1105, 1106, 1107, 1174]
+    if v:
+        raw = json.loads(v[0])
+        for t in __tags:   # - check: all required tags
+            if str(t) not in raw:
+                raise RuntimeError(f"Tag {t} not found.")
+        # 2. convert raw dict into TagDict
+        td = tag.json2tagdict(raw)
+        return cmd.CmdCorrReceiptData(td)
+    print("data required ('<json>').")
+
+
+def __cmd_3f(v: List[str]) -> cmd.CmdCorrReceiptAutomat:
+    """0x3F: Corr. Receipt. Step #3 - send automat number."""
+    __tags = [1009, 1187, 1036]
+    if v:
+        # 0. load json
+        raw = json.loads(v[0])
+        for t in __tags:   # - check: all required tags
+            if str(t) not in raw:
+                raise RuntimeError(f"Tag {t} not found.")
+        # 2. convert raw dict into TagDict
+        td = tag.json2tagdict(raw)
+        # 3. go
+        return cmd.CmdCorrReceiptAutomat(td)
+    print("data required ('<json>').")
+
+
+def __cmd_26(v: List[str]) -> cmd.CmdCorrReceiptCommit:
+    """0x26: Corr. Receipt. Step #4 (last) - commit."""
+    if v:
+        # print(v[0])
+        raw = json.loads(v[0])
+        # TODO: chk value types
+        return cmd.CmdCorrReceiptCommit(
+            req_type=const.IEnumReceiptType(raw['type']),
+            total=raw['total']
+        )
+    print("data required ('<json>').")
+
+
 __COMMANDS = {
     'GetDeviceStatus': __cmd_01,
     'GetDeviceModel': __cmd_04,
@@ -113,10 +170,15 @@ __COMMANDS = {
     'SessionOpenCommit': __cmd_22,
     'SessionCloseBegin': __cmd_29,
     'SessionCloseCommit': __cmd_2a,
-    'GetDocByNum': __cmd_30,
+    'GetDocInfo': __cmd_30,
+    'GetDocData': __cmd_3a,
     'GetOFDXchgStatus': __cmd_50,
     'SetDateTime': __cmd_72,
     'GetDateTime': __cmd_73,
+    'CorrReceiptBegin': __cmd_25,
+    'CorrReceiptData': __cmd_2e,
+    'CorrReceiptAutomat': __cmd_3f,
+    'CorrReceiptCommit': __cmd_26,
 }
 
 
@@ -130,12 +192,11 @@ def main():
         return
     if (cmd_object := __COMMANDS[sys.argv[3]](sys.argv[4:])) is None:
         return
-    cmd_class = type(cmd_object)
     bytes_o = cmd_object.to_bytes()  # 1. make command...
     frame_o = util.bytes2frame(bytes_o)  # ..., frame it
     # print(frame_o.hex().upper())
     # return
-    frame_i = net.txrx(sys.argv[1], int(sys.argv[2]), frame_o, TIMEOUT)    # 2. txrx
+    frame_i = net.txrx(sys.argv[1], int(sys.argv[2]), frame_o, conn_timeout=30, txrx_timeout=0.1)    # 2. txrx
     # 3. dispatch response
     # - unwrap frame
     payload_i = util.frame2bytes(frame_i)
@@ -143,6 +204,7 @@ def main():
     ok, bytes_i = util.bytes_as_response(payload_i)
     # - dispatch last
     if ok:
+        cmd_class = type(cmd_object)
         rsp_object = rsp.bytes2rsp(cmd_class.cmd_id, bytes_i)
         print(rsp_object.str('\n'))
     else:
