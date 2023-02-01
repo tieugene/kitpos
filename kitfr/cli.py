@@ -1,6 +1,6 @@
 """CLI commands executors."""
 # 1. std
-from typing import List
+from typing import Optional
 import datetime
 import json
 # 3. local
@@ -37,13 +37,13 @@ def __cmd_20(_) -> cmd.CmdGetCurSession:
     return cmd.CmdGetCurSession()
 
 
-def __cmd_21(v: List[str]) -> cmd.CmdSessionOpenBegin:
+def __cmd_21(v: Optional[str]) -> cmd.CmdSessionOpenBegin:
     """Begin opening session [0 (default)|1 - skip prn]."""
     if v:
-        if v[0] not in {'0', '1'}:
+        if v not in {'0', '1'}:
             print("Skip printing must be '0' or '1'.")
         else:
-            return cmd.CmdSessionOpenBegin(v[0] == '1')
+            return cmd.CmdSessionOpenBegin(v == '1')
     else:
         return cmd.CmdSessionOpenBegin()
 
@@ -53,13 +53,13 @@ def __cmd_22(_) -> cmd.CmdSessionOpenCommit:
     return cmd.CmdSessionOpenCommit()
 
 
-def __cmd_29(v: List[str]) -> cmd.CmdSessionCloseBegin:
+def __cmd_29(v: Optional[str]) -> cmd.CmdSessionCloseBegin:
     """Begin closing session [0 (default)|1 - skip prn]."""
     if v:
-        if v[0] not in {'0', '1'}:
+        if v not in {'0', '1'}:
             print("Skip printing must be '0' or '1'.")
         else:
-            return cmd.CmdSessionCloseBegin(v[0] == '1')
+            return cmd.CmdSessionCloseBegin(v == '1')
     else:
         return cmd.CmdSessionCloseBegin()
 
@@ -69,17 +69,17 @@ def __cmd_2a(_) -> cmd.CmdSessionCloseCommit:
     return cmd.CmdSessionCloseCommit()
 
 
-def __cmd_30(v: List[str]) -> cmd.CmdGetDocInfo:
+def __cmd_30(v: Optional[str]) -> cmd.CmdGetDocInfo:
     """Find document by its number <num>."""
     if v:
-        return cmd.CmdGetDocInfo(int(v[0]))
+        return cmd.CmdGetDocInfo(int(v))
     print("Doc number required.")
 
 
-def __cmd_3a(v: List[str]) -> cmd.CmdGetDocData:
+def __cmd_3a(v: Optional[str]) -> cmd.CmdGetDocData:
     """Get doc <num> content."""
     if v:
-        return cmd.CmdGetDocData(int(v[0]))
+        return cmd.CmdGetDocData(int(v))
     print("Doc number required.")
 
 
@@ -88,11 +88,11 @@ def __cmd_50(_) -> cmd.CmdGetOFDXchgStatus:
     return cmd.CmdGetOFDXchgStatus()
 
 
-def __cmd_72(v: List[str]) -> cmd.CmdSetDateTime:
+def __cmd_72(v: Optional[str]) -> cmd.CmdSetDateTime:
     """Set POS date/time to <yymmddHHMM>."""
     # FIXME: convert v[0] into datitime
     if v:
-        dt = datetime.datetime.strptime(v[0], '%y%m%d%H%M')  # TODO: handle exception
+        dt = datetime.datetime.strptime(v, '%y%m%d%H%M')  # TODO: handle exception
         return cmd.CmdSetDateTime(dt)
     print("Date/time required (yymmddHHMM).")
 
@@ -103,15 +103,15 @@ def __cmd_73(_) -> cmd.CmdGetDateTime:
 
 
 def __cmd_25(_) -> cmd.CmdCorrReceiptBegin:
-    """0x25: Corr. Receipt. Step #1 - begin."""
+    """Corr. Receipt. Step #1/4 - begin."""
     return cmd.CmdCorrReceiptBegin()
 
 
-def __cmd_2e(v: List[str]) -> cmd.CmdCorrReceiptData:
-    """0x2E: Corr. Receipt. Step #2 - send data."""
+def __cmd_2e(v: Optional[str]) -> cmd.CmdCorrReceiptData:
+    """Corr. Receipt. Step #2/4 - send data as <'json'>."""
     __tags = [1021, 1203, 1173, 1055, 1031, 1081, 1215, 1216, 1217, 1102, 1103, 1104, 1105, 1106, 1107, 1174]
     if v:
-        raw = json.loads(v[0])
+        raw = json.loads(v)
         for t in __tags:   # - check: all required tags
             if str(t) not in raw:
                 raise RuntimeError(f"Tag {t} not found.")
@@ -121,12 +121,12 @@ def __cmd_2e(v: List[str]) -> cmd.CmdCorrReceiptData:
     print("data required ('<json>').")
 
 
-def __cmd_3f(v: List[str]) -> cmd.CmdCorrReceiptAutomat:
-    """0x3F: Corr. Receipt. Step #3 - send automat number."""
+def __cmd_3f(v: Optional[str]) -> cmd.CmdCorrReceiptAutomat:
+    """Corr. Receipt. Step #3/4 - send automat number as <'json'>."""
     __tags = [1009, 1187, 1036]
     if v:
         # 0. load json
-        raw = json.loads(v[0])
+        raw = json.loads(v)
         for t in __tags:   # - check: all required tags
             if str(t) not in raw:
                 raise RuntimeError(f"Tag {t} not found.")
@@ -137,11 +137,11 @@ def __cmd_3f(v: List[str]) -> cmd.CmdCorrReceiptAutomat:
     print("data required ('<json>').")
 
 
-def __cmd_26(v: List[str]) -> cmd.CmdCorrReceiptCommit:
-    """0x26: Corr. Receipt. Step #4 (last) - commit."""
+def __cmd_26(v: Optional[str]) -> cmd.CmdCorrReceiptCommit:
+    """Corr. Receipt. Step #4/4 - commit as <'json'>."""
     if v:
         # print(v[0])
-        raw = json.loads(v[0])
+        raw = json.loads(v)
         # TODO: chk value types
         return cmd.CmdCorrReceiptCommit(
             req_type=const.IEnumReceiptType(raw['type']),

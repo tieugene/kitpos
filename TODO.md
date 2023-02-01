@@ -1,9 +1,10 @@
 # TODO
 
 - [ ] Maintain:
-  + [ ] 3..4 CLI args
+  + [x] 3..4 CLI args (230201)
   + [ ] CLI (`-p[ort]`, `-f`, `--dry-run`[, `-v`])
   + [ ] Load data from `file.json`
+  + [ ] Logging(v)
 - [ ] Extend cmd #4 (5):
   + [ ] Receipt (5):
     - [ ] 0x23: Begin
