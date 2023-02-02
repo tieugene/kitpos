@@ -7,32 +7,32 @@ import json
 from kitfr import cmd, tag, const
 
 
-def __cmd_01(_) -> cmd.CmdGetDeviceStatus:
+def __cmd_01() -> cmd.CmdGetDeviceStatus:
     """Get POS status."""
     return cmd.CmdGetDeviceStatus()
 
 
-def __cmd_04(_) -> cmd.CmdGetDeviceModel:
+def __cmd_04() -> cmd.CmdGetDeviceModel:
     """Get POS model."""
     return cmd.CmdGetDeviceModel()
 
 
-def __cmd_08(_) -> cmd.CmdGetStorageStatus:
+def __cmd_08() -> cmd.CmdGetStorageStatus:
     """Get FS status."""
     return cmd.CmdGetStorageStatus()
 
 
-def __cmd_0a(_) -> cmd.CmdGetRegisterParms:
+def __cmd_0a() -> cmd.CmdGetRegisterParms:
     """Get POS/FS registering parameters."""
     return cmd.CmdGetRegisterParms()
 
 
-def __cmd_10(_) -> cmd.CmdDocCancel:
+def __cmd_10() -> cmd.CmdDocCancel:
     """Cancel current document."""
     return cmd.CmdDocCancel()
 
 
-def __cmd_20(_) -> cmd.CmdGetCurSession:
+def __cmd_20() -> cmd.CmdGetCurSession:
     """Get session params."""
     return cmd.CmdGetCurSession()
 
@@ -48,7 +48,7 @@ def __cmd_21(v: Optional[str]) -> cmd.CmdSessionOpenBegin:
         return cmd.CmdSessionOpenBegin()
 
 
-def __cmd_22(_) -> cmd.CmdSessionOpenCommit:
+def __cmd_22() -> cmd.CmdSessionOpenCommit:
     """Commit opening session."""
     return cmd.CmdSessionOpenCommit()
 
@@ -64,7 +64,7 @@ def __cmd_29(v: Optional[str]) -> cmd.CmdSessionCloseBegin:
         return cmd.CmdSessionCloseBegin()
 
 
-def __cmd_2a(_) -> cmd.CmdSessionCloseCommit:
+def __cmd_2a() -> cmd.CmdSessionCloseCommit:
     """Commit closing session."""
     return cmd.CmdSessionCloseCommit()
 
@@ -83,7 +83,7 @@ def __cmd_3a(v: Optional[str]) -> cmd.CmdGetDocData:
     print("Doc number required.")
 
 
-def __cmd_50(_) -> cmd.CmdGetOFDXchgStatus:
+def __cmd_50() -> cmd.CmdGetOFDXchgStatus:
     """Get OFD exchange status."""
     return cmd.CmdGetOFDXchgStatus()
 
@@ -97,12 +97,12 @@ def __cmd_72(v: Optional[str]) -> cmd.CmdSetDateTime:
     print("Date/time required (yymmddHHMM).")
 
 
-def __cmd_73(_) -> cmd.CmdGetDateTime:
+def __cmd_73() -> cmd.CmdGetDateTime:
     """Get POS date/time."""
     return cmd.CmdGetDateTime()
 
 
-def __cmd_25(_) -> cmd.CmdCorrReceiptBegin:
+def __cmd_25() -> cmd.CmdCorrReceiptBegin:
     """Corr. Receipt. Step #1/4 - begin."""
     return cmd.CmdCorrReceiptBegin()
 
