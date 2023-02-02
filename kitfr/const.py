@@ -174,7 +174,7 @@ class IEnumReRegReason(_IEnumPrintable):
 
 @enum.unique
 class IEnumReceiptType(_IEnumPrintable):
-    """Receipt type."""
+    """Receipt type (tag 1199)."""
     In = enum.auto()  # Incoming
     InRet = enum.auto()  # Incoming return
     Out = enum.auto()  # Outcome
@@ -183,7 +183,8 @@ class IEnumReceiptType(_IEnumPrintable):
 
 @enum.unique
 class IEnumVAT(_IEnumPrintable):
-    """VAT type."""
+    """VAT type.
+    """
     p_18 = enum.auto()
     p_10 = enum.auto()
     c_18 = enum.auto()

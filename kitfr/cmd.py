@@ -232,8 +232,29 @@ class CmdReceiptItem(_CmdBase):
 
     Response: RspOK
     """
-    __tags = ()
+    __1059_tags = (1030, 1079, 1023, 1199, 1214, 1212)
     cmd_id = const.IEnumCmd.ReceiptItem
+    payload: tag.TagDict
+
+    def __init__(self, payload: tag.TagDict):
+        super().__init__()
+        if not (len(payload) == 1 and 1059 in payload):
+            raise RuntimeError("The only '1059' tag required.")
+        # self.chk_tags(payload, self.__1059_tags)
+        self.payload = payload
+
+    def to_bytes(self) -> bytes:
+        """Serialize to bytes."""
+        return super().to_bytes() + tag.tag_dict_pack(self.payload)
+
+
+class CmdReceiptAutomat(_CmdBase):
+    """0x1F: Receipt. Step #4/6 - send automat number.
+
+    Response: RspOK
+    """
+    __tags = (1009, 1187, 1036)
+    cmd_id = const.IEnumCmd.ReceiptAutomat
     payload: tag.TagDict
 
     def __init__(self, payload: tag.TagDict):
@@ -247,37 +268,18 @@ class CmdReceiptItem(_CmdBase):
 
 
 class CmdReceiptPayment(_CmdBase):
-    """0x2D: Receipt. Step #4/6 - send payment details.
+    """0x2D: Receipt. Step #5/6 - send payment details.
 
     Response: RspOK
     """
-    __tags = (1055, 1031, 1081, 1215, 1216, 1217, 1021, 1203)
-    __opts = (1008,)  # ... 1228, 1227, 1192, 1085, 1086
+    __tags = (1055, 1031, 1081, 1215, 1216, 1217)
+    __opts = (1021, 1203, 1008, 1192)  # ... 1228, 1227, 1085, 1086
     cmd_id = const.IEnumCmd.ReceiptPayment
     payload: tag.TagDict
 
     def __init__(self, payload: tag.TagDict):
         super().__init__()
         self.chk_tags(payload, self.__tags, self.__opts)
-        self.payload = payload
-
-    def to_bytes(self) -> bytes:
-        """Serialize to bytes."""
-        return super().to_bytes() + tag.tag_dict_pack(self.payload)
-
-
-class CmdReceiptAutomat(_CmdBase):
-    """0x1F: Receipt. Step #5/6 - send automat number.
-
-    Response: RspOK
-    """
-    __tags = (1009, 1187, 1036)
-    cmd_id = const.IEnumCmd.ReceiptAutomat
-    payload: tag.TagDict
-
-    def __init__(self, payload: tag.TagDict):
-        super().__init__()
-        self.chk_tags(payload, self.__tags)
         self.payload = payload
 
     def to_bytes(self) -> bytes:

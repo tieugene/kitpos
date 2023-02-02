@@ -1,12 +1,12 @@
 # TODO
 
-- [ ] Extend cmd #4 (5):
-  + [ ] Receipt (5):
-    - [ ] 0x23: Begin
+- […] Extend cmd #4 (5):
+  + […] Receipt (5):
+    - […] 0x23: Begin
     - [ ] 0x2B: Position
-    - [ ] 0x2D: Payment
-    - [ ] 0x1F: AutoNum
-    - [ ] 0x24: Commit
+    - […] 0x2D: Payment
+    - […] 0x1F: AutoNum
+    - […] 0x24: Commit
 - [ ] Fixing (0.0.1):
   + [ ] Logging(v)
   + [ ] Async txrx

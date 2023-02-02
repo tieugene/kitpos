@@ -134,20 +134,17 @@ def __cmd_23() -> cmd.CmdReceiptBegin:
 
 def __cmd_2b(v: Dict) -> cmd.CmdReceiptItem:
     """Receipt. Step #2/6 - send receipt item."""
-    # TODO: __tags, check
     return cmd.CmdReceiptItem(tag.json2tagdict(v))
 
 
-def __cmd_2d(v: Dict) -> cmd.CmdReceiptPayment:
-    """Receipt. Step #3/6 - send receipt payment details."""
-    # TODO: __tags, check
-    return cmd.CmdReceiptPayment(tag.json2tagdict(v))
-
-
 def __cmd_1f(v: Dict) -> cmd.CmdReceiptAutomat:
-    """Receipt. Step #5/6 - send receipt automat details."""
-    # TODO: __tags, check
+    """Receipt. Step #4/6 - send receipt automat details."""
     return cmd.CmdReceiptAutomat(tag.json2tagdict(v))
+
+
+def __cmd_2d(v: Dict) -> cmd.CmdReceiptPayment:
+    """Receipt. Step #5/6 - send receipt payment details."""
+    return cmd.CmdReceiptPayment(tag.json2tagdict(v))
 
 
 def __cmd_24(v: Dict) -> cmd.CmdReceiptCommit:
@@ -182,7 +179,7 @@ COMMANDS = {  # TODO: replace some functions w/ class directly
     'CorrReceiptCommit': (__cmd_26, JSON_ARG),
     'ReceiptBegin': __cmd_23,
     'ReceiptItem': (__cmd_2b, JSON_ARG),
-    'ReceiptPayment': (__cmd_2d, JSON_ARG),
     'ReceiptAutomat': (__cmd_1f, JSON_ARG),
+    'ReceiptPayment': (__cmd_2d, JSON_ARG),
     'ReceiptCommit': (__cmd_24, JSON_ARG)
 }

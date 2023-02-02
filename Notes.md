@@ -58,12 +58,25 @@
 - Q: What about full tag list?
 - A: N/a (`TerminalFAUtility.exe` not helps)
 
-### Live:
-- SessionOpenBegin 1
-- SessionOpenCommit
-- CorrReceiptBegin
-- CorrReceiptData &hellip;
-- CorrReceiptAutomat &hellip;
-- CorrReceiptCommit &hellip;
-- SessionCloseBegin 1
-- SessionCloseCommit
+## Live tests
+
+### CorrReceipt:
+1. SessionOpenBegin 1
+2. SessionOpenCommit
+3. CorrReceiptBegin
+4. CorrReceiptData &hellip;
+5. CorrReceiptAutomat &hellip;
+6. CorrReceiptCommit &hellip;
+7. SessionCloseBegin 1
+8. SessionCloseCommit
+
+### Receipt:
+1. SessionOpenBegin 1
+2. SessionOpenCommit
+3. ReceiptBegin
+4. ReceiptItem &hellip;
+5. ReceiptAutomat &hellip;
+6. ReceiptPayment &hellip;
+7. ReceiptCommit &hellip;
+8. SessionCloseBegin 1
+9. SessionCloseCommit
