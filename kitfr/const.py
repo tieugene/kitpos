@@ -18,29 +18,29 @@ class IEnumCmd(enum.IntEnum):
     GetDeviceStatus = 0x01            # ✓ [Info] Get status
     GetDeviceModel = 0x04             # ✓ [Info]
     GetStorageStatus = 0x08           # ✓ [Info]
-    GetRegisterParms = 0x0A           # ✓ [Info] not used
+    GetRegisterParms = 0x0A           # ✓ [Info] (not used in C#)
     DocCancel = 0x10                  # ✓ [RegFS]
-    ReceiptSendAutomatNum = 0x1F      # [Receipt]
+    ReceiptAutomat = 0x1F             # … [Receipt]
     GetCurSession = 0x20              # ✓ [Session]
     SessionOpenBegin = 0x21           # ✓ [Session]
     SessionOpenCommit = 0x22          # ✓ [Session]
-    ReceiptBegin = 0x23               # [Receipt]
-    ReceiptCommit = 0x24              # [Receipt]
-    CorrReceiptBegin = 0x25           # … [CorRcpt]
-    CorrReceiptCommit = 0x26          # … [CorRcpt]
+    ReceiptBegin = 0x23               # … [Receipt]
+    ReceiptCommit = 0x24              # … [Receipt]
+    CorrReceiptBegin = 0x25           # ✓ [CorRcpt]
+    CorrReceiptCommit = 0x26          # ✓ [CorRcpt]
     SessionCloseBegin = 0x29          # ✓ [Session]
     SessionCloseCommit = 0x2A         # ✓ [Session]
-    ReceiptSendPos = 0x2B             # [Receipt]
-    # ReceiptSendAgent = 0x2C         # [Receipt] not used
-    ReceiptSendPay = 0x2D             # [Receipt]
-    CorrReceiptData = 0x2E            # … [CorRcpt]
-    GetDocInfo = 0x30                 # … [Archive]
+    ReceiptItem = 0x2B                # … [Receipt]
+    # ReceiptSendAgent = 0x2C         # … [Receipt] (not used in C#)
+    ReceiptPayment = 0x2D             # … [Receipt]
+    CorrReceiptData = 0x2E            # ✓ [CorRcpt]
+    GetDocInfo = 0x30                 # ✓ [Archive]
     GetDocData = 0x3A                 # … [Info]
-    CorrReceiptAutomat = 0x3F         # … [CorRcpt]
+    CorrReceiptAutomat = 0x3F         # ✓ [CorRcpt]
     # ResetMGM = 0x40
     GetOFDXchgStatus = 0x50           # ✓ [Info]
     SetDateTime = 0x72                # ✓ [Settings]
-    GetDateTime = 0x73                # ✓ [Settings] not used
+    GetDateTime = 0x73                # ✓ [Settings] (not used in C#)
     Restart = 0xEF
 
 
@@ -55,9 +55,10 @@ TAGS_UNKNOWN = {  # not documented
 @enum.unique
 class IEnumTag(_IEnumPrintable):
     """Tags."""
+    Tag_1008 = 1008    # str[..64], Customer email
     Tag_1009 = 1009    # str[..164], POS address
     Tag_1017 = 1017    # ! str[12], OFD INN
-    Tag_1021 = 1021    # ! str[..64] Authorized person's FIO (reg, session)
+    Tag_1021 = 1021    # ! str[..64] Authorized person's FIO (reg, session, receipt)
     Tag_1023 = 1023    # FVLN, Subj number
     Tag_1030 = 1030    # str[..128], Subj name
     Tag_1031 = 1031    # ! VLN, Payment as cash (kop)
@@ -83,7 +84,7 @@ class IEnumTag(_IEnumPrintable):
     Tag_1187 = 1187    # str[..64], POS place
     Tag_1192 = 1192    # str[..16]
     Tag_1199 = 1199    # bytes[1], Subj VAT (1-6, addon 4)
-    Tag_1203 = 1203    # str[12] Authorized person's INN (reg, session)
+    Tag_1203 = 1203    # str[12] Authorized person's INN (reg, session, receipt)
     Tag_1212 = 1212    # bytes[1], optional (1-19, addon 4)
     Tag_1214 = 1214    # bytes[1] (1-7, addon 4)
     Tag_1215 = 1215    # ! VLN, PrePayment (kop)
@@ -173,7 +174,7 @@ class IEnumReRegReason(_IEnumPrintable):
 
 @enum.unique
 class IEnumReceiptType(_IEnumPrintable):
-    """Receipt type."""
+    """Receipt type (tag 1199)."""
     In = enum.auto()  # Incoming
     InRet = enum.auto()  # Incoming return
     Out = enum.auto()  # Outcome
@@ -182,7 +183,8 @@ class IEnumReceiptType(_IEnumPrintable):
 
 @enum.unique
 class IEnumVAT(_IEnumPrintable):
-    """VAT type."""
+    """VAT type.
+    """
     p_18 = enum.auto()
     p_10 = enum.auto()
     c_18 = enum.auto()

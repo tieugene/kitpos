@@ -110,25 +110,12 @@ def __cmd_25() -> cmd.CmdCorrReceiptBegin:
 
 def __cmd_2e(v: Dict) -> cmd.CmdCorrReceiptData:
     """Corr. Receipt. Step #2/4 - send data."""
-    __tags = [1021, 1203, 1173, 1055, 1031, 1081, 1215, 1216, 1217, 1102, 1103, 1104, 1105, 1106, 1107, 1174]
-    for t in __tags:   # - check: all required tags; TODO: mv 2 CmdCorrReceiptData.__init__
-        if str(t) not in v:
-            raise RuntimeError(f"Tag {t} not found.")
-    # 2. convert raw dict into TagDict
-    td = tag.json2tagdict(v)
-    return cmd.CmdCorrReceiptData(td)
+    return cmd.CmdCorrReceiptData(tag.json2tagdict(v))
 
 
 def __cmd_3f(v: Dict) -> cmd.CmdCorrReceiptAutomat:
-    """Corr. Receipt. Step #3/4 - send automat number."""
-    __tags = [1009, 1187, 1036]
-    for t in __tags:   # - check: all required tags
-        if str(t) not in v:
-            raise RuntimeError(f"Tag {t} not found.")
-    # 2. convert raw dict into TagDict
-    td = tag.json2tagdict(v)
-    # 3. go
-    return cmd.CmdCorrReceiptAutomat(td)
+    """Corr. Receipt. Step #3/4 - send automat number (option)."""
+    return cmd.CmdCorrReceiptAutomat(tag.json2tagdict(v))
 
 
 def __cmd_26(v: Dict) -> cmd.CmdCorrReceiptCommit:
@@ -140,7 +127,37 @@ def __cmd_26(v: Dict) -> cmd.CmdCorrReceiptCommit:
     )
 
 
-COMMANDS = {
+def __cmd_23() -> cmd.CmdReceiptBegin:
+    """Receipt. Step #1/6 - begin."""
+    return cmd.CmdReceiptBegin()
+
+
+def __cmd_2b(v: Dict) -> cmd.CmdReceiptItem:
+    """Receipt. Step #2/6 - send receipt item."""
+    return cmd.CmdReceiptItem(tag.json2tagdict(v))
+
+
+def __cmd_1f(v: Dict) -> cmd.CmdReceiptAutomat:
+    """Receipt. Step #4/6 - send receipt automat details."""
+    return cmd.CmdReceiptAutomat(tag.json2tagdict(v))
+
+
+def __cmd_2d(v: Dict) -> cmd.CmdReceiptPayment:
+    """Receipt. Step #5/6 - send receipt payment details."""
+    return cmd.CmdReceiptPayment(tag.json2tagdict(v))
+
+
+def __cmd_24(v: Dict) -> cmd.CmdReceiptCommit:
+    """Receipt. Step #6/6 - commit."""
+    # TODO: chk value types
+    return cmd.CmdReceiptCommit(
+        req_type=const.IEnumReceiptType(v['type']),
+        total=v['total'],
+        notes=v.get('notes')
+    )
+
+
+COMMANDS = {  # TODO: replace some functions w/ class directly
     'GetDeviceStatus': __cmd_01,
     'GetDeviceModel': __cmd_04,
     'GetStorageStatus': __cmd_08,
@@ -159,5 +176,10 @@ COMMANDS = {
     'CorrReceiptBegin': __cmd_25,
     'CorrReceiptData': (__cmd_2e, JSON_ARG),
     'CorrReceiptAutomat': (__cmd_3f, JSON_ARG),
-    'CorrReceiptCommit': (__cmd_26, JSON_ARG)
+    'CorrReceiptCommit': (__cmd_26, JSON_ARG),
+    'ReceiptBegin': __cmd_23,
+    'ReceiptItem': (__cmd_2b, JSON_ARG),
+    'ReceiptAutomat': (__cmd_1f, JSON_ARG),
+    'ReceiptPayment': (__cmd_2d, JSON_ARG),
+    'ReceiptCommit': (__cmd_24, JSON_ARG)
 }

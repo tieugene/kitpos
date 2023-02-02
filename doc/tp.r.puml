@@ -27,6 +27,7 @@ TLV += (1059, (
     (1199, "\1\0\item.Vat"),
     (1214, "\1\0\4"),
     (1212, "\1\0\4")));
+note right: 1214=\n1212=\n'l=1,v=4'
 :rsp = Cmd.ReceiptPosition(TLV.Take(TLVPostion), item.id);
 if (rsp.result?) then (err)
 	:return ResultItem(
@@ -36,7 +37,7 @@ if (rsp.result?) then (err)
 endif
 if (need_device) then (ok)
 	:rsp = Cmd.ReceiptSendAutoDevice(...);
-	note right: Hardcoded
+	note right: Hardcoded:\n1009='',\n1187='',\n1036='1'
 endif
 if (rsp.result?) then (err)
 	:return ResultItem(

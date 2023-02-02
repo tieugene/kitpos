@@ -403,9 +403,9 @@ class RspGetDateTime(RspBase):
 @dataclass
 class RspCorrReceiptCommit(RspBase):
     """Commit Corr. Receipt (0x26)."""
-    doc_num: int  # (16) doc number in session
-    fd_num: int  # (32) fiscal doc no
-    fp: int  # (32)
+    doc_num: int  # (2) doc number in session
+    fd_num: int  # (4) fiscal doc no
+    fp: int  # (4)
 
     @classmethod
     def from_bytes(cls, data: bytes):
@@ -415,6 +415,28 @@ class RspCorrReceiptCommit(RspBase):
             doc_num=v[0],
             fd_num=v[1],
             fp=v[2]
+        )
+
+
+@dataclass
+class RspReceiptCommit(RspBase):
+    """Commit Receipt (0x24)."""
+    doc_num: int  # (2) doc number in session
+    fd_num: int  # (4) fiscal doc no
+    fp: int  # (4)
+    datime: datetime.datetime  # (5) YMDHm
+    ses_no: int  # (2)
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        v = _data_decode(data, '<HIIBBBBBH', cls)
+        return cls(
+            doc_num=v[0],
+            fd_num=v[1],
+            fp=v[2],
+            datime=util.b2dt(v[3:8]),
+            ses_no=v[9]
         )
 
 
@@ -439,6 +461,11 @@ _CODE2CLASS = {
     const.IEnumCmd.CorrReceiptData: RspOK,
     const.IEnumCmd.CorrReceiptAutomat: RspOK,
     const.IEnumCmd.CorrReceiptCommit: RspCorrReceiptCommit,
+    const.IEnumCmd.ReceiptBegin: RspOK,
+    const.IEnumCmd.ReceiptItem: RspOK,
+    const.IEnumCmd.ReceiptPayment: RspOK,
+    const.IEnumCmd.ReceiptAutomat: RspOK,
+    const.IEnumCmd.ReceiptCommit: RspReceiptCommit,
 }
 
 

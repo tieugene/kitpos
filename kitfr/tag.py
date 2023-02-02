@@ -9,6 +9,10 @@ from kitfr import const, flag, util
 TagDict = Dict[const.IEnumTag, Any]
 
 TAG2FUNC = {  # Tag: (json_2_value, value_2_bytes (pack), bytes_2_value (unpack))
+    const.IEnumTag.Tag_1008: (
+        lambda v: v[:64].strip(),
+        lambda v: util.s2b(v[:64]),
+        lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1009: (
         lambda v: v[:164].strip(),
         lambda v: util.s2b(v[:164]),
@@ -48,7 +52,7 @@ TAG2FUNC = {  # Tag: (json_2_value, value_2_bytes (pack), bytes_2_value (unpack)
     const.IEnumTag.Tag_1055: (
         lambda v: flag.TaxModes(v),  # byte[1] == int
         lambda v: v.b(),
-        lambda v: flag.TaxModes(util.b2ui(v))),  # 0x2D, 0x2E; TODO: .bit_count() == 1
+        lambda v: flag.TaxModes(util.b2ui(v))),  # 0x2D, 0x2E; FIXME: .bit_count() == 1
     const.IEnumTag.Tag_1059: (
         lambda v: json2tagdict(v),
         lambda v: tag_dict_pack(v),
@@ -118,7 +122,7 @@ TAG2FUNC = {  # Tag: (json_2_value, value_2_bytes (pack), bytes_2_value (unpack)
         lambda v: util.s2b(v[:16]),
         lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1199: (
-        lambda v: const.IEnumVAT(util.b2ui(v)),
+        lambda v: const.IEnumVAT(v),
         lambda v: util.ui2b1(v.value),
         lambda v: const.IEnumVAT(util.b2ui(v))),
     const.IEnumTag.Tag_1203: (
@@ -127,12 +131,12 @@ TAG2FUNC = {  # Tag: (json_2_value, value_2_bytes (pack), bytes_2_value (unpack)
         lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1212: (
         lambda v: v,
-        lambda v: util.l2b(v),
-        lambda v: util.b2l(v)),  # TODO: enum
+        lambda v: util.ui2b1(v),
+        lambda v: util.b2ui(v)),  # TODO: enum
     const.IEnumTag.Tag_1214: (
         lambda v: v,
-        lambda v: util.l2b(v),
-        lambda v: util.b2l(v)),  # TODO: enum
+        lambda v: util.ui2b1(v),
+        lambda v: util.b2ui(v)),  # TODO: enum
     const.IEnumTag.Tag_1215: (
         lambda v: v,
         lambda v: util.ui2vln(v),
@@ -194,5 +198,5 @@ def tag_list_unpack(tl: bytes) -> TagDict:
             if t not in TAG2FUNC:
                 print(f"Tag {t} not processed ({util.b2hex(t_data)}).", file=sys.stderr)
                 continue
-            retvalue[t] = TAG2FUNC[t][1](t_data)
+            retvalue[t] = TAG2FUNC[t][2](t_data)
     return retvalue
