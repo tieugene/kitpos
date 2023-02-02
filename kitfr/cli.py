@@ -110,22 +110,12 @@ def __cmd_25() -> cmd.CmdCorrReceiptBegin:
 
 def __cmd_2e(v: Dict) -> cmd.CmdCorrReceiptData:
     """Corr. Receipt. Step #2/4 - send data."""
-    __tags = (1021, 1203, 1173, 1055, 1031, 1081, 1215, 1216, 1217, 1102, 1103, 1104, 1105, 1106, 1107, 1174)
-    for t in __tags:   # - check: all required tags; TODO: mv 2 CmdCorrReceiptData.__init__
-        if str(t) not in v:
-            raise RuntimeError(f"Tag {t} not found.")
-    td = tag.json2tagdict(v)
-    return cmd.CmdCorrReceiptData(td)
+    return cmd.CmdCorrReceiptData(tag.json2tagdict(v))
 
 
 def __cmd_3f(v: Dict) -> cmd.CmdCorrReceiptAutomat:
     """Corr. Receipt. Step #3/4 - send automat number (option)."""
-    __tags = (1009, 1187, 1036)
-    for t in __tags:   # - check: all required tags
-        if str(t) not in v:
-            raise RuntimeError(f"Tag {t} not found.")
-    td = tag.json2tagdict(v)
-    return cmd.CmdCorrReceiptAutomat(td)
+    return cmd.CmdCorrReceiptAutomat(tag.json2tagdict(v))
 
 
 def __cmd_26(v: Dict) -> cmd.CmdCorrReceiptCommit:

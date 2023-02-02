@@ -4,7 +4,7 @@
 """
 # 1. std
 import datetime
-from typing import Optional
+from typing import Optional, Iterable
 # 3. local
 from kitfr import const, util, tag
 
@@ -12,6 +12,13 @@ from kitfr import const, util, tag
 class _CmdBase:
     """Base for commands."""
     cmd_id: const.IEnumCmd
+
+    @staticmethod
+    def chk_tags(payload: tag.TagDict, tags: Iterable[int]):
+        """Check given payload on consistemcy."""
+        for t in tags:
+            if t not in payload:
+                raise RuntimeError(f"Required tag '{t}' not found in given data.")
 
     def to_bytes(self) -> bytes:
         """Serialize to bytes."""
@@ -149,11 +156,13 @@ class CmdCorrReceiptData(_CmdBase):
 
     Response: RspOK
     """
+    __tags = (1021, 1203, 1173, 1055, 1031, 1081, 1215, 1216, 1217, 1102, 1103, 1104, 1105, 1106, 1107, 1174)
     cmd_id = const.IEnumCmd.CorrReceiptData
     payload: tag.TagDict
 
     def __init__(self, payload: tag.TagDict):
         super().__init__()
+        self.chk_tags(payload, self.__tags)
         # TODO: chk 1031+1081+1215+1216+1217 == sum(1102..1107)
         self.payload = payload
 
@@ -167,11 +176,13 @@ class CmdCorrReceiptAutomat(_CmdBase):
 
     Response: RspOK
     """
+    __tags = (1009, 1187, 1036)
     cmd_id = const.IEnumCmd.CorrReceiptAutomat
     payload: tag.TagDict
 
     def __init__(self, payload: tag.TagDict):
         super().__init__()
+        self.chk_tags(payload, self.__tags)
         self.payload = payload
 
     def to_bytes(self) -> bytes:
@@ -198,6 +209,7 @@ class CmdCorrReceiptCommit(_CmdBase):
         return super().to_bytes() + util.ui2b1(self.req_type) + util.ui2vln(self.total)
 
 
+# noinspection DuplicatedCode
 class CmdReceiptBegin(_CmdBase):
     """0x23: Receipt. Step #1/6 - begin.
 
@@ -211,6 +223,7 @@ class CmdReceiptItem(_CmdBase):
 
     Response: RspOK
     """
+    __tags = ()
     cmd_id = const.IEnumCmd.ReceiptItem
     payload: tag.TagDict
 
