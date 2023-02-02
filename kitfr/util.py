@@ -22,30 +22,30 @@ def s2b(v: str) -> bytes:
     return v.encode('cp866')
 
 
-def _ui2b(v: int, w: int) -> bytes:
-    """Convert uint into w bytes."""
-    return v.to_bytes(w, 'little')
+def ui2b_n(v: int, n: int) -> bytes:
+    """Convert uint into n bytes."""
+    return v.to_bytes(n, 'little')
 
 
 def ui2b1(v: int) -> bytes:
     """Convert uint8 into byte."""
-    return _ui2b(v, 1)
+    return ui2b_n(v, 1)
 
 
 def ui2b2(v: int) -> bytes:
     """Convert uint16 into 2x bytes (LE)."""
-    return _ui2b(v, 2)
+    return ui2b_n(v, 2)
 
 
 def ui2b4(v: int) -> bytes:
     """Convert uint32 into 4x bytes (LE)."""
-    return _ui2b(v, 4)
+    return ui2b_n(v, 4)
 
 
 def ui2vln(v: int) -> bytes:
     """Convert uintX into minimal bytes (LE)."""
     if v:
-        return _ui2b(v, math.ceil(v.bit_length()/8))
+        return ui2b_n(v, math.ceil(v.bit_length() / 8))
     else:
         return b'\0'
 

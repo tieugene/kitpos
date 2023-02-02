@@ -14,11 +14,20 @@ class _CmdBase:
     cmd_id: const.IEnumCmd
 
     @staticmethod
-    def chk_tags(payload: tag.TagDict, tags: Iterable[int]):
-        """Check given payload on consistemcy."""
-        for t in tags:
+    def chk_tags(payload: tag.TagDict, tags_required: Iterable[int], tags_optional: Iterable[int] = ()):
+        """Check given payload on consistency.
+
+        :fixme: Add back check (extra tags)
+        """
+        # step #1: All required tags shipped
+        for t in tags_required:
             if t not in payload:
                 raise RuntimeError(f"Required tag '{t}' not found in given data.")
+        # step #2: No one shipped tag excess
+        __tag_set = set(tags_required).union(set(tags_optional))
+        for t in payload.keys():
+            if t.value not in __tag_set:
+                raise RuntimeError(f"Extra tag '{t.value}' in given data.")
 
     def to_bytes(self) -> bytes:
         """Serialize to bytes."""
@@ -229,6 +238,7 @@ class CmdReceiptItem(_CmdBase):
 
     def __init__(self, payload: tag.TagDict):
         super().__init__()
+        self.chk_tags(payload, self.__tags)
         self.payload = payload
 
     def to_bytes(self) -> bytes:
@@ -241,11 +251,13 @@ class CmdReceiptPayment(_CmdBase):
 
     Response: RspOK
     """
+    __tags = ()
     cmd_id = const.IEnumCmd.ReceiptPayment
     payload: tag.TagDict
 
     def __init__(self, payload: tag.TagDict):
         super().__init__()
+        self.chk_tags(payload, self.__tags)
         self.payload = payload
 
     def to_bytes(self) -> bytes:
@@ -258,11 +270,13 @@ class CmdReceiptAutomat(_CmdBase):
 
     Response: RspOK
     """
+    __tags = (1009, 1187, 1036)
     cmd_id = const.IEnumCmd.ReceiptAutomat
     payload: tag.TagDict
 
     def __init__(self, payload: tag.TagDict):
         super().__init__()
+        self.chk_tags(payload, self.__tags)
         self.payload = payload
 
     def to_bytes(self) -> bytes:
@@ -288,7 +302,7 @@ class CmdReceiptCommit(_CmdBase):
 
     def to_bytes(self) -> bytes:
         """Serialize to bytes."""
-        retvalue = super().to_bytes() + util.ui2b1(self.req_type) + util.ui2vln(self.total)  # FIXME: total is special
+        retvalue = super().to_bytes() + util.ui2b1(self.req_type) + util.ui2b_n(5, self.total)
         if self.notes:
             retvalue += util.s2b(self.notes)
         return retvalue
