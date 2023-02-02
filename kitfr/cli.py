@@ -112,7 +112,7 @@ def __cmd_2e(v: Optional[str]) -> cmd.CmdCorrReceiptData:
     __tags = [1021, 1203, 1173, 1055, 1031, 1081, 1215, 1216, 1217, 1102, 1103, 1104, 1105, 1106, 1107, 1174]
     if v:
         raw = json.loads(v)
-        for t in __tags:   # - check: all required tags
+        for t in __tags:   # - check: all required tags; TODO: mv 2 CmdCorrReceiptData.__init__
             if str(t) not in raw:
                 raise RuntimeError(f"Tag {t} not found.")
         # 2. convert raw dict into TagDict
@@ -150,7 +150,7 @@ def __cmd_26(v: Optional[str]) -> cmd.CmdCorrReceiptCommit:
     print("data required ('<json>').")
 
 
-COMMANDS = {
+COMMANDS = {  # FIXME: add arg required
     'GetDeviceStatus': __cmd_01,
     'GetDeviceModel': __cmd_04,
     'GetStorageStatus': __cmd_08,

@@ -5,6 +5,7 @@
   + [ ] CLI (`-p[ort]`, `-f`, `--dry-run`[, `-v`])
   + [ ] Load data from `file.json`
   + [ ] Logging(v)
+- [ ] Extend tags (use `TerminalFAUtility.exe`)
 - [ ] Extend cmd #4 (5):
   + [ ] Receipt (5):
     - [ ] 0x23: Begin
@@ -12,30 +13,34 @@
     - [ ] 0x2D: Payment
     - [ ] 0x1F: AutoNum
     - [ ] 0x24: Commit
+- [ ] Fixing (0.0.1):
+  + [ ] Async txrx
+  + [ ] Multitag
+  + [ ] Dox
+  + [ ] Exceptions
+  + [ ] Tests
+  + [ ] Lint, coverage
+  + [ ] Packaging (`requirements.txt`, `setup.{py,cfg}`, `kitfr.spec`, `?MANIFEST.in`, `?tox.*`)
 - [ ] Sequences:
-  - [ ] SessionOpen
-  - [ ] SessionClose
-  - [ ] Receipt
-  - [ ] CorReceipt
+  + [ ] SessionOpen
+  + [ ] SessionClose
+  + [ ] Receipt
+  + [ ] CorReceipt
 - [ ] Extend cmd #5 (8):
   + [ ] 0x40: ResetMLM
-  + [ ] FSClose (3):
+  + [ ] FSClose (3)
   + [ ] *Re*Register (4):
     - [ ] 0x3B: ReadRegDoc
     - [ ] 0x12: RegisterStart
     - [ ] 0x16: RegisterData
     - [ ] 0x13: RegisterFlush
 - [ ] Extend cmd #6 (GetDocByNum #2):
-  - [ ]  6: FSCloseRpt (5.6?)
-  - [ ] 21: SattleRpt (5.7)
-  - [ ]  4: BSO
-  - [ ] 41: CorBSO
-  - [ ]  7: OpConfirm
-- [ ] Multitag
-- [ ] Add tests: online tests (w/ live FRs)
-- [ ] Async txrx
-- [ ] Wrap all exceptions with `exc.KitX(e)`
-- [ ] Packaging (`requirements.txt`, `setup.{py,cfg}`, `kitfr.spec`, `?MANIFEST.in`, `?tox.*`)
+  + [ ]  6: FSCloseRpt (5.6?)
+  + [ ] 21: SattleRpt (5.7)
+  + [ ]  4: BSO
+  + [ ] 41: CorBSO
+  + [ ]  7: OpConfirm
+- [ ] Online tests (w/ live FRs)
 
 ## Maybe
 - [ ] FR: State diagramm
