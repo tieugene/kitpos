@@ -1,202 +1,66 @@
 #!/usr/bin/env python3
-"""Main CLI module.
-
-:todo: Call commands w/ separate functions.
-"""
-import json
+"""Main CLI module."""
 # 1. std
-from typing import List
+from typing import Optional
+from types import FunctionType
 import sys
-import os
-import datetime
+import json
+import argparse
 # 3. local
-from kitfr import cmd, net, rsp, util, errs, const, tag
-
+from kitfr import cli, net, rsp, util, errs
 # x. consts
-CONN_TIMEOUT = 3  # Too fast; can be 20+
+CONN_TIMEOUT = 3  # TODO: too fast; can be 20+
 
 
-def __cmd_01(_) -> cmd.CmdGetDeviceStatus:
-    """Get POS status."""
-    return cmd.CmdGetDeviceStatus()
+def __mk_args_parser() -> argparse.ArgumentParser:
+    """TODO: [RTFM](https://habr.com/ru/post/466999/)"""
+    def __mk_subhelp() -> str:
+        retvalue = 'command:'
+        for k, v in cli.COMMANDS.items():
+            if isinstance(v, tuple):
+                retvalue += f"\n  {k} {v[1]}: {v[0].__doc__}"
+            else:
+                retvalue += f"\n  {k}: {v.__doc__}"
+        return retvalue
+    parser = argparse.ArgumentParser(
+        prog="kitpos",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description="Tool to control Termanal-FA POS",
+        epilog=__mk_subhelp())
+    parser.add_argument('-p', '--port', type=int, default=7777, help="POS TCP/IP port (default 7777)")
+    parser.add_argument('--dry-run', action='store_true', help="Print cmd dump")
+    parser.add_argument('-f', '--file', action='store_true', help="Get json from file (default from arg)")
+    parser.add_argument('-v', '--verbose', action='store_true', help="Extended logging")
+    parser.add_argument('host', type=str, help="POS to connect")
+    parser.add_argument('cmd', metavar='cmd', choices=cli.COMMANDS.keys(), help="Command to execute")
+    parser.add_argument('arg', nargs='?', help="Argument of some commands")
+    return parser
 
 
-def __cmd_04(_) -> cmd.CmdGetDeviceModel:
-    """Get POS model."""
-    return cmd.CmdGetDeviceModel()
-
-
-def __cmd_08(_) -> cmd.CmdGetStorageStatus:
-    """Get FS status."""
-    return cmd.CmdGetStorageStatus()
-
-
-def __cmd_0a(_) -> cmd.CmdGetRegisterParms:
-    """Get POS/FS registering parameters."""
-    return cmd.CmdGetRegisterParms()
-
-
-def __cmd_10(_) -> cmd.CmdDocCancel:
-    """Cancel current document."""
-    return cmd.CmdDocCancel()
-
-
-def __cmd_20(_) -> cmd.CmdGetCurSession:
-    """Get session params."""
-    return cmd.CmdGetCurSession()
-
-
-def __cmd_21(v: List[str]) -> cmd.CmdSessionOpenBegin:
-    """Begin opening session [0 (default)|1 - skip prn]."""
-    if v:
-        if v[0] not in {'0', '1'}:
-            print("Skip printing must be '0' or '1'.")
-        else:
-            return cmd.CmdSessionOpenBegin(v[0] == '1')
-    else:
-        return cmd.CmdSessionOpenBegin()
-
-
-def __cmd_22(_) -> cmd.CmdSessionOpenCommit:
-    """Commit opening session."""
-    return cmd.CmdSessionOpenCommit()
-
-
-def __cmd_29(v: List[str]) -> cmd.CmdSessionCloseBegin:
-    """Begin closing session [0 (default)|1 - skip prn]."""
-    if v:
-        if v[0] not in {'0', '1'}:
-            print("Skip printing must be '0' or '1'.")
-        else:
-            return cmd.CmdSessionCloseBegin(v[0] == '1')
-    else:
-        return cmd.CmdSessionCloseBegin()
-
-
-def __cmd_2a(_) -> cmd.CmdSessionCloseCommit:
-    """Commit closing session."""
-    return cmd.CmdSessionCloseCommit()
-
-
-def __cmd_30(v: List[str]) -> cmd.CmdGetDocInfo:
-    """Find document by its number <num>."""
-    if v:
-        return cmd.CmdGetDocInfo(int(v[0]))
-    print("Doc number required.")
-
-
-def __cmd_3a(v: List[str]) -> cmd.CmdGetDocData:
-    """Get doc <num> content."""
-    if v:
-        return cmd.CmdGetDocData(int(v[0]))
-    print("Doc number required.")
-
-
-def __cmd_50(_) -> cmd.CmdGetOFDXchgStatus:
-    """Get OFD exchange status."""
-    return cmd.CmdGetOFDXchgStatus()
-
-
-def __cmd_72(v: List[str]) -> cmd.CmdSetDateTime:
-    """Set POS date/time to <yymmddHHMM>."""
-    # FIXME: convert v[0] into datitime
-    if v:
-        dt = datetime.datetime.strptime(v[0], '%y%m%d%H%M')  # TODO: handle exception
-        return cmd.CmdSetDateTime(dt)
-    print("Date/time required (yymmddHHMM).")
-
-
-def __cmd_73(_) -> cmd.CmdGetDateTime:
-    """Get POS date/time."""
-    return cmd.CmdGetDateTime()
-
-
-def __cmd_25(_) -> cmd.CmdCorrReceiptBegin:
-    """0x25: Corr. Receipt. Step #1 - begin."""
-    return cmd.CmdCorrReceiptBegin()
-
-
-def __cmd_2e(v: List[str]) -> cmd.CmdCorrReceiptData:
-    """0x2E: Corr. Receipt. Step #2 - send data."""
-    __tags = [1021, 1203, 1173, 1055, 1031, 1081, 1215, 1216, 1217, 1102, 1103, 1104, 1105, 1106, 1107, 1174]
-    if v:
-        raw = json.loads(v[0])
-        for t in __tags:   # - check: all required tags
-            if str(t) not in raw:
-                raise RuntimeError(f"Tag {t} not found.")
-        # 2. convert raw dict into TagDict
-        td = tag.json2tagdict(raw)
-        return cmd.CmdCorrReceiptData(td)
-    print("data required ('<json>').")
-
-
-def __cmd_3f(v: List[str]) -> cmd.CmdCorrReceiptAutomat:
-    """0x3F: Corr. Receipt. Step #3 - send automat number."""
-    __tags = [1009, 1187, 1036]
-    if v:
-        # 0. load json
-        raw = json.loads(v[0])
-        for t in __tags:   # - check: all required tags
-            if str(t) not in raw:
-                raise RuntimeError(f"Tag {t} not found.")
-        # 2. convert raw dict into TagDict
-        td = tag.json2tagdict(raw)
-        # 3. go
-        return cmd.CmdCorrReceiptAutomat(td)
-    print("data required ('<json>').")
-
-
-def __cmd_26(v: List[str]) -> cmd.CmdCorrReceiptCommit:
-    """0x26: Corr. Receipt. Step #4 (last) - commit."""
-    if v:
-        # print(v[0])
-        raw = json.loads(v[0])
-        # TODO: chk value types
-        return cmd.CmdCorrReceiptCommit(
-            req_type=const.IEnumReceiptType(raw['type']),
-            total=raw['total']
-        )
-    print("data required ('<json>').")
-
-
-__COMMANDS = {
-    'GetDeviceStatus': __cmd_01,
-    'GetDeviceModel': __cmd_04,
-    'GetStorageStatus': __cmd_08,
-    'GetRegisterParms': __cmd_0a,
-    'DocCancel': __cmd_10,
-    'GetCurSession': __cmd_20,
-    'SessionOpenBegin': __cmd_21,
-    'SessionOpenCommit': __cmd_22,
-    'SessionCloseBegin': __cmd_29,
-    'SessionCloseCommit': __cmd_2a,
-    'GetDocInfo': __cmd_30,
-    'GetDocData': __cmd_3a,
-    'GetOFDXchgStatus': __cmd_50,
-    'SetDateTime': __cmd_72,
-    'GetDateTime': __cmd_73,
-    'CorrReceiptBegin': __cmd_25,
-    'CorrReceiptData': __cmd_2e,
-    'CorrReceiptAutomat': __cmd_3f,
-    'CorrReceiptCommit': __cmd_26,
-}
-
-
-def main():
-    """CLI."""
-    if len(sys.argv) < 4 or sys.argv[3] not in __COMMANDS:
-        print(
-            f"Usage: python3 {os.path.basename(__file__)} <host> <port> <command> [arg]\n"
-            "Commands:\n\t" + "\n\t".join([f"{k}: {v.__doc__}" for k, v in __COMMANDS.items()])
-        )
-        return
-    if (cmd_object := __COMMANDS[sys.argv[3]](sys.argv[4:])) is None:
+def __do_it(host: str, port: int, cmd_name: str, arg: Optional[str], dry_run: bool, from_file: bool, verbose: bool):
+    __cmd_XX = cli.COMMANDS[cmd_name]
+    if isinstance(__cmd_XX, FunctionType):
+        cmd_object = __cmd_XX()
+    else:  # isinstance(__cmd_XX, tuple)
+        if __cmd_XX[1] == cli.JSON_ARG:
+            if arg is None:
+                print("JSON data required")
+                return
+            if from_file:
+                with open(arg, 'rt') as fp:
+                    arg = json.load(fp)
+            else:
+                arg = json.loads(arg)
+        cmd_object = __cmd_XX[0](arg)
+    if cmd_object is None:
         return
     bytes_o = cmd_object.to_bytes()  # 1. make command...
     frame_o = util.bytes2frame(bytes_o)  # ..., frame it
-    # print(frame_o.hex().upper())
-    # return
-    frame_i = net.txrx(sys.argv[1], int(sys.argv[2]), frame_o, conn_timeout=30, txrx_timeout=0.1)    # 2. txrx
+    if dry_run:
+        print(frame_o.hex().upper())
+        return
+    # 2. txrx
+    frame_i = net.txrx(host, port, frame_o, conn_timeout=CONN_TIMEOUT, txrx_timeout=0.1)
     # 3. dispatch response
     # - unwrap frame
     payload_i = util.frame2bytes(frame_i)
@@ -209,10 +73,12 @@ def main():
         print(rsp_object.str('\n'))
     else:
         print("Err: %02x '%s'" % (bytes_i, errs.ERR_TEXT['ru'].get(bytes_i, '<Unknown>.')))
-    # TODO: handle exceptions:
-    # - TimeoutError (no host for socket.create_connection())
-    # TODO: verbosity (e.g. `print(frame.hex().upper())`)
-    # TODO: dry_run
+
+
+def main():
+    """CLI entry point."""
+    args = __mk_args_parser().parse_args(sys.argv[1:])
+    __do_it(args.host, args.port, args.cmd, args.arg, args.dry_run, args.file, args.verbose)
 
 
 if __name__ == '__main__':
