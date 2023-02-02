@@ -9,6 +9,10 @@ from kitfr import const, flag, util
 TagDict = Dict[const.IEnumTag, Any]
 
 TAG2FUNC = {  # Tag: (json_2_value, value_2_bytes (pack), bytes_2_value (unpack))
+    const.IEnumTag.Tag_1008: (
+        lambda v: v[:64].strip(),
+        lambda v: util.s2b(v[:64]),
+        lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1009: (
         lambda v: v[:164].strip(),
         lambda v: util.s2b(v[:164]),

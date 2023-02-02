@@ -55,9 +55,10 @@ TAGS_UNKNOWN = {  # not documented
 @enum.unique
 class IEnumTag(_IEnumPrintable):
     """Tags."""
+    Tag_1008 = 1008    # str[..64], Customer email
     Tag_1009 = 1009    # str[..164], POS address
     Tag_1017 = 1017    # ! str[12], OFD INN
-    Tag_1021 = 1021    # ! str[..64] Authorized person's FIO (reg, session)
+    Tag_1021 = 1021    # ! str[..64] Authorized person's FIO (reg, session, receipt)
     Tag_1023 = 1023    # FVLN, Subj number
     Tag_1030 = 1030    # str[..128], Subj name
     Tag_1031 = 1031    # ! VLN, Payment as cash (kop)
@@ -83,7 +84,7 @@ class IEnumTag(_IEnumPrintable):
     Tag_1187 = 1187    # str[..64], POS place
     Tag_1192 = 1192    # str[..16]
     Tag_1199 = 1199    # bytes[1], Subj VAT (1-6, addon 4)
-    Tag_1203 = 1203    # str[12] Authorized person's INN (reg, session)
+    Tag_1203 = 1203    # str[12] Authorized person's INN (reg, session, receipt)
     Tag_1212 = 1212    # bytes[1], optional (1-19, addon 4)
     Tag_1214 = 1214    # bytes[1] (1-7, addon 4)
     Tag_1215 = 1215    # ! VLN, PrePayment (kop)

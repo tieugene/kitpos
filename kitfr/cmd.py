@@ -251,13 +251,14 @@ class CmdReceiptPayment(_CmdBase):
 
     Response: RspOK
     """
-    __tags = ()
+    __tags = (1055, 1031, 1081, 1215, 1216, 1217, 1021, 1203)
+    __opts = (1008,)  # ... 1228, 1227, 1192, 1085, 1086
     cmd_id = const.IEnumCmd.ReceiptPayment
     payload: tag.TagDict
 
     def __init__(self, payload: tag.TagDict):
         super().__init__()
-        self.chk_tags(payload, self.__tags)
+        self.chk_tags(payload, self.__tags, self.__opts)
         self.payload = payload
 
     def to_bytes(self) -> bytes:
