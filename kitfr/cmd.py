@@ -137,7 +137,7 @@ class CmdGetDateTime(_CmdBase):
 
 
 class CmdCorrReceiptBegin(_CmdBase):
-    """0x25: Corr. Receipt. Step #1 - begin.
+    """0x25: Corr. Receipt. Step #1/4 - begin.
 
     Response: RspOK
     """
@@ -145,7 +145,7 @@ class CmdCorrReceiptBegin(_CmdBase):
 
 
 class CmdCorrReceiptData(_CmdBase):
-    """0x2E: Corr. Receipt. Step #2 - send data.
+    """0x2E: Corr. Receipt. Step #2/4 - send data.
 
     Response: RspOK
     """
@@ -163,7 +163,7 @@ class CmdCorrReceiptData(_CmdBase):
 
 
 class CmdCorrReceiptAutomat(_CmdBase):
-    """0x3F: Corr. Receipt. Step #3 - send automat number.
+    """0x3F: Corr. Receipt. Step #3/4 - send automat number.
 
     Response: RspOK
     """
@@ -180,7 +180,7 @@ class CmdCorrReceiptAutomat(_CmdBase):
 
 
 class CmdCorrReceiptCommit(_CmdBase):
-    """0x26: Corr. Receipt. Step #4 (last) - commit.
+    """0x26: Corr. Receipt. Step #4/4 - commit.
 
     Response: RspCorrReceiptCommit
     """
@@ -196,3 +196,86 @@ class CmdCorrReceiptCommit(_CmdBase):
     def to_bytes(self) -> bytes:
         """Serialize to bytes."""
         return super().to_bytes() + util.ui2b1(self.req_type) + util.ui2vln(self.total)
+
+
+class CmdReceiptBegin(_CmdBase):
+    """0x23: Receipt. Step #1/6 - begin.
+
+    Response: RspOK
+    """
+    cmd_id = const.IEnumCmd.ReceiptBegin
+
+
+class CmdReceiptItem(_CmdBase):
+    """0x2B: Receipt. Step #2/6 - send item.
+
+    Response: RspOK
+    """
+    cmd_id = const.IEnumCmd.ReceiptItem
+    payload: tag.TagDict
+
+    def __init__(self, payload: tag.TagDict):
+        super().__init__()
+        self.payload = payload
+
+    def to_bytes(self) -> bytes:
+        """Serialize to bytes."""
+        return super().to_bytes() + tag.tag_dict_pack(self.payload)
+
+
+class CmdReceiptPayment(_CmdBase):
+    """0x2D: Receipt. Step #4/6 - send payment details.
+
+    Response: RspOK
+    """
+    cmd_id = const.IEnumCmd.ReceiptPayment
+    payload: tag.TagDict
+
+    def __init__(self, payload: tag.TagDict):
+        super().__init__()
+        self.payload = payload
+
+    def to_bytes(self) -> bytes:
+        """Serialize to bytes."""
+        return super().to_bytes() + tag.tag_dict_pack(self.payload)
+
+
+class CmdReceiptAutomat(_CmdBase):
+    """0x1F: Receipt. Step #5/6 - send automat number.
+
+    Response: RspOK
+    """
+    cmd_id = const.IEnumCmd.ReceiptAutomat
+    payload: tag.TagDict
+
+    def __init__(self, payload: tag.TagDict):
+        super().__init__()
+        self.payload = payload
+
+    def to_bytes(self) -> bytes:
+        """Serialize to bytes."""
+        return super().to_bytes() + tag.tag_dict_pack(self.payload)
+
+
+class CmdReceiptCommit(_CmdBase):
+    """0x24: Receipt. Step #6/6 - commit.
+
+    Response: RspReceiptCommit
+    """
+    cmd_id = const.IEnumCmd.ReceiptCommit
+    req_type: const.IEnumReceiptType
+    total: int
+    notes: Optional[str]
+
+    def __init__(self, req_type: const.IEnumReceiptType, total: int, notes: Optional[str]):
+        super().__init__()
+        self.req_type = req_type
+        self.total = total
+        self.notes = notes
+
+    def to_bytes(self) -> bytes:
+        """Serialize to bytes."""
+        retvalue = super().to_bytes() + util.ui2b1(self.req_type) + util.ui2vln(self.total)  # FIXME: total is special
+        if self.notes:
+            retvalue += util.s2b(self.notes)
+        return retvalue
