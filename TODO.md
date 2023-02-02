@@ -1,11 +1,5 @@
 # TODO
 
-- [ ] Maintain:
-  + [x] 3..4 CLI args (230201)
-  + [ ] CLI (`-p[ort]`, `-f`, `--dry-run`[, `-v`])
-  + [ ] Load data from `file.json`
-  + [ ] Logging(v)
-- [ ] Extend tags (use `TerminalFAUtility.exe`)
 - [ ] Extend cmd #4 (5):
   + [ ] Receipt (5):
     - [ ] 0x23: Begin
@@ -14,10 +8,11 @@
     - [ ] 0x1F: AutoNum
     - [ ] 0x24: Commit
 - [ ] Fixing (0.0.1):
+  + [ ] Logging(v)
   + [ ] Async txrx
   + [ ] Multitag
   + [ ] Dox
-  + [ ] Exceptions
+  + [ ] Exceptions (catch, wrap into KitFR&hellip;)
   + [ ] Tests
   + [ ] Lint, coverage
   + [ ] Packaging (`requirements.txt`, `setup.{py,cfg}`, `kitfr.spec`, `?MANIFEST.in`, `?tox.*`)

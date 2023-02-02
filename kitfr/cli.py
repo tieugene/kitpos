@@ -1,10 +1,11 @@
 """CLI commands executors."""
 # 1. std
-from typing import Optional
+from typing import Optional, Dict
 import datetime
-import json
 # 3. local
 from kitfr import cmd, tag, const
+# x. const
+JSON_ARG = '<json>'
 
 
 def __cmd_01() -> cmd.CmdGetDeviceStatus:
@@ -107,47 +108,36 @@ def __cmd_25() -> cmd.CmdCorrReceiptBegin:
     return cmd.CmdCorrReceiptBegin()
 
 
-def __cmd_2e(v: Optional[str]) -> cmd.CmdCorrReceiptData:
+def __cmd_2e(v: Dict) -> cmd.CmdCorrReceiptData:
     """Corr. Receipt. Step #2/4 - send data."""
     __tags = [1021, 1203, 1173, 1055, 1031, 1081, 1215, 1216, 1217, 1102, 1103, 1104, 1105, 1106, 1107, 1174]
-    if v:
-        raw = json.loads(v)
-        for t in __tags:   # - check: all required tags; TODO: mv 2 CmdCorrReceiptData.__init__
-            if str(t) not in raw:
-                raise RuntimeError(f"Tag {t} not found.")
-        # 2. convert raw dict into TagDict
-        td = tag.json2tagdict(raw)
-        return cmd.CmdCorrReceiptData(td)
-    print("data required ('<json>').")
+    for t in __tags:   # - check: all required tags; TODO: mv 2 CmdCorrReceiptData.__init__
+        if str(t) not in v:
+            raise RuntimeError(f"Tag {t} not found.")
+    # 2. convert raw dict into TagDict
+    td = tag.json2tagdict(v)
+    return cmd.CmdCorrReceiptData(td)
 
 
-def __cmd_3f(v: Optional[str]) -> cmd.CmdCorrReceiptAutomat:
+def __cmd_3f(v: Dict) -> cmd.CmdCorrReceiptAutomat:
     """Corr. Receipt. Step #3/4 - send automat number."""
     __tags = [1009, 1187, 1036]
-    if v:
-        # 0. load json
-        raw = json.loads(v)
-        for t in __tags:   # - check: all required tags
-            if str(t) not in raw:
-                raise RuntimeError(f"Tag {t} not found.")
-        # 2. convert raw dict into TagDict
-        td = tag.json2tagdict(raw)
-        # 3. go
-        return cmd.CmdCorrReceiptAutomat(td)
-    print("data required ('<json>').")
+    for t in __tags:   # - check: all required tags
+        if str(t) not in v:
+            raise RuntimeError(f"Tag {t} not found.")
+    # 2. convert raw dict into TagDict
+    td = tag.json2tagdict(v)
+    # 3. go
+    return cmd.CmdCorrReceiptAutomat(td)
 
 
-def __cmd_26(v: Optional[str]) -> cmd.CmdCorrReceiptCommit:
+def __cmd_26(v: Dict) -> cmd.CmdCorrReceiptCommit:
     """Corr. Receipt. Step #4/4 - commit."""
-    if v:
-        # print(v[0])
-        raw = json.loads(v)
-        # TODO: chk value types
-        return cmd.CmdCorrReceiptCommit(
-            req_type=const.IEnumReceiptType(raw['type']),
-            total=raw['total']
-        )
-    print("data required ('<json>').")
+    # TODO: chk value types
+    return cmd.CmdCorrReceiptCommit(
+        req_type=const.IEnumReceiptType(v['type']),
+        total=v['total']
+    )
 
 
 COMMANDS = {
@@ -167,7 +157,7 @@ COMMANDS = {
     'SetDateTime': (__cmd_72, '<yymmddHHMM>'),
     'GetDateTime': __cmd_73,
     'CorrReceiptBegin': __cmd_25,
-    'CorrReceiptData': (__cmd_2e, '<json>'),
-    'CorrReceiptAutomat': (__cmd_3f, '<json>'),
-    'CorrReceiptCommit': (__cmd_26, '<json>')
+    'CorrReceiptData': (__cmd_2e, JSON_ARG),
+    'CorrReceiptAutomat': (__cmd_3f, JSON_ARG),
+    'CorrReceiptCommit': (__cmd_26, JSON_ARG)
 }

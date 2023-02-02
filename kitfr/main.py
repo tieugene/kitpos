@@ -2,17 +2,18 @@
 """Main CLI module."""
 # 1. std
 from typing import Optional
+from types import FunctionType
 import sys
-import os
+import json
 import argparse
 # 3. local
 from kitfr import cli, net, rsp, util, errs
-
 # x. consts
-CONN_TIMEOUT = 3  # Too fast; can be 20+
+CONN_TIMEOUT = 3  # TODO: too fast; can be 20+
 
 
 def __mk_args_parser() -> argparse.ArgumentParser:
+    """TODO: [RTFM](https://habr.com/ru/post/466999/)"""
     def __mk_subhelp() -> str:
         retvalue = 'command:'
         for k, v in cli.COMMANDS.items():
@@ -36,13 +37,21 @@ def __mk_args_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def __do_it(host: str, port: int, cmd_name: str, arg: Optional[str], dry_run: bool, file: bool, verbose: bool):
-    """Main command dispatcher."""
+def __do_it(host: str, port: int, cmd_name: str, arg: Optional[str], dry_run: bool, from_file: bool, verbose: bool):
     __cmd_XX = cli.COMMANDS[cmd_name]
-    if isinstance(__cmd_XX, tuple):
-        cmd_object = __cmd_XX[0](arg)
-    else:
+    if isinstance(__cmd_XX, FunctionType):
         cmd_object = __cmd_XX()
+    else:  # isinstance(__cmd_XX, tuple)
+        if __cmd_XX[1] == cli.JSON_ARG:
+            if arg is None:
+                print("JSON data required")
+                return
+            if from_file:
+                with open(arg, 'rt') as fp:
+                    arg = json.load(fp)
+            else:
+                arg = json.loads(arg)
+        cmd_object = __cmd_XX[0](arg)
     if cmd_object is None:
         return
     bytes_o = cmd_object.to_bytes()  # 1. make command...
@@ -64,16 +73,11 @@ def __do_it(host: str, port: int, cmd_name: str, arg: Optional[str], dry_run: bo
         print(rsp_object.str('\n'))
     else:
         print("Err: %02x '%s'" % (bytes_i, errs.ERR_TEXT['ru'].get(bytes_i, '<Unknown>.')))
-    # TODO: handle exceptions:
-    # - TimeoutError (no host for socket.create_connection())
-    # TODO: verbosity (e.g. `print(frame.hex().upper())`)
 
 
 def main():
-    """CLI."""
+    """CLI entry point."""
     args = __mk_args_parser().parse_args(sys.argv[1:])
-    # print(args)
-    # TODO: json from cli/stdin/file
     __do_it(args.host, args.port, args.cmd, args.arg, args.dry_run, args.file, args.verbose)
 
 
