@@ -41,11 +41,19 @@ def __do_it(host: str, port: int, cmd_name: str, arg: Optional[str]):
 
 
 def __mk_args_parser() -> argparse.ArgumentParser:
+    def __mk_subhelp() -> str:
+        retvalue = 'command:'
+        for k, v in cli.COMMANDS.items():
+            if isinstance(v, tuple):
+                retvalue += f"\n  {k} {v[1]}: {v[0].__doc__}"
+            else:
+                retvalue += f"\n  {k}: {v.__doc__}"
+        return retvalue
     parser = argparse.ArgumentParser(
         prog="kitpos",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description="Tool to control Termanal-FA POS",
-        epilog=f"Commands:\n\t" + "\n\t".join([f"{k}: {v.__doc__}" for k, v in cli.COMMANDS.items()]))
+        epilog=__mk_subhelp())
     parser.add_argument('-p', '--port', type=int, default=7777, help="POS TCP/IP port (default 7777)")
     parser.add_argument('--dry-run', action='store_true', help="Print cmd dump")
     parser.add_argument('-f', '--file', action='store_true', help="Get json from file (default from arg)")

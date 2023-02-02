@@ -70,14 +70,14 @@ def __cmd_2a(_) -> cmd.CmdSessionCloseCommit:
 
 
 def __cmd_30(v: Optional[str]) -> cmd.CmdGetDocInfo:
-    """Find document by its number <num>."""
+    """Get document info."""
     if v:
         return cmd.CmdGetDocInfo(int(v))
     print("Doc number required.")
 
 
 def __cmd_3a(v: Optional[str]) -> cmd.CmdGetDocData:
-    """Get doc <num> content."""
+    """Get doc content."""
     if v:
         return cmd.CmdGetDocData(int(v))
     print("Doc number required.")
@@ -89,7 +89,7 @@ def __cmd_50(_) -> cmd.CmdGetOFDXchgStatus:
 
 
 def __cmd_72(v: Optional[str]) -> cmd.CmdSetDateTime:
-    """Set POS date/time to <yymmddHHMM>."""
+    """Set POS date/time."""
     # FIXME: convert v[0] into datitime
     if v:
         dt = datetime.datetime.strptime(v, '%y%m%d%H%M')  # TODO: handle exception
@@ -108,7 +108,7 @@ def __cmd_25(_) -> cmd.CmdCorrReceiptBegin:
 
 
 def __cmd_2e(v: Optional[str]) -> cmd.CmdCorrReceiptData:
-    """Corr. Receipt. Step #2/4 - send data as <'json'>."""
+    """Corr. Receipt. Step #2/4 - send data."""
     __tags = [1021, 1203, 1173, 1055, 1031, 1081, 1215, 1216, 1217, 1102, 1103, 1104, 1105, 1106, 1107, 1174]
     if v:
         raw = json.loads(v)
@@ -122,7 +122,7 @@ def __cmd_2e(v: Optional[str]) -> cmd.CmdCorrReceiptData:
 
 
 def __cmd_3f(v: Optional[str]) -> cmd.CmdCorrReceiptAutomat:
-    """Corr. Receipt. Step #3/4 - send automat number as <'json'>."""
+    """Corr. Receipt. Step #3/4 - send automat number."""
     __tags = [1009, 1187, 1036]
     if v:
         # 0. load json
@@ -138,7 +138,7 @@ def __cmd_3f(v: Optional[str]) -> cmd.CmdCorrReceiptAutomat:
 
 
 def __cmd_26(v: Optional[str]) -> cmd.CmdCorrReceiptCommit:
-    """Corr. Receipt. Step #4/4 - commit as <'json'>."""
+    """Corr. Receipt. Step #4/4 - commit."""
     if v:
         # print(v[0])
         raw = json.loads(v)
@@ -150,24 +150,24 @@ def __cmd_26(v: Optional[str]) -> cmd.CmdCorrReceiptCommit:
     print("data required ('<json>').")
 
 
-COMMANDS = {  # FIXME: add arg required
+COMMANDS = {
     'GetDeviceStatus': __cmd_01,
     'GetDeviceModel': __cmd_04,
     'GetStorageStatus': __cmd_08,
     'GetRegisterParms': __cmd_0a,
     'DocCancel': __cmd_10,
     'GetCurSession': __cmd_20,
-    'SessionOpenBegin': __cmd_21,
+    'SessionOpenBegin': (__cmd_21, '[0/1]'),
     'SessionOpenCommit': __cmd_22,
-    'SessionCloseBegin': __cmd_29,
+    'SessionCloseBegin': (__cmd_29, '[0/1]'),
     'SessionCloseCommit': __cmd_2a,
-    'GetDocInfo': __cmd_30,
-    'GetDocData': __cmd_3a,
+    'GetDocInfo': (__cmd_30, '<int>'),
+    'GetDocData': (__cmd_3a, '<int>'),
     'GetOFDXchgStatus': __cmd_50,
-    'SetDateTime': __cmd_72,
+    'SetDateTime': (__cmd_72, '<yymmddHHMM>'),
     'GetDateTime': __cmd_73,
     'CorrReceiptBegin': __cmd_25,
-    'CorrReceiptData': __cmd_2e,
-    'CorrReceiptAutomat': __cmd_3f,
-    'CorrReceiptCommit': __cmd_26,
+    'CorrReceiptData': (__cmd_2e, '<json>'),
+    'CorrReceiptAutomat': (__cmd_3f, '<json>'),
+    'CorrReceiptCommit': (__cmd_26, '<json>')
 }
