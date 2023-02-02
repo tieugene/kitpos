@@ -240,7 +240,7 @@ class CmdReceiptItem(_CmdBase):
         super().__init__()
         if not (len(payload) == 1 and 1059 in payload):
             raise RuntimeError("The only '1059' tag required.")
-        # self.chk_tags(payload, self.__1059_tags)
+        self.chk_tags(payload[const.IEnumTag.Tag_1059], self.__1059_tags)
         self.payload = payload
 
     def to_bytes(self) -> bytes:
@@ -305,7 +305,7 @@ class CmdReceiptCommit(_CmdBase):
 
     def to_bytes(self) -> bytes:
         """Serialize to bytes."""
-        retvalue = super().to_bytes() + util.ui2b1(self.req_type) + util.ui2b_n(5, self.total)
+        retvalue = super().to_bytes() + util.ui2b1(self.req_type) + util.ui2b_n(self.total, 5)
         if self.notes:
             retvalue += util.s2b(self.notes)
         return retvalue

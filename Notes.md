@@ -64,9 +64,9 @@
 1. SessionOpenBegin 1
 2. SessionOpenCommit
 3. CorrReceiptBegin
-4. CorrReceiptData &hellip;
-5. CorrReceiptAutomat &hellip;
-6. CorrReceiptCommit &hellip;
+4. CorrReceiptData <2E.json>
+5. CorrReceiptAutomat <3F.json>
+6. CorrReceiptCommit <26.json>
 7. SessionCloseBegin 1
 8. SessionCloseCommit
 
@@ -74,9 +74,9 @@
 1. SessionOpenBegin 1
 2. SessionOpenCommit
 3. ReceiptBegin
-4. ReceiptItem &hellip;
-5. ReceiptAutomat &hellip;
-6. ReceiptPayment &hellip;
-7. ReceiptCommit &hellip;
+4. ReceiptItem <2B.json>
+5. ReceiptAutomat <1F.json> (!)
+6. ReceiptPayment <2D.json>
+7. ReceiptCommit <24.json>
 8. SessionCloseBegin 1
 9. SessionCloseCommit

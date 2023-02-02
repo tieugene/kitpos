@@ -430,7 +430,7 @@ class RspReceiptCommit(RspBase):
     @classmethod
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
-        v = _data_decode(data, '<HIIBBBBH', cls)
+        v = _data_decode(data, '<HIIBBBBBH', cls)
         return cls(
             doc_num=v[0],
             fd_num=v[1],
