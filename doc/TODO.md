@@ -3,13 +3,10 @@
 - [ ] Fixing (0.0.1):
   + [x] Rename to `kitpos`
   + [ ] Packaging:
-    - [ ] `kitpos.spec`
-    - [ ] `pyproject.toml` (PEP-621)
+    - [x] `python-kitpos.spec`
+    - [x] `pyproject.toml` (PEP-621)
     - [ ] `tox.ini`
-    - [x] ~~`requirements.txt`~~
-    - [ ] ~~`setup.py`~~
-    - [ ] ~~`setup,cfg}`~~
-    - [ ] ~~`?MANIFEST.in`~~
+    - [x] ~~`requirements.txt`, `setup.py`, `setup,cfg`, `MANIFEST.in`~~
   + [ ] Dox
   + [ ] Lint:
     - [x] `pydocstyle`
