@@ -1,18 +1,18 @@
 """Exceptions."""
 
 
-class KitFRError(RuntimeError):
-    """KitFR basic error"""
+class KitPOSError(RuntimeError):
+    """KitPOS basic error"""
     ...
 
 
-class KitFRWarning(RuntimeWarning):
-    """KitFR basic warning"""
+class KitPOSWarning(RuntimeWarning):
+    """KitPOS basic warning"""
     ...
 
 
-class KitFRTxtError(KitFRError):
-    """KitFR commented exceptions"""
+class KitPOSTxtError(KitPOSError):
+    """KitPOS commented exceptions"""
     msg: str
 
     def __init__(self, msg: str):
@@ -23,19 +23,19 @@ class KitFRTxtError(KitFRError):
         return self.msg
 
 
-class KitFRNetError(KitFRTxtError):
-    """KitFR frame [un]wrap exceptions"""
+class KitPOSNetError(KitPOSTxtError):
+    """KitPOS frame [un]wrap exceptions"""
     def __init__(self, msg: str):
         super().__init__(msg)
 
 
-class KitFRFrameError(KitFRTxtError):
-    """KitFR frame [un]wrap exceptions"""
+class KitPOSFrameError(KitPOSTxtError):
+    """KitPOS frame [un]wrap exceptions"""
     def __init__(self, msg: str):
         super().__init__(msg)
 
 
-class KitFRResponseError(KitFRError):
+class KitPOSResponseError(KitPOSError):
     """MFP error response"""
     rsname: str     # response name (AppResExt...)
     code: int       # Result/ErrorInfo/Code
@@ -51,7 +51,7 @@ class KitFRResponseError(KitFRError):
         return "Device response '{0}' error {1}: {2}".format(self.rsname, self.code, self.desc)
 
 
-class KitFRRspDecodeError(KitFRTxtError):
-    """KitFR response object decoding exceptions"""
+class KitPOSRspDecodeError(KitPOSTxtError):
+    """KitPOS response object decoding exceptions"""
     def __init__(self, msg: str):
         super().__init__(msg)

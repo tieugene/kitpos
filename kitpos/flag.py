@@ -2,7 +2,7 @@
 # 1. std
 import enum
 # 3. local
-from kitfr import const
+from kitpos import const
 
 x_table = str.maketrans({'0': '.', '1': '+'})
 

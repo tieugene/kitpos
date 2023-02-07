@@ -1,6 +1,6 @@
 """`cmd.py` tests."""
 
-from kitfr import util, cmd
+from kitpos import util, cmd
 from tests.samples import RAW_Q
 
 

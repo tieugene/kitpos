@@ -1,4 +1,4 @@
-# kitfr
+# kitpos
 
 KIT POS python library
 

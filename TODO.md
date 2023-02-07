@@ -4,10 +4,10 @@
   + [ ] Rename to `kitpos`
   + [ ] Logging(v)
   + [ ] Dox
-  + [ ] Exceptions (catch, wrap into KitFR&hellip;)
+  + [ ] Exceptions (catch, wrap into KitPOS&hellip;)
   + [ ] Tests
   + [ ] Lint, coverage
-  + [ ] Packaging (`requirements.txt`, `setup.{py,cfg}`, `kitfr.spec`, `?MANIFEST.in`, `?tox.*`)
+  + [ ] Packaging (`requirements.txt`, `setup.{py,cfg}`, `kitpos.spec`, `?MANIFEST.in`, `?tox.*`)
 - [ ] Sequences:
   + [ ] SessionOpen
   + [ ] SessionClose

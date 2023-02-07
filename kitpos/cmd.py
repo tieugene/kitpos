@@ -6,7 +6,7 @@
 import datetime
 from typing import Optional, Iterable
 # 3. local
-from kitfr import const, util, tag
+from kitpos import const, util, tag
 
 
 class _CmdBase:

@@ -7,7 +7,7 @@ import sys
 import json
 import argparse
 # 3. local
-from kitfr import cli, net, rsp, util, errs
+from kitpos import cli, net, rsp, util, errs
 # x. consts
 CONN_TIMEOUT = 3  # TODO: too fast; can be 20+
 

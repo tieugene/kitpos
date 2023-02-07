@@ -3,7 +3,7 @@
 from typing import Optional, Dict
 import datetime
 # 3. local
-from kitfr import cmd, tag, const
+from kitpos import cmd, tag, const
 # x. const
 JSON_ARG = '<json>'
 

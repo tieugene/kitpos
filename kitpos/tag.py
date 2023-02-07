@@ -4,7 +4,7 @@ from typing import Dict, Any, Tuple
 import sys
 import datetime
 # 3. local
-from kitfr import const, flag, util
+from kitpos import const, flag, util
 
 TagDict = Dict[const.IEnumTag, Any]
 
