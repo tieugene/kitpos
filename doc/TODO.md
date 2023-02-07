@@ -2,9 +2,20 @@
 
 - [ ] Fixing (0.0.1):
   + [x] Rename to `kitpos`
-  + [ ] Packaging (`requirements.txt`, `setup.{py,cfg}`, `kitpos.spec`, `?MANIFEST.in`, `?tox.*`)
+  + [ ] Packaging:
+    - [ ] `kitpos.spec`
+    - [ ] `pyproject.toml` (PEP-621)
+    - [ ] `tox.ini`
+    - [x] ~~`requirements.txt`~~
+    - [ ] ~~`setup.py`~~
+    - [ ] ~~`setup,cfg}`~~
+    - [ ] ~~`?MANIFEST.in`~~
   + [ ] Dox
-  + [ ] Lint, coverage
+  + [ ] Lint:
+    - [ ] pydocstyle
+    - [ ] flake8
+    - [ ] pylint
+    - [ ] coverage
   + [ ] Exceptions (catch, wrap into KitPOS&hellip;)
   + [ ] Tests
   + [ ] Logging(v)
