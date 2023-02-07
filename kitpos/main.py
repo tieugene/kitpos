@@ -13,7 +13,7 @@ CONN_TIMEOUT = 3  # TODO: too fast; can be 20+
 
 
 def __mk_args_parser() -> argparse.ArgumentParser:
-    """TODO: [RTFM](https://habr.com/ru/post/466999/)"""
+    """TODO: [RTFM](https://habr.com/ru/post/466999/)."""
     def __mk_subhelp() -> str:
         retvalue = 'command:'
         for k, v in cli.COMMANDS.items():

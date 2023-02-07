@@ -12,7 +12,7 @@ from kitpos import const, flag, exc, util, tag
 
 
 def _dt2str(dt: datetime.datetime) -> str:
-    """Convert datime to string"""
+    """Convert datime to string."""
     return dt.strftime('%Y-%m-%d %H:%M')
 
 
@@ -37,12 +37,14 @@ class RspBase:
         return sep.join([f"{f}={self.__dict__[f]}" for f in self.__annotations__])
 
     def __str__(self) -> str:
+        """Make string representation of response object."""
         return f"{self._cn}: {self.str()}"
 
 
 @dataclass
 class _RspStub(RspBase):
-    """Stub base for debugging."""
+    """Stub base for response debugging."""
+
     payload: bytes
 
     def str(self, sep: str = ', ') -> str:
@@ -57,7 +59,7 @@ class _RspStub(RspBase):
 
 @dataclass
 class RspOK(RspBase):
-    """Just OK and nothing else."""
+    """Just OK."""
 
     def str(self, _: str = '') -> str:
         """Get response attrs as string."""
@@ -73,7 +75,8 @@ class RspOK(RspBase):
 
 @dataclass
 class RspGetDeviceStatus(RspBase):
-    """FR status (0x01)."""
+    """POS status (0x01)."""
+
     sn: str
     datime: datetime.datetime
     err: bool  # Critical errors; TODO: chk 0/1
@@ -99,7 +102,8 @@ class RspGetDeviceStatus(RspBase):
 
 @dataclass
 class RspGetDeviceModel(RspBase):
-    """FR sn (0x04)."""
+    """POS model (0x04)."""
+
     name: str
 
     @staticmethod
@@ -111,7 +115,8 @@ class RspGetDeviceModel(RspBase):
 
 @dataclass
 class RspGetStorageStatus(RspBase):
-    """FS status (0x08)."""
+    """Fiscal storage status (0x08)."""
+
     phase: const.IEnumFSphase
     cur_doc: int
     is_doc: bool
@@ -139,7 +144,8 @@ class RspGetStorageStatus(RspBase):
 
 @dataclass
 class RspGetRegisterParms(RspBase):
-    """FR/FS registering parameters (0x0A)."""
+    """POS+FS registering parameters (0x0A)."""
+
     rn: str
     inn: str
     fr_mode: flag.FRModes
@@ -161,7 +167,8 @@ class RspGetRegisterParms(RspBase):
 
 @dataclass
 class RspGetCurSession(RspBase):
-    """Get current session params (0x20)."""
+    """Current session params (0x20)."""
+
     opened: bool
     ses_num: int
     rcp_num: int
@@ -180,6 +187,7 @@ class RspGetCurSession(RspBase):
 @dataclass
 class _RspSessionAnyCommit(RspBase):
     """Base for RspSessionOpenCommit/RspSessionCloseCommit."""
+
     ses_num: int
     fd_num: int
     fp: int
@@ -211,6 +219,7 @@ class ADoc(RspBase):
 @dataclass
 class ADocRegRpt(ADoc):
     """Archive document. Registration report."""
+
     datime: datetime.datetime
     no: int
     fp: int
@@ -238,6 +247,7 @@ class ADocRegRpt(ADoc):
 @dataclass
 class ADocReRegRpt(ADoc):
     """Archive document. Re-Registration report."""
+
     datime: datetime.datetime
     no: int
     fp: int
@@ -266,6 +276,7 @@ class ADocReRegRpt(ADoc):
 @dataclass
 class _ADocSesRpt(ADoc):
     """Archive document. Session open/close report."""
+
     datime: datetime.datetime
     no: int
     fp: int
@@ -284,16 +295,17 @@ class _ADocSesRpt(ADoc):
 
 
 class ADocSesOpenRpt(_ADocSesRpt):
-    """Archive document. Session open report"""
+    """Archive document. Session open report."""
 
 
 class ADocSesCloseRpt(_ADocSesRpt):
-    """Archive document. Session close report"""
+    """Archive document. Session close report."""
 
 
 @dataclass
 class ADocReceipt(ADoc):
     """Archive document. Receipt."""
+
     datime: datetime.datetime
     no: int
     fp: int
@@ -332,7 +344,8 @@ ADOC_CLASS = {
 
 @dataclass
 class RspGetDocInfo(RspBase):
-    """FD (0x30)."""
+    """Document [meta-]info (0x30)."""
+
     doc_type: const.IEnumADocType
     ofd: bool  # TODO: chk 0/1
     doc: ADoc
@@ -355,7 +368,8 @@ class RspGetDocInfo(RspBase):
 
 @dataclass
 class RspGetDocData(RspBase):
-    """Something."""
+    """Document data (0x3A)."""
+
     tags: Dict[const.IEnumTag, Any]
 
     @classmethod
@@ -367,6 +381,7 @@ class RspGetDocData(RspBase):
 @dataclass
 class RspGetOFDXchgStatus(RspBase):
     """OFD exchange status (0x50)."""
+
     out_count: int
     next_doc_n: int
     next_doc_d: datetime.datetime
@@ -384,7 +399,8 @@ class RspGetOFDXchgStatus(RspBase):
 
 @dataclass
 class RspGetDateTime(RspBase):
-    """FS date/time (0x73)."""
+    """POS date/time (0x73)."""
+
     datime: datetime.datetime
 
     @classmethod
@@ -403,6 +419,7 @@ class RspGetDateTime(RspBase):
 @dataclass
 class RspCorrReceiptCommit(RspBase):
     """Commit Corr. Receipt (0x26)."""
+
     doc_num: int  # (2) doc number in session
     fd_num: int  # (4) fiscal doc no
     fp: int  # (4)
@@ -421,6 +438,7 @@ class RspCorrReceiptCommit(RspBase):
 @dataclass
 class RspReceiptCommit(RspBase):
     """Commit Receipt (0x24)."""
+
     doc_num: int  # (2) doc number in session
     fd_num: int  # (4) fiscal doc no
     fp: int  # (4)

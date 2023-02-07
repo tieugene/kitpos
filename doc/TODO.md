@@ -12,9 +12,9 @@
     - [ ] ~~`?MANIFEST.in`~~
   + [ ] Dox
   + [ ] Lint:
-    - [ ] pydocstyle
-    - [ ] flake8
-    - [ ] pylint
+    - [x] `pydocstyle`
+    - [x] `flake8`
+    - [ ] `pylint`
     - [ ] coverage
   + [ ] Exceptions (catch, wrap into KitPOS&hellip;)
   + [ ] Tests

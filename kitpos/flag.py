@@ -12,6 +12,7 @@ class _Flags:
 
     :todo: Metaclass
     """
+
     _v: int
     _v_cls: enum.IntEnum
 
@@ -36,6 +37,7 @@ class FSErrors(_Flags):
     Used:
     - ...
     """
+
     _v_cls: const.IFlagFSErr
 
 
@@ -45,6 +47,7 @@ class FRModes(_Flags):
     Used:
     - ...
     """
+
     _v_cls: const.IFlagFRMode
 
 
@@ -54,6 +57,7 @@ class TaxModes(_Flags):
     Used:
     - ...
     """
+
     _v_cls: const.IFlagTax
 
 
@@ -63,4 +67,5 @@ class AgentModes(_Flags):
     Used:
     - ...
     """
+
     _v_cls: const.IFlagAgent

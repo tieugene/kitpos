@@ -3,14 +3,15 @@
 :todo: .to_frame()
 """
 # 1. std
-import datetime
 from typing import Optional, Iterable
+import datetime
 # 3. local
 from kitpos import const, util, tag
 
 
 class _CmdBase:
     """Base for commands."""
+
     cmd_id: const.IEnumCmd
 
     @staticmethod
@@ -36,36 +37,43 @@ class _CmdBase:
 
 class CmdGetDeviceStatus(_CmdBase):
     """0x01: Get POS status."""
+
     cmd_id = const.IEnumCmd.GetDeviceStatus
 
 
 class CmdGetDeviceModel(_CmdBase):
     """0x04: Get POS model."""
+
     cmd_id = const.IEnumCmd.GetDeviceModel
 
 
 class CmdGetStorageStatus(_CmdBase):
     """0x08: Get FS status."""
+
     cmd_id = const.IEnumCmd.GetStorageStatus
 
 
 class CmdGetRegisterParms(_CmdBase):
     """0x0A: Get POS/FS registering parameters."""
+
     cmd_id = const.IEnumCmd.GetRegisterParms
 
 
 class CmdDocCancel(_CmdBase):
     """0x10: Cancel any opened document."""
+
     cmd_id = const.IEnumCmd.DocCancel
 
 
 class CmdGetCurSession(_CmdBase):
     """0x20: Get current session params."""
+
     cmd_id = const.IEnumCmd.GetCurSession
 
 
 class _CmdSessionAnyBegin(_CmdBase):
-    """Base for CmdSessionOpenBegin/CmdSessioCloseBegin"""
+    """Base for CmdSessionOpenBegin/CmdSessioCloseBegin."""
+
     skip_prn: Optional[bool]  # Skip printing report (None = False)
 
     def __init__(self, skip_prn: Optional[bool] = None):
@@ -82,26 +90,31 @@ class _CmdSessionAnyBegin(_CmdBase):
 
 class CmdSessionOpenBegin(_CmdSessionAnyBegin):
     """0x21: Begin opening session."""
+
     cmd_id = const.IEnumCmd.SessionOpenBegin
 
 
 class CmdSessionOpenCommit(_CmdBase):
     """0x22: Commit opening session."""
+
     cmd_id = const.IEnumCmd.SessionOpenCommit
 
 
 class CmdSessionCloseBegin(_CmdSessionAnyBegin):
     """0x29: Begin closing session."""
+
     cmd_id = const.IEnumCmd.SessionCloseBegin
 
 
 class CmdSessionCloseCommit(_CmdBase):
     """0x2A: Commit opening session."""
+
     cmd_id = const.IEnumCmd.SessionCloseCommit
 
 
 class _CmdGetDocAny(_CmdBase):
     """Base CmdGetDocInfo/CmdGetDocData."""
+
     num: int
 
     def __init__(self, num: int):
@@ -115,25 +128,33 @@ class _CmdGetDocAny(_CmdBase):
 
 class CmdGetDocInfo(_CmdGetDocAny):
     """0x30: Find document by its number."""
+
     cmd_id = const.IEnumCmd.GetDocInfo
 
 
 class CmdGetDocData(_CmdGetDocAny):
     """0x3A: Read document content."""
+
     cmd_id = const.IEnumCmd.GetDocData
 
 
 class CmdGetOFDXchgStatus(_CmdBase):
     """0x50: Get OFD exchange status."""
+
     cmd_id = const.IEnumCmd.GetOFDXchgStatus
 
 
 class CmdSetDateTime(_CmdBase):
     """0x72: Set POS date/time."""
+
     cmd_id = const.IEnumCmd.SetDateTime
     datime: datetime.datetime
 
     def __init__(self, datime: datetime.datetime):
+        """Make CmdSetDateTime object.
+
+        :param datime: Date/time to set.
+        """
         super().__init__()
         self.datime = datime
 
@@ -149,6 +170,7 @@ class CmdSetDateTime(_CmdBase):
 
 class CmdGetDateTime(_CmdBase):
     """0x73: Get POS date/time."""
+
     cmd_id = const.IEnumCmd.GetDateTime
 
 
@@ -157,6 +179,7 @@ class CmdCorrReceiptBegin(_CmdBase):
 
     Response: RspOK
     """
+
     cmd_id = const.IEnumCmd.CorrReceiptBegin
 
 
@@ -165,11 +188,16 @@ class CmdCorrReceiptData(_CmdBase):
 
     Response: RspOK
     """
+
     __tags = (1021, 1203, 1173, 1055, 1031, 1081, 1215, 1216, 1217, 1102, 1103, 1104, 1105, 1106, 1107, 1174)
     cmd_id = const.IEnumCmd.CorrReceiptData
     payload: tag.TagDict
 
     def __init__(self, payload: tag.TagDict):
+        """Make CmdCorrReceiptData object.
+
+        :param payload: Dict of tag-value pairs.
+        """
         super().__init__()
         self.chk_tags(payload, self.__tags)
         # TODO: chk 1031+1081+1215+1216+1217 == sum(1102..1107)
@@ -185,11 +213,16 @@ class CmdCorrReceiptAutomat(_CmdBase):
 
     Response: RspOK
     """
+
     __tags = (1009, 1187, 1036)
     cmd_id = const.IEnumCmd.CorrReceiptAutomat
     payload: tag.TagDict
 
     def __init__(self, payload: tag.TagDict):
+        """Make CmdCorrReceiptAutomat object.
+
+        :param payload: Dict of tag-value pairs.
+        """
         super().__init__()
         self.chk_tags(payload, self.__tags)
         self.payload = payload
@@ -204,11 +237,17 @@ class CmdCorrReceiptCommit(_CmdBase):
 
     Response: RspCorrReceiptCommit
     """
+
     cmd_id = const.IEnumCmd.CorrReceiptCommit
     req_type: const.IEnumReceiptType
     total: int
 
     def __init__(self, req_type: const.IEnumReceiptType, total: int):
+        """Make CmdCorrReceiptCommit object.
+
+        :param req_type: Corr. receipt type (enum)
+        :param total: Total of corr. receipt items prices.
+        """
         super().__init__()
         self.req_type = req_type
         self.total = total
@@ -224,6 +263,7 @@ class CmdReceiptBegin(_CmdBase):
 
     Response: RspOK
     """
+
     cmd_id = const.IEnumCmd.ReceiptBegin
 
 
@@ -232,11 +272,16 @@ class CmdReceiptItem(_CmdBase):
 
     Response: RspOK
     """
+
     __1059_tags = (1030, 1079, 1023, 1199, 1214, 1212)
     cmd_id = const.IEnumCmd.ReceiptItem
     payload: tag.TagDict
 
     def __init__(self, payload: tag.TagDict):
+        """Make CmdReceiptItem object.
+
+        :param payload: Dict of tag-value pairs.
+        """
         super().__init__()
         if not (len(payload) == 1 and 1059 in payload):
             raise RuntimeError("The only '1059' tag required.")
@@ -253,11 +298,16 @@ class CmdReceiptAutomat(_CmdBase):
 
     Response: RspOK
     """
+
     __tags = (1009, 1187, 1036)
     cmd_id = const.IEnumCmd.ReceiptAutomat
     payload: tag.TagDict
 
     def __init__(self, payload: tag.TagDict):
+        """Make CmdReceiptAutomat object.
+
+        :param payload: Dict of tag-value pairs.
+        """
         super().__init__()
         self.chk_tags(payload, self.__tags)
         self.payload = payload
@@ -272,12 +322,17 @@ class CmdReceiptPayment(_CmdBase):
 
     Response: RspOK
     """
+
     __tags = (1055, 1031, 1081, 1215, 1216, 1217)
     __opts = (1021, 1203, 1008, 1192)  # ... 1228, 1227, 1085, 1086
     cmd_id = const.IEnumCmd.ReceiptPayment
     payload: tag.TagDict
 
     def __init__(self, payload: tag.TagDict):
+        """Make CmdReceiptPayment object.
+
+        :param payload: Dict of tag-value pairs.
+        """
         super().__init__()
         self.chk_tags(payload, self.__tags, self.__opts)
         self.payload = payload
@@ -292,12 +347,19 @@ class CmdReceiptCommit(_CmdBase):
 
     Response: RspReceiptCommit
     """
+
     cmd_id = const.IEnumCmd.ReceiptCommit
     req_type: const.IEnumReceiptType
     total: int
     notes: Optional[str]
 
     def __init__(self, req_type: const.IEnumReceiptType, total: int, notes: Optional[str]):
+        """Create CmdReceiptCommit object.
+
+        :param req_type: Receipt type (enum)
+        :param total: Total of receipt items prices.
+        :param notes: Subj.
+        """
         super().__init__()
         self.req_type = req_type
         self.total = total

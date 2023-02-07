@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Stress-test of POS networking.
-Try to txrx random commands and get responses."""
+
+TODO: Try to txrx random commands and get responses.
+"""
 import os.path
 import sys
-import time
 import random
 import socket
 import crcmod
@@ -26,7 +27,7 @@ def _send(host: str, port: int, data_out: bytes, timeout=None) -> bytes:
 def __gen_commands(tickets: int):
     """Generate command samples."""
     def __wrap(data: bytes) -> bytes:
-        """Wrap command into frame (hdr+len+body+crc)"""
+        """Wrap command into frame (hdr+len+body+crc)."""
         return FRAME_HEADER + (inner := (len(data)).to_bytes(2, 'big') + data) + crc(inner).to_bytes(2, 'little')
     for i in __SIMPLES:
         SAMPLES.append(__wrap(i.to_bytes(1, 'little')))

@@ -15,6 +15,7 @@ class _IEnumPrintable(enum.IntEnum):
 @enum.unique
 class IEnumCmd(enum.IntEnum):
     """Commands."""
+
     GetDeviceStatus = 0x01            # ✓ [Info] Get status
     GetDeviceModel = 0x04             # ✓ [Info]
     GetStorageStatus = 0x08           # ✓ [Info]
@@ -55,6 +56,7 @@ TAGS_UNKNOWN = {  # not documented
 @enum.unique
 class IEnumTag(_IEnumPrintable):
     """Tags."""
+
     Tag_1008 = 1008    # str[..64], Customer email
     Tag_1009 = 1009    # str[..164], POS address
     Tag_1017 = 1017    # ! str[12], OFD INN
@@ -101,6 +103,7 @@ class IEnumPrnStatus(_IEnumPrintable):
     Used:
     - ...
     """
+
     OK = 0
     Offline = 1  # Prn device is not connected
     NoPaper = 2  # Out of paper
@@ -117,6 +120,7 @@ class IEnumFSphase(_IEnumPrintable):
     Used:
     - ...
     """
+
     Fail = 0   # Impossible, but...
     Ready = 1  # Ready for fiscalization
     Fisc = 3   # Fiscalization mode
@@ -131,6 +135,7 @@ class IEnumFSCurDoc(_IEnumPrintable):
     Used:
     - ...
     """
+
     Empty = 0x00
     RegRpt = 0x01  # FR registration report
     SesOpenRpt = 0x02  # Session opening report
@@ -150,6 +155,7 @@ class IEnumADocType(_IEnumPrintable):
     Used:
     - RspGetDocInfo
     """
+
     RegRpt = 1  # FR registration report
     ReRegRpt = 11  # Reregistration report
     SesOpenRpt = 2  # Session opening report
@@ -166,6 +172,7 @@ class IEnumADocType(_IEnumPrintable):
 @enum.unique
 class IEnumReRegReason(_IEnumPrintable):
     """Reason for reregistration."""
+
     FS = enum.auto()  # Changing FS
     OFD = enum.auto()  # Changing OFD
     User = enum.auto()  # Changing user's requisitions
@@ -175,6 +182,7 @@ class IEnumReRegReason(_IEnumPrintable):
 @enum.unique
 class IEnumReceiptType(_IEnumPrintable):
     """Receipt type (tag 1199)."""
+
     In = enum.auto()  # Incoming
     InRet = enum.auto()  # Incoming return
     Out = enum.auto()  # Outcome
@@ -183,8 +191,8 @@ class IEnumReceiptType(_IEnumPrintable):
 
 @enum.unique
 class IEnumVAT(_IEnumPrintable):
-    """VAT type.
-    """
+    """VAT type."""
+
     p_18 = enum.auto()
     p_10 = enum.auto()
     c_18 = enum.auto()
@@ -199,6 +207,7 @@ class IFlagFSErr(enum.IntFlag):
     Used:
     - flag.FSErr > 0x...
     """
+
     Exp3d = 1  # Expired 3 days
     Exp30d = 2  # Expired 30 days
     Full90 = 4  # FS filled upt to 90%
@@ -208,9 +217,11 @@ class IFlagFSErr(enum.IntFlag):
 
 class IFlagFRMode(enum.IntFlag):
     """FR working mode.
+
     Used:
     - flag.FRModes > 0x...
     """
+
     Enc = enum.auto()  # Encryption
     Alone = enum.auto()  # Autonomous mode
     Auto = enum.auto()  # Automatic mode
@@ -221,6 +232,7 @@ class IFlagFRMode(enum.IntFlag):
 
 class IFlagTax(enum.IntFlag):
     """Tax type."""
+
     General = enum.auto()
     Simple = enum.auto()
     SimpleP = enum.auto()
@@ -231,6 +243,7 @@ class IFlagTax(enum.IntFlag):
 
 class IFlagAgent(enum.IntFlag):
     """Agent types."""
+
     Mode0 = enum.auto()
     Mode1 = enum.auto()
     Mode2 = enum.auto()

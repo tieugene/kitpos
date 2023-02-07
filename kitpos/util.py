@@ -100,16 +100,16 @@ def b2ut(v: bytes) -> datetime.datetime:
 
 
 def b2dt(v: Tuple[int, int, int, int, int]) -> datetime.datetime:
-    """Convert 5xInt to datetime"""
+    """Convert 5xInt to datetime."""
     return datetime.datetime(2000 + v[0], v[1], v[2], v[3], v[4])
 
 
 # ----
 def bytes2frame(data: bytes) -> bytes:  # TODO: rename to frame_unpack
     """Wrap data into frame: <header><len><cmd>[data]<crc>."""
-    if (l := len(data)) > 1024:  # cmd[1] + payload[1023]
-        raise exc.KitPOSFrameError(f"Data too long: {l} bytes.")
-    return const.FRAME_HEADER + (inner := (len(data)).to_bytes(2, 'big') + data) + crc(inner).to_bytes(2, 'little')
+    if (l_data := len(data)) > 1024:  # cmd[1] + payload[1023]
+        raise exc.KitPOSFrameError(f"Data too long: {l_data} bytes.")
+    return const.FRAME_HEADER + (inner := l_data.to_bytes(2, 'big') + data) + crc(inner).to_bytes(2, 'little')
 
 
 def frame2bytes(data: bytes) -> bytes:  # TODO: rename to frame_pack
