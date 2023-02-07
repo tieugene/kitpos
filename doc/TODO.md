@@ -1,12 +1,6 @@
 # TODO
 
 - [ ] Fixing (0.0.1):
-  + [x] Rename to `kitpos`
-  + [ ] Packaging:
-    - [x] `python-kitpos.spec`
-    - [x] `pyproject.toml` (PEP-621)
-    - [ ] `tox.ini`
-    - [x] ~~`requirements.txt`, `setup.py`, `setup,cfg`, `MANIFEST.in`~~
   + [ ] Dox
   + [ ] Lint:
     - [x] `pydocstyle`
@@ -36,6 +30,7 @@
   + [ ] 41: CorBSO
   + [ ]  7: OpConfirm
 - [ ] Misc
+  + [ ] `tox.ini`
   + [ ] Async txrx
   + [ ] Multitag
   + [ ] Online tests (w/ live FRs)
