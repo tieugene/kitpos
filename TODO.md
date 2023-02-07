@@ -1,13 +1,13 @@
 # TODO
 
 - [ ] Fixing (0.0.1):
-  + [ ] Rename to `kitpos`
-  + [ ] Logging(v)
+  + [x] Rename to `kitpos`
+  + [ ] Packaging (`requirements.txt`, `setup.{py,cfg}`, `kitpos.spec`, `?MANIFEST.in`, `?tox.*`)
   + [ ] Dox
+  + [ ] Lint, coverage
   + [ ] Exceptions (catch, wrap into KitPOS&hellip;)
   + [ ] Tests
-  + [ ] Lint, coverage
-  + [ ] Packaging (`requirements.txt`, `setup.{py,cfg}`, `kitpos.spec`, `?MANIFEST.in`, `?tox.*`)
+  + [ ] Logging(v)
 - [ ] Sequences:
   + [ ] SessionOpen
   + [ ] SessionClose
