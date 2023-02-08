@@ -4,13 +4,9 @@
 class KitPOSError(RuntimeError):
     """KitPOS basic error."""
 
-    ...
-
 
 class KitPOSWarning(RuntimeWarning):
     """KitPOS basic warning."""
-
-    ...
 
 
 class KitPOSTxtError(KitPOSError):
@@ -31,17 +27,9 @@ class KitPOSTxtError(KitPOSError):
 class KitPOSNetError(KitPOSTxtError):
     """KitPOS frame [un]wrap exceptions."""
 
-    def __init__(self, msg: str):
-        """No comments."""
-        super().__init__(msg)
-
 
 class KitPOSFrameError(KitPOSTxtError):
     """KitPOS frame [un]wrap exceptions."""
-
-    def __init__(self, msg: str):
-        """No comments."""
-        super().__init__(msg)
 
 
 class KitPOSResponseError(KitPOSError):
@@ -63,12 +51,8 @@ class KitPOSResponseError(KitPOSError):
 
     def __str__(self):
         """Make string representation of the exception."""
-        return "Device response '{0}' error {1}: {2}".format(self.rsname, self.code, self.desc)
+        return f"Device response '{self.rsname}' error {self.code}: {self.desc}"
 
 
 class KitPOSRspDecodeError(KitPOSTxtError):
     """KitPOS response object decoding exceptions."""
-
-    def __init__(self, msg: str):
-        """No comments."""
-        super().__init__(msg)
