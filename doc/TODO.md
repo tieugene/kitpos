@@ -6,10 +6,10 @@
     - [x] `pydocstyle`
     - [x] `flake8`
     - [ ] `pylint`
-      + [ ] cmd, flag (`import error`)
+      + [ ] cmd, flag, tag (`import error`)
       + [ ] const
       + [ ] rsp
-      + [ ] tag
+      + [x] tag
       + [x] util
   + [ ] Exceptions (catch, wrap into KitPOS&hellip;)
   + [ ] Tests
