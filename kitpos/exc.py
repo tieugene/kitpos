@@ -1,16 +1,16 @@
 """Exceptions."""
 
 
-class KitPOSError(RuntimeError):
+class Kpe(RuntimeError):
     """KitPOS basic error."""
 
 
-class KitPOSWarning(RuntimeWarning):
+class Kpw(RuntimeWarning):
     """KitPOS basic warning."""
 
 
-class KitPOSTxtError(KitPOSError):
-    """KitPOS commented exceptions."""
+class KpeNoted(Kpe):
+    """KitPOS annotated errer exceptions."""
 
     msg: str
 
@@ -24,15 +24,15 @@ class KitPOSTxtError(KitPOSError):
         return self.msg
 
 
-class KitPOSNetError(KitPOSTxtError):
+class KpeNet(KpeNoted):
     """KitPOS frame [un]wrap exceptions."""
 
 
-class KitPOSFrameError(KitPOSTxtError):
+class KpeFrame(KpeNoted):
     """KitPOS frame [un]wrap exceptions."""
 
 
-class KitPOSResponseError(KitPOSError):
+class KpePOS(Kpe):
     """POS error response."""
 
     code: int       # Result/ErrorInfo/Code
@@ -54,5 +54,5 @@ class KitPOSResponseError(KitPOSError):
         return f"Device response '{self.rsname}' error {self.code}: {self.desc}"
 
 
-class KitPOSRspDecodeError(KitPOSTxtError):
+class KpeRspDecode(KpeNoted):
     """KitPOS response object decoding exceptions."""

@@ -19,7 +19,7 @@ def _dt2str(datime: datetime.datetime) -> str:
 def _data_decode(data: bytes, fmt: str, cls) -> Tuple[Any]:
     """Check and decode data length against struct format."""
     if (l_data := len(data)) != (l_fmt := struct.calcsize(fmt)):
-        raise exc.KitPOSRspDecodeError(f"{cls.__name__}: bad data len: {l_data} (must be {l_fmt}).")
+        raise exc.KpeRspDecode(f"{cls.__name__}: bad data len: {l_data} (must be {l_fmt}).")
     return struct.unpack(fmt, data)
 
 
@@ -68,7 +68,7 @@ class RspOK(RspBase):
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
         if l_data := len(data):
-            raise exc.KitPOSRspDecodeError(f"{cls.__name__}: bad data len: {l_data} (must be 0).")
+            raise exc.KpeRspDecode(f"{cls.__name__}: bad data len: {l_data} (must be 0).")
         return RspOK()
 
 
@@ -353,11 +353,11 @@ class RspGetDocInfo(RspBase):
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
         if (l_data := len(data)) <= 3:
-            raise exc.KitPOSRspDecodeError(f"{cls.__name__}: too few data: {l_data} bytes.")
+            raise exc.KpeRspDecode(f"{cls.__name__}: too few data: {l_data} bytes.")
         # 1. decode last
         doc_type = const.IEnumADocType(data[0])  # ValueSomething exception if unknown
         if (doc_class := ADOC_CLASS.get(doc_type)) is None:
-            raise exc.KitPOSRspDecodeError(
+            raise exc.KpeRspDecode(
                 f"{cls.__name__}: Doc type={doc_type} unprocessable yet ({util.b2hex(data[1:])})."
             )
         doc = doc_class.from_bytes(data[2:])
@@ -407,9 +407,9 @@ class RspGetDateTime(RspBase):
         """Deserialize object."""
         val = _data_decode(data, '<HHBBBBB', cls)  # 9; TODO: quick hack of TLV
         if val[0] != 30000:
-            raise exc.KitPOSRspDecodeError(f"{cls.__name__}: bad TAG: {val[0]}")
+            raise exc.KpeRspDecode(f"{cls.__name__}: bad TAG: {val[0]}")
         if val[1] != 5:
-            raise exc.KitPOSRspDecodeError(f"{cls.__name__}: bad TLV len: {val[1]}")
+            raise exc.KpeRspDecode(f"{cls.__name__}: bad TLV len: {val[1]}")
         return cls(
             datime=util.b2dt(val[2:])
         )
@@ -490,4 +490,4 @@ def bytes2rsp(cmd_code: const.IEnumCmd, data: bytes) -> RspBase:
     """Decode inbound bytes into RspX object."""
     if (rsp := _CODE2CLASS.get(cmd_code)) is not None:
         return rsp.from_bytes(data)
-    raise exc.KitPOSRspDecodeError(f"Unknown response object (cmd {cmd_code}): {util.b2hex(data)}")
+    raise exc.KpeRspDecode(f"Unknown response object (cmd {cmd_code}): {util.b2hex(data)}")

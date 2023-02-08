@@ -3,7 +3,8 @@
 from typing import Optional
 import socket
 import time
-
+# 3. local
+from kitpos import const
 
 def txrx(
         host: str,
@@ -24,7 +25,7 @@ def txrx(
     with socket.create_connection((host, port), timeout=conn_timeout or socket.getdefaulttimeout()) as sock:
         sock.sendall(data_out)  # or .send()
         retvalue = __rx(sock)
-        if retvalue == b'\xb6\x29' and txrx_timeout:  # hack: wait for slow response after single FRAME_HEADER
+        if retvalue == const.FRAME_HEADER and txrx_timeout:  # hack: wait for slow response after single FRAME_HEADER
             time.sleep(txrx_timeout)
             retvalue += __rx(sock)
         return retvalue
