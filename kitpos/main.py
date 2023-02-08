@@ -16,11 +16,11 @@ def __mk_args_parser() -> argparse.ArgumentParser:
     """TODO: [RTFM](https://habr.com/ru/post/466999/)."""
     def __mk_subhelp() -> str:
         retvalue = 'command:'
-        for k, v in cli.COMMANDS.items():
-            if isinstance(v, tuple):
-                retvalue += f"\n  {k} {v[1]}: {v[0].__doc__}"
+        for k, val in cli.COMMANDS.items():
+            if isinstance(val, tuple):
+                retvalue += f"\n  {k} {val[1]}: {val[0].__doc__}"
             else:
-                retvalue += f"\n  {k}: {v.__doc__}"
+                retvalue += f"\n  {k}: {val.__doc__}"
         return retvalue
     parser = argparse.ArgumentParser(
         prog="kitpos",
@@ -37,21 +37,31 @@ def __mk_args_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def __do_it(host: str, port: int, cmd_name: str, arg: Optional[str], dry_run: bool, from_file: bool, verbose: bool):
-    __cmd_XX = cli.COMMANDS[cmd_name]
-    if isinstance(__cmd_XX, FunctionType):
-        cmd_object = __cmd_XX()
+def __do_it(host: str, port: int, cmd_name: str, arg: Optional[str], dry_run: bool, from_file: bool, _: bool):
+    """
+
+    :param host: POS IP
+    :param port: POS TCP/IP port
+    :param cmd_name: Command to execute
+    :param arg: Command argument (optional)
+    :param dry_run: If True: dump bytes to send and exit
+    :param from_file: Whether read json data from file instead of argv
+    :param _: Be verbose
+    """
+    __cmd_xx = cli.COMMANDS[cmd_name]
+    if isinstance(__cmd_xx, FunctionType):
+        cmd_object = __cmd_xx()
     else:  # isinstance(__cmd_XX, tuple)
-        if __cmd_XX[1] == cli.JSON_ARG:
+        if __cmd_xx[1] == cli.JSON_ARG:
             if arg is None:
                 print("JSON data required")
                 return
             if from_file:
-                with open(arg, 'rt') as fp:
-                    arg = json.load(fp)
+                with open(arg, 'rt', encoding='utf-8') as infile:
+                    arg = json.load(infile)
             else:
                 arg = json.loads(arg)
-        cmd_object = __cmd_XX[0](arg)
+        cmd_object = __cmd_xx[0](arg)
     if cmd_object is None:
         return
     bytes_o = cmd_object.to_bytes()  # 1. make command...
@@ -65,9 +75,9 @@ def __do_it(host: str, port: int, cmd_name: str, arg: Optional[str], dry_run: bo
     # - unwrap frame
     payload_i = util.frame2bytes(frame_i)
     # - ok/err
-    ok, bytes_i = util.bytes_as_response(payload_i)
+    decoded_ok, bytes_i = util.bytes_as_response(payload_i)
     # - dispatch last
-    if ok:
+    if decoded_ok:
         cmd_class = type(cmd_object)
         rsp_object = rsp.bytes2rsp(cmd_class.cmd_id, bytes_i)
         print(rsp_object.str('\n'))

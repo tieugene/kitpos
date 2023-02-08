@@ -6,9 +6,10 @@
     - [x] `pydocstyle`
     - [x] `flake8`
     - [ ] `pylint`
-    - [ ] coverage
+      + [ ] `import error`: cmd, flag
   + [ ] Exceptions (catch, wrap into KitPOS&hellip;)
   + [ ] Tests
+    - [ ] coverage
   + [ ] Logging(v)
 - [ ] Sequences:
   + [ ] SessionOpen
