@@ -38,7 +38,7 @@ def __mk_args_parser() -> argparse.ArgumentParser:
 
 
 def __do_it(host: str, port: int, cmd_name: str, arg: Optional[str], dry_run: bool, from_file: bool, _: bool):
-    """
+    """Execute CLI.
 
     :param host: POS IP
     :param port: POS TCP/IP port

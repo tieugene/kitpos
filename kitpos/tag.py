@@ -60,143 +60,143 @@ def tag_list_unpack(t_list: bytes) -> TagDict:
 
 # Tag: (json_2_value, value_2_bytes (pack), bytes_2_value (unpack))
 TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
-    const.IEnumTag.Tag_1008: (
+    const.IEnumTag.TAG_1008: (
         lambda v: v[:64].strip(),
         lambda v: util.s2b(v[:64]),
         util.b2s),
-    const.IEnumTag.Tag_1009: (
+    const.IEnumTag.TAG_1009: (
         lambda v: v[:164].strip(),
         lambda v: util.s2b(v[:164]),
         util.b2s),
-    const.IEnumTag.Tag_1017: (
+    const.IEnumTag.TAG_1017: (
         lambda v: v[:12].strip(),
         lambda v: util.s2b(v[:12]).ljust(12),
         util.b2s),
-    const.IEnumTag.Tag_1021: (
+    const.IEnumTag.TAG_1021: (
         lambda v: v[:64].strip(),
         lambda v: util.s2b(v[:64]),
         util.b2s),
-    const.IEnumTag.Tag_1023: (
+    const.IEnumTag.TAG_1023: (
         lambda v: v,
         util.n2fvln,
         util.fvln2n),  # FVLN; 0x2B
-    const.IEnumTag.Tag_1030: (
+    const.IEnumTag.TAG_1030: (
         lambda v: v[:128].strip(),
         lambda v: util.s2b(v[:128]),
         util.b2s),
-    const.IEnumTag.Tag_1031: (
+    const.IEnumTag.TAG_1031: (
         lambda v: v,
         util.ui2vln,
         util.b2ui),  # VLN
-    const.IEnumTag.Tag_1036: (
+    const.IEnumTag.TAG_1036: (
         lambda v: v[:21].strip(),
         lambda v: util.s2b(v[:21]),
         util.b2s),
-    const.IEnumTag.Tag_1046: (
+    const.IEnumTag.TAG_1046: (
         lambda v: v[:64].strip(),
         lambda v: util.s2b(v[:64]),
         util.b2s),
-    const.IEnumTag.Tag_1048: (
+    const.IEnumTag.TAG_1048: (
         lambda v: v[:128].strip(),
         lambda v: util.s2b(v[:128]),
         util.b2s),
-    const.IEnumTag.Tag_1055: (
+    const.IEnumTag.TAG_1055: (
         flag.TaxModes,  # byte[1] == int
         lambda v: v.as_bytes(),
         lambda v: flag.TaxModes(util.b2ui(v))),  # 0x2D, 0x2E; FIXME: .bit_count() == 1
-    const.IEnumTag.Tag_1059: (
+    const.IEnumTag.TAG_1059: (
         json2tagdict,
         tag_dict_pack,
         tag_list_unpack),  # STLV; recur
-    const.IEnumTag.Tag_1079: (
+    const.IEnumTag.TAG_1079: (
         lambda v: v,
         util.ui2vln,
         util.b2ui),  # VLN
-    const.IEnumTag.Tag_1081: (
+    const.IEnumTag.TAG_1081: (
         lambda v: v,
         util.ui2vln,
         util.b2ui),  # VLN
-    const.IEnumTag.Tag_1102: (
+    const.IEnumTag.TAG_1102: (
         lambda v: v,
         util.ui2vln,
         util.b2ui),  # VLN
-    const.IEnumTag.Tag_1103: (
+    const.IEnumTag.TAG_1103: (
         lambda v: v,
         util.ui2vln,
         util.b2ui),  # VLN
-    const.IEnumTag.Tag_1104: (
+    const.IEnumTag.TAG_1104: (
         lambda v: v,
         util.ui2vln,
         util.b2ui),  # VLN
-    const.IEnumTag.Tag_1105: (
+    const.IEnumTag.TAG_1105: (
         lambda v: v,
         util.ui2vln,
         util.b2ui),  # VLN
-    const.IEnumTag.Tag_1106: (
+    const.IEnumTag.TAG_1106: (
         lambda v: v,
         util.ui2vln,
         util.b2ui),  # VLN
-    const.IEnumTag.Tag_1107: (
+    const.IEnumTag.TAG_1107: (
         lambda v: v,
         util.ui2vln,
         util.b2ui),  # VLN
-    const.IEnumTag.Tag_1117: (
+    const.IEnumTag.TAG_1117: (
         lambda v: v[:64].strip(),
         lambda v: util.s2b(v[:64]),
         util.b2s),
-    const.IEnumTag.Tag_1173: (
+    const.IEnumTag.TAG_1173: (
         lambda v: v,
         util.l2b,
         util.b2l),
-    const.IEnumTag.Tag_1174: (
+    const.IEnumTag.TAG_1174: (
         json2tagdict,
         tag_dict_pack,
         tag_list_unpack),  # STLV; recur
-    const.IEnumTag.Tag_1177: (
+    const.IEnumTag.TAG_1177: (
         lambda v: v[:255].strip(),
         lambda v: util.s2b(v[:255]),
         util.b2s),
-    const.IEnumTag.Tag_1178: (
+    const.IEnumTag.TAG_1178: (
         datetime.datetime.fromisoformat,
         lambda v: util.ui2b4(int(v.timestamp())),  # FIXME: hours
         util.b2ut),  # Unixtime(y,d,m[,h]), bytes[4]; 0x2E
-    const.IEnumTag.Tag_1179: (
+    const.IEnumTag.TAG_1179: (
         lambda v: v[:32].strip(),
         lambda v: util.s2b(v[:32]),
         util.b2s),
-    const.IEnumTag.Tag_1187: (
+    const.IEnumTag.TAG_1187: (
         lambda v: v[:64].strip(),
         lambda v: util.s2b(v[:64]),
         util.b2s),
-    const.IEnumTag.Tag_1192: (
+    const.IEnumTag.TAG_1192: (
         lambda v: v[:16].strip(),
         lambda v: util.s2b(v[:16]),
         util.b2s),
-    const.IEnumTag.Tag_1199: (
+    const.IEnumTag.TAG_1199: (
         const.IEnumVAT,
         lambda v: util.ui2b1(v.value),
         lambda v: const.IEnumVAT(util.b2ui(v))),
-    const.IEnumTag.Tag_1203: (
+    const.IEnumTag.TAG_1203: (
         lambda v: v[:12].strip(),
         lambda v: util.s2b(v[:12]).ljust(12),
         util.b2s),
-    const.IEnumTag.Tag_1212: (
+    const.IEnumTag.TAG_1212: (
         lambda v: v,
         util.ui2b1,
         util.b2ui),  # TODO: enum
-    const.IEnumTag.Tag_1214: (
+    const.IEnumTag.TAG_1214: (
         lambda v: v,
         util.ui2b1,
         util.b2ui),  # TODO: enum
-    const.IEnumTag.Tag_1215: (
+    const.IEnumTag.TAG_1215: (
         lambda v: v,
         util.ui2vln,
         util.b2ui),  # VLN
-    const.IEnumTag.Tag_1216: (
+    const.IEnumTag.TAG_1216: (
         lambda v: v,
         util.ui2vln,
         util.b2ui),  # VLN
-    const.IEnumTag.Tag_1217: (
+    const.IEnumTag.TAG_1217: (
         lambda v: v,
         util.ui2vln,
         util.b2ui),  # VLN

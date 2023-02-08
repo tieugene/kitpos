@@ -81,13 +81,13 @@ def test_rsp_get_date_time():
 
 def test_bytes2rsp():
     cls_list = (
-        const.IEnumCmd.GetDeviceStatus,
-        const.IEnumCmd.GetDeviceModel,
-        const.IEnumCmd.GetStorageStatus,
-        const.IEnumCmd.GetRegisterParms,
-        const.IEnumCmd.GetOFDXchgStatus,
-        const.IEnumCmd.SetDateTime,
-        const.IEnumCmd.GetDateTime,
+        const.IEnumCmd.GET_POS_STATUS,
+        const.IEnumCmd.GET_POS_MODEL,
+        const.IEnumCmd.GET_FS_STATUS,
+        const.IEnumCmd.GET_REG_PARMS,
+        const.IEnumCmd.GET_OFD_XCHG_STATUS,
+        const.IEnumCmd.SET_DATETIME,
+        const.IEnumCmd.GET_DATETIME,
     )
     for i, c in enumerate(cls_list):
         assert rsp.bytes2rsp(c, RSP[i]) is not None  # compare type

@@ -27,7 +27,6 @@ def _data_decode(data: bytes, fmt: str, cls) -> Tuple[Any]:
 class RspBase:
     """Base for response."""
 
-    @property
     def cls_name(self) -> str:
         """Class name shorthand."""
         return self.__class__.__name__
@@ -38,7 +37,7 @@ class RspBase:
 
     def __str__(self) -> str:
         """Make string representation of response object."""
-        return f"{self.cls_name}: {self.str()}"
+        return f"{self.cls_name()}: {self.str()}"
 
 
 @dataclass
@@ -333,12 +332,12 @@ class ADocCorReceipt(ADocReceipt):
 
 
 ADOC_CLASS = {
-    const.IEnumADocType.RegRpt: ADocRegRpt,
-    const.IEnumADocType.ReRegRpt: ADocReRegRpt,
-    const.IEnumADocType.SesOpenRpt: ADocSesOpenRpt,
-    const.IEnumADocType.SesCloseRpt: ADocSesCloseRpt,
-    const.IEnumADocType.Receipt: ADocReceipt,
-    const.IEnumADocType.CorReceipt: ADocCorReceipt,
+    const.IEnumADocType.REG_RPT: ADocRegRpt,
+    const.IEnumADocType.RE_REG_RPT: ADocReRegRpt,
+    const.IEnumADocType.SES_OPEN_RPT: ADocSesOpenRpt,
+    const.IEnumADocType.SES_CLOSE_RPT: ADocSesCloseRpt,
+    const.IEnumADocType.RECEIPT: ADocReceipt,
+    const.IEnumADocType.COR_RECEIPT: ADocCorReceipt,
 }
 
 
@@ -460,30 +459,30 @@ class RspReceiptCommit(RspBase):
 
 # ----
 _CODE2CLASS = {
-    const.IEnumCmd.GetDeviceStatus: RspGetDeviceStatus,
-    const.IEnumCmd.GetDeviceModel: RspGetDeviceModel,
-    const.IEnumCmd.GetStorageStatus: RspGetStorageStatus,
-    const.IEnumCmd.GetRegisterParms: RspGetRegisterParms,
-    const.IEnumCmd.DocCancel: RspOK,
-    const.IEnumCmd.GetCurSession: RspGetCurSession,
-    const.IEnumCmd.SessionOpenBegin: RspOK,
-    const.IEnumCmd.SessionOpenCommit: RspSessionOpenCommit,
-    const.IEnumCmd.SessionCloseBegin: RspOK,
-    const.IEnumCmd.SessionCloseCommit: RspSessionCloseCommit,
-    const.IEnumCmd.GetDocInfo: RspGetDocInfo,
-    const.IEnumCmd.GetDocData: RspGetDocData,
-    const.IEnumCmd.GetOFDXchgStatus: RspGetOFDXchgStatus,
-    const.IEnumCmd.SetDateTime: RspOK,
-    const.IEnumCmd.GetDateTime: RspGetDateTime,
-    const.IEnumCmd.CorrReceiptBegin: RspOK,
-    const.IEnumCmd.CorrReceiptData: RspOK,
-    const.IEnumCmd.CorrReceiptAutomat: RspOK,
-    const.IEnumCmd.CorrReceiptCommit: RspCorrReceiptCommit,
-    const.IEnumCmd.ReceiptBegin: RspOK,
-    const.IEnumCmd.ReceiptItem: RspOK,
-    const.IEnumCmd.ReceiptPayment: RspOK,
-    const.IEnumCmd.ReceiptAutomat: RspOK,
-    const.IEnumCmd.ReceiptCommit: RspReceiptCommit,
+    const.IEnumCmd.GET_POS_STATUS: RspGetDeviceStatus,
+    const.IEnumCmd.GET_POS_MODEL: RspGetDeviceModel,
+    const.IEnumCmd.GET_FS_STATUS: RspGetStorageStatus,
+    const.IEnumCmd.GET_REG_PARMS: RspGetRegisterParms,
+    const.IEnumCmd.DOC_CANCEL: RspOK,
+    const.IEnumCmd.GET_CUR_SES: RspGetCurSession,
+    const.IEnumCmd.SES_OPEN_BEGIN: RspOK,
+    const.IEnumCmd.SES_OPEN_COMMIT: RspSessionOpenCommit,
+    const.IEnumCmd.SES_CLOSE_BEGIN: RspOK,
+    const.IEnumCmd.SES_CLOSE_COMMIT: RspSessionCloseCommit,
+    const.IEnumCmd.GET_DOC_INFO: RspGetDocInfo,
+    const.IEnumCmd.GET_DOC_DATA: RspGetDocData,
+    const.IEnumCmd.GET_OFD_XCHG_STATUS: RspGetOFDXchgStatus,
+    const.IEnumCmd.SET_DATETIME: RspOK,
+    const.IEnumCmd.GET_DATETIME: RspGetDateTime,
+    const.IEnumCmd.COR_RCP_BEGIN: RspOK,
+    const.IEnumCmd.COR_RCP_DATA: RspOK,
+    const.IEnumCmd.COR_RCP_AUTOMAT: RspOK,
+    const.IEnumCmd.COR_RCP_COMMIT: RspCorrReceiptCommit,
+    const.IEnumCmd.RCP_BEGIN: RspOK,
+    const.IEnumCmd.RCP_ITEM: RspOK,
+    const.IEnumCmd.RCP_PAYMENT: RspOK,
+    const.IEnumCmd.RCP_AUTOMAT: RspOK,
+    const.IEnumCmd.RCP_COMMIT: RspReceiptCommit,
 }
 
 

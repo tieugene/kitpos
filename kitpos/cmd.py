@@ -38,37 +38,37 @@ class _CmdBase:
 class CmdGetDeviceStatus(_CmdBase):
     """0x01: Get POS status."""
 
-    cmd_id = const.IEnumCmd.GetDeviceStatus
+    cmd_id = const.IEnumCmd.GET_POS_STATUS
 
 
 class CmdGetDeviceModel(_CmdBase):
     """0x04: Get POS model."""
 
-    cmd_id = const.IEnumCmd.GetDeviceModel
+    cmd_id = const.IEnumCmd.GET_POS_MODEL
 
 
 class CmdGetStorageStatus(_CmdBase):
     """0x08: Get FS status."""
 
-    cmd_id = const.IEnumCmd.GetStorageStatus
+    cmd_id = const.IEnumCmd.GET_FS_STATUS
 
 
 class CmdGetRegisterParms(_CmdBase):
     """0x0A: Get POS/FS registering parameters."""
 
-    cmd_id = const.IEnumCmd.GetRegisterParms
+    cmd_id = const.IEnumCmd.GET_REG_PARMS
 
 
 class CmdDocCancel(_CmdBase):
     """0x10: Cancel any opened document."""
 
-    cmd_id = const.IEnumCmd.DocCancel
+    cmd_id = const.IEnumCmd.DOC_CANCEL
 
 
 class CmdGetCurSession(_CmdBase):
     """0x20: Get current session params."""
 
-    cmd_id = const.IEnumCmd.GetCurSession
+    cmd_id = const.IEnumCmd.GET_CUR_SES
 
 
 class _CmdSessionAnyBegin(_CmdBase):
@@ -91,25 +91,25 @@ class _CmdSessionAnyBegin(_CmdBase):
 class CmdSessionOpenBegin(_CmdSessionAnyBegin):
     """0x21: Begin opening session."""
 
-    cmd_id = const.IEnumCmd.SessionOpenBegin
+    cmd_id = const.IEnumCmd.SES_OPEN_BEGIN
 
 
 class CmdSessionOpenCommit(_CmdBase):
     """0x22: Commit opening session."""
 
-    cmd_id = const.IEnumCmd.SessionOpenCommit
+    cmd_id = const.IEnumCmd.SES_OPEN_COMMIT
 
 
 class CmdSessionCloseBegin(_CmdSessionAnyBegin):
     """0x29: Begin closing session."""
 
-    cmd_id = const.IEnumCmd.SessionCloseBegin
+    cmd_id = const.IEnumCmd.SES_CLOSE_BEGIN
 
 
 class CmdSessionCloseCommit(_CmdBase):
     """0x2A: Commit opening session."""
 
-    cmd_id = const.IEnumCmd.SessionCloseCommit
+    cmd_id = const.IEnumCmd.SES_CLOSE_COMMIT
 
 
 class _CmdGetDocAny(_CmdBase):
@@ -129,25 +129,25 @@ class _CmdGetDocAny(_CmdBase):
 class CmdGetDocInfo(_CmdGetDocAny):
     """0x30: Find document by its number."""
 
-    cmd_id = const.IEnumCmd.GetDocInfo
+    cmd_id = const.IEnumCmd.GET_DOC_INFO
 
 
 class CmdGetDocData(_CmdGetDocAny):
     """0x3A: Read document content."""
 
-    cmd_id = const.IEnumCmd.GetDocData
+    cmd_id = const.IEnumCmd.GET_DOC_DATA
 
 
 class CmdGetOFDXchgStatus(_CmdBase):
     """0x50: Get OFD exchange status."""
 
-    cmd_id = const.IEnumCmd.GetOFDXchgStatus
+    cmd_id = const.IEnumCmd.GET_OFD_XCHG_STATUS
 
 
 class CmdSetDateTime(_CmdBase):
     """0x72: Set POS date/time."""
 
-    cmd_id = const.IEnumCmd.SetDateTime
+    cmd_id = const.IEnumCmd.SET_DATETIME
     datime: datetime.datetime
 
     def __init__(self, datime: datetime.datetime):
@@ -171,7 +171,7 @@ class CmdSetDateTime(_CmdBase):
 class CmdGetDateTime(_CmdBase):
     """0x73: Get POS date/time."""
 
-    cmd_id = const.IEnumCmd.GetDateTime
+    cmd_id = const.IEnumCmd.GET_DATETIME
 
 
 class CmdCorrReceiptBegin(_CmdBase):
@@ -180,7 +180,7 @@ class CmdCorrReceiptBegin(_CmdBase):
     Response: RspOK
     """
 
-    cmd_id = const.IEnumCmd.CorrReceiptBegin
+    cmd_id = const.IEnumCmd.COR_RCP_BEGIN
 
 
 class CmdCorrReceiptData(_CmdBase):
@@ -190,7 +190,7 @@ class CmdCorrReceiptData(_CmdBase):
     """
 
     __tags = (1021, 1203, 1173, 1055, 1031, 1081, 1215, 1216, 1217, 1102, 1103, 1104, 1105, 1106, 1107, 1174)
-    cmd_id = const.IEnumCmd.CorrReceiptData
+    cmd_id = const.IEnumCmd.COR_RCP_DATA
     payload: tag.TagDict
 
     def __init__(self, payload: tag.TagDict):
@@ -215,7 +215,7 @@ class CmdCorrReceiptAutomat(_CmdBase):
     """
 
     __tags = (1009, 1187, 1036)
-    cmd_id = const.IEnumCmd.CorrReceiptAutomat
+    cmd_id = const.IEnumCmd.COR_RCP_AUTOMAT
     payload: tag.TagDict
 
     def __init__(self, payload: tag.TagDict):
@@ -238,7 +238,7 @@ class CmdCorrReceiptCommit(_CmdBase):
     Response: RspCorrReceiptCommit
     """
 
-    cmd_id = const.IEnumCmd.CorrReceiptCommit
+    cmd_id = const.IEnumCmd.COR_RCP_COMMIT
     req_type: const.IEnumReceiptType
     total: int
 
@@ -264,7 +264,7 @@ class CmdReceiptBegin(_CmdBase):
     Response: RspOK
     """
 
-    cmd_id = const.IEnumCmd.ReceiptBegin
+    cmd_id = const.IEnumCmd.RCP_BEGIN
 
 
 class CmdReceiptItem(_CmdBase):
@@ -274,7 +274,7 @@ class CmdReceiptItem(_CmdBase):
     """
 
     __1059_tags = (1030, 1079, 1023, 1199, 1214, 1212)
-    cmd_id = const.IEnumCmd.ReceiptItem
+    cmd_id = const.IEnumCmd.RCP_ITEM
     payload: tag.TagDict
 
     def __init__(self, payload: tag.TagDict):
@@ -285,7 +285,7 @@ class CmdReceiptItem(_CmdBase):
         super().__init__()
         if not (len(payload) == 1 and 1059 in payload):
             raise RuntimeError("The only '1059' tag required.")
-        self.chk_tags(payload[const.IEnumTag.Tag_1059], self.__1059_tags)
+        self.chk_tags(payload[const.IEnumTag.TAG_1059], self.__1059_tags)
         self.payload = payload
 
     def to_bytes(self) -> bytes:
@@ -300,7 +300,7 @@ class CmdReceiptAutomat(_CmdBase):
     """
 
     __tags = (1009, 1187, 1036)
-    cmd_id = const.IEnumCmd.ReceiptAutomat
+    cmd_id = const.IEnumCmd.RCP_AUTOMAT
     payload: tag.TagDict
 
     def __init__(self, payload: tag.TagDict):
@@ -325,7 +325,7 @@ class CmdReceiptPayment(_CmdBase):
 
     __tags = (1055, 1031, 1081, 1215, 1216, 1217)
     __opts = (1021, 1203, 1008, 1192)  # ... 1228, 1227, 1085, 1086
-    cmd_id = const.IEnumCmd.ReceiptPayment
+    cmd_id = const.IEnumCmd.RCP_PAYMENT
     payload: tag.TagDict
 
     def __init__(self, payload: tag.TagDict):
@@ -348,7 +348,7 @@ class CmdReceiptCommit(_CmdBase):
     Response: RspReceiptCommit
     """
 
-    cmd_id = const.IEnumCmd.ReceiptCommit
+    cmd_id = const.IEnumCmd.RCP_COMMIT
     req_type: const.IEnumReceiptType
     total: int
     notes: Optional[str]

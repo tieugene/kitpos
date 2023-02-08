@@ -2,15 +2,6 @@
 
 - [ ] Fixing (0.0.1):
   + [ ] Dox
-  + [ ] Lint:
-    - [x] `pydocstyle`
-    - [x] `flake8`
-    - [ ] `pylint`
-      + [ ] cmd, flag, tag (`import error`)
-      + [ ] const
-      + [x] rsp
-      + [x] tag
-      + [x] util
   + [ ] Exceptions (catch, wrap into KitPOS&hellip;)
   + [ ] Tests
     - [ ] coverage
