@@ -21,14 +21,14 @@ class _CmdBase:
         :fixme: Add back check (extra tags)
         """
         # step #1: All required tags shipped
-        for t in tags_required:
-            if t not in payload:
-                raise RuntimeError(f"Required tag '{t}' not found in given data.")
+        for __tag in tags_required:
+            if __tag not in payload:
+                raise RuntimeError(f"Required tag '{__tag}' not found in given data.")
         # step #2: No one shipped tag excess
         __tag_set = set(tags_required).union(set(tags_optional))
-        for t in payload.keys():
-            if t.value not in __tag_set:
-                raise RuntimeError(f"Extra tag '{t.value}' in given data.")
+        for __tag in payload.keys():
+            if __tag.value not in __tag_set:
+                raise RuntimeError(f"Extra tag '{__tag.value}' in given data.")
 
     def to_bytes(self) -> bytes:
         """Serialize to bytes."""
