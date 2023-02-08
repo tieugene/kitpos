@@ -51,7 +51,7 @@ TAG2FUNC = {  # Tag: (json_2_value, value_2_bytes (pack), bytes_2_value (unpack)
         lambda v: util.b2s(v)),
     const.IEnumTag.Tag_1055: (
         lambda v: flag.TaxModes(v),  # byte[1] == int
-        lambda v: v.b(),
+        lambda v: v.as_bytes(),
         lambda v: flag.TaxModes(util.b2ui(v))),  # 0x2D, 0x2E; FIXME: .bit_count() == 1
     const.IEnumTag.Tag_1059: (
         lambda v: json2tagdict(v),
