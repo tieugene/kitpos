@@ -38,15 +38,13 @@ def __cmd_20() -> cmd.CmdGetCurSession:
     return cmd.CmdGetCurSession()
 
 
-def __cmd_21(v: Optional[str]) -> cmd.CmdSessionOpenBegin:
+def __cmd_21(val: Optional[str]) -> Optional[cmd.CmdSessionOpenBegin]:
     """Begin opening session [0 (default)|1 - skip prn]."""
-    if v:
-        if v not in {'0', '1'}:
-            print("Skip printing must be '0' or '1'.")
-        else:
-            return cmd.CmdSessionOpenBegin(v == '1')
-    else:
-        return cmd.CmdSessionOpenBegin()
+    if val:
+        if val not in {'0', '1'}:
+            return print("Skip printing must be '0' or '1'.")  # == return None
+        return cmd.CmdSessionOpenBegin(val == '1')
+    return cmd.CmdSessionOpenBegin()
 
 
 def __cmd_22() -> cmd.CmdSessionOpenCommit:
@@ -54,15 +52,13 @@ def __cmd_22() -> cmd.CmdSessionOpenCommit:
     return cmd.CmdSessionOpenCommit()
 
 
-def __cmd_29(v: Optional[str]) -> cmd.CmdSessionCloseBegin:
+def __cmd_29(val: Optional[str]) -> cmd.CmdSessionCloseBegin:
     """Begin closing session [0 (default)|1 - skip prn]."""
-    if v:
-        if v not in {'0', '1'}:
-            print("Skip printing must be '0' or '1'.")
-        else:
-            return cmd.CmdSessionCloseBegin(v == '1')
-    else:
-        return cmd.CmdSessionCloseBegin()
+    if val:
+        if val not in {'0', '1'}:
+            return print("Skip printing must be '0' or '1'.")
+        return cmd.CmdSessionCloseBegin(val == '1')
+    return cmd.CmdSessionCloseBegin()
 
 
 def __cmd_2a() -> cmd.CmdSessionCloseCommit:
@@ -70,18 +66,14 @@ def __cmd_2a() -> cmd.CmdSessionCloseCommit:
     return cmd.CmdSessionCloseCommit()
 
 
-def __cmd_30(v: Optional[str]) -> cmd.CmdGetDocInfo:
+def __cmd_30(val: Optional[str]) -> Optional[cmd.CmdGetDocInfo]:
     """Get document info."""
-    if v:
-        return cmd.CmdGetDocInfo(int(v))
-    print("Doc number required.")
+    return cmd.CmdGetDocInfo(int(val)) if val else print("Doc number required.")
 
 
-def __cmd_3a(v: Optional[str]) -> cmd.CmdGetDocData:
+def __cmd_3a(val: Optional[str]) -> Optional[cmd.CmdGetDocData]:
     """Get doc content."""
-    if v:
-        return cmd.CmdGetDocData(int(v))
-    print("Doc number required.")
+    return cmd.CmdGetDocData(int(val)) if val else print("Doc number required.")
 
 
 def __cmd_50() -> cmd.CmdGetOFDXchgStatus:
@@ -89,13 +81,12 @@ def __cmd_50() -> cmd.CmdGetOFDXchgStatus:
     return cmd.CmdGetOFDXchgStatus()
 
 
-def __cmd_72(v: Optional[str]) -> cmd.CmdSetDateTime:
+def __cmd_72(val: Optional[str]) -> Optional[cmd.CmdSetDateTime]:
     """Set POS date/time."""
-    # FIXME: convert v[0] into datitime
-    if v:
-        dt = datetime.datetime.strptime(v, '%y%m%d%H%M')  # TODO: handle exception
-        return cmd.CmdSetDateTime(dt)
-    print("Date/time required (yymmddHHMM).")
+    if val:
+        datime = datetime.datetime.strptime(val, '%y%m%d%H%M')  # TODO: handle exception
+        return cmd.CmdSetDateTime(datime)
+    return print("Date/time required (yymmddHHMM).")
 
 
 def __cmd_73() -> cmd.CmdGetDateTime:
@@ -108,22 +99,22 @@ def __cmd_25() -> cmd.CmdCorrReceiptBegin:
     return cmd.CmdCorrReceiptBegin()
 
 
-def __cmd_2e(v: Dict) -> cmd.CmdCorrReceiptData:
+def __cmd_2e(val: Dict) -> cmd.CmdCorrReceiptData:
     """Corr. Receipt. Step #2/4 - send data."""
-    return cmd.CmdCorrReceiptData(tag.json2tagdict(v))
+    return cmd.CmdCorrReceiptData(tag.json2tagdict(val))
 
 
-def __cmd_3f(v: Dict) -> cmd.CmdCorrReceiptAutomat:
+def __cmd_3f(val: Dict) -> cmd.CmdCorrReceiptAutomat:
     """Corr. Receipt. Step #3/4 - send automat number (option)."""
-    return cmd.CmdCorrReceiptAutomat(tag.json2tagdict(v))
+    return cmd.CmdCorrReceiptAutomat(tag.json2tagdict(val))
 
 
-def __cmd_26(v: Dict) -> cmd.CmdCorrReceiptCommit:
+def __cmd_26(val: Dict) -> cmd.CmdCorrReceiptCommit:
     """Corr. Receipt. Step #4/4 - commit."""
     # TODO: chk value types
     return cmd.CmdCorrReceiptCommit(
-        req_type=const.IEnumReceiptType(v['type']),
-        total=v['total']
+        req_type=const.IEnumReceiptType(val['type']),
+        total=val['total']
     )
 
 
@@ -132,28 +123,28 @@ def __cmd_23() -> cmd.CmdReceiptBegin:
     return cmd.CmdReceiptBegin()
 
 
-def __cmd_2b(v: Dict) -> cmd.CmdReceiptItem:
+def __cmd_2b(val: Dict) -> cmd.CmdReceiptItem:
     """Receipt. Step #2/6 - send receipt item."""
-    return cmd.CmdReceiptItem(tag.json2tagdict(v))
+    return cmd.CmdReceiptItem(tag.json2tagdict(val))
 
 
-def __cmd_1f(v: Dict) -> cmd.CmdReceiptAutomat:
+def __cmd_1f(val: Dict) -> cmd.CmdReceiptAutomat:
     """Receipt. Step #4/6 - send receipt automat details."""
-    return cmd.CmdReceiptAutomat(tag.json2tagdict(v))
+    return cmd.CmdReceiptAutomat(tag.json2tagdict(val))
 
 
-def __cmd_2d(v: Dict) -> cmd.CmdReceiptPayment:
+def __cmd_2d(val: Dict) -> cmd.CmdReceiptPayment:
     """Receipt. Step #5/6 - send receipt payment details."""
-    return cmd.CmdReceiptPayment(tag.json2tagdict(v))
+    return cmd.CmdReceiptPayment(tag.json2tagdict(val))
 
 
-def __cmd_24(v: Dict) -> cmd.CmdReceiptCommit:
+def __cmd_24(val: Dict) -> cmd.CmdReceiptCommit:
     """Receipt. Step #6/6 - commit."""
     # TODO: chk value types
     return cmd.CmdReceiptCommit(
-        req_type=const.IEnumReceiptType(v['type']),
-        total=v['total'],
-        notes=v.get('notes')
+        req_type=const.IEnumReceiptType(val['type']),
+        total=val['total'],
+        notes=val.get('notes')
     )
 
 

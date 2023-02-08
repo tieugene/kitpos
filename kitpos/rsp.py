@@ -28,7 +28,7 @@ class RspBase:
     """Base for response."""
 
     @property
-    def _cn(self) -> str:
+    def cls_name(self) -> str:
         """Class name shorthand."""
         return self.__class__.__name__
 
@@ -38,7 +38,7 @@ class RspBase:
 
     def __str__(self) -> str:
         """Make string representation of response object."""
-        return f"{self._cn}: {self.str()}"
+        return f"{self.cls_name}: {self.str()}"
 
 
 @dataclass
