@@ -1,11 +1,10 @@
 # TODO
 
 - [ ] Fixing (0.0.1):
-  + [ ] Dox
   + [ ] Exceptions (catch, wrap into KitPOS&hellip;)
-  + [ ] Tests
-    - [ ] coverage
+  + [ ] Tests (&rArr; coverage)
   + [ ] Logging(v)
+  + [ ] Dox
 - [ ] Sequences:
   + [ ] SessionOpen
   + [ ] SessionClose
