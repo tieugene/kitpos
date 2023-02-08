@@ -11,9 +11,9 @@ import datetime
 from kitpos import const, flag, exc, util, tag
 
 
-def _dt2str(dt: datetime.datetime) -> str:
+def _dt2str(datime: datetime.datetime) -> str:
     """Convert datime to string."""
-    return dt.strftime('%Y-%m-%d %H:%M')
+    return datime.strftime('%Y-%m-%d %H:%M')
 
 
 def _data_decode(data: bytes, fmt: str, cls) -> Tuple[Any]:
@@ -77,7 +77,7 @@ class RspOK(RspBase):
 class RspGetDeviceStatus(RspBase):
     """POS status (0x01)."""
 
-    sn: str
+    s_n: str
     datime: datetime.datetime
     err: bool  # Critical errors; TODO: chk 0/1
     prn_status: const.IEnumPrnStatus
@@ -88,15 +88,15 @@ class RspGetDeviceStatus(RspBase):
     @staticmethod
     def from_bytes(data: bytes):
         """Deserialize object."""
-        v = _data_decode(data, '12sBBBBB?B?BB', RspGetDeviceStatus)
+        val = _data_decode(data, '12sBBBBB?B?BB', RspGetDeviceStatus)
         return RspGetDeviceStatus(
-            sn=util.b2s(v[0]),
-            datime=util.b2dt(v[1:6]),
-            err=v[6],
-            prn_status=const.IEnumPrnStatus(v[7]),
-            is_fs=v[8],
-            fs_phase=const.IEnumFSphase(v[9]),
-            wtf=v[10]
+            s_n=util.b2s(val[0]),
+            datime=util.b2dt(val[1:6]),
+            err=val[6],
+            prn_status=const.IEnumPrnStatus(val[7]),
+            is_fs=val[8],
+            fs_phase=const.IEnumFSphase(val[9]),
+            wtf=val[10]
         )
 
 
@@ -118,27 +118,27 @@ class RspGetStorageStatus(RspBase):
     """Fiscal storage status (0x08)."""
 
     phase: const.IEnumFSphase
-    cur_doc: int
+    cur_doc_type: int  # TODO: enum
     is_doc: bool
     is_session_open: bool
     flags: flag.FSErrors
     datime: datetime.datetime
-    sn: str
-    last_doc_no: int
+    s_n: str
+    last_fdoc_n: int
 
     @staticmethod
     def from_bytes(data: bytes):
         """Deserialize object."""
-        v = _data_decode(data, '<BB??BBBBBB16sI', RspGetStorageStatus)
+        val = _data_decode(data, '<BB??BBBBBB16sI', RspGetStorageStatus)
         return RspGetStorageStatus(
-            phase=const.IEnumFSphase(v[0]),
-            cur_doc=const.IEnumFSCurDoc(v[1]),
-            is_doc=v[2],
-            is_session_open=v[3],
-            flags=flag.FSErrors(v[4]),
-            datime=util.b2dt(v[5:10]),
-            sn=util.b2s(v[10]),
-            last_doc_no=v[11]
+            phase=const.IEnumFSphase(val[0]),
+            cur_doc_type=const.IEnumFSCurDoc(val[1]),
+            is_doc=val[2],
+            is_session_open=val[3],
+            flags=flag.FSErrors(val[4]),
+            datime=util.b2dt(val[5:10]),
+            s_n=util.b2s(val[10]),
+            last_fdoc_n=val[11]
         )
 
 
@@ -146,7 +146,7 @@ class RspGetStorageStatus(RspBase):
 class RspGetRegisterParms(RspBase):
     """POS+FS registering parameters (0x0A)."""
 
-    rn: str
+    reg_n: str
     inn: str
     fr_mode: flag.FRModes
     tax: flag.TaxModes
@@ -155,13 +155,13 @@ class RspGetRegisterParms(RspBase):
     @staticmethod
     def from_bytes(data: bytes):
         """Deserialize object."""
-        v = _data_decode(data, '20s12sBBB', RspGetRegisterParms)
+        val = _data_decode(data, '20s12sBBB', RspGetRegisterParms)
         return RspGetRegisterParms(
-            rn=util.b2s(v[0]).rstrip(),
-            inn=util.b2s(v[1]).rstrip(),
-            fr_mode=flag.FRModes(v[2]),
-            tax=flag.TaxModes(v[3]),
-            agent=flag.AgentModes(v[4])
+            reg_n=util.b2s(val[0]).rstrip(),
+            inn=util.b2s(val[1]).rstrip(),
+            fr_mode=flag.FRModes(val[2]),
+            tax=flag.TaxModes(val[3]),
+            agent=flag.AgentModes(val[4])
         )
 
 
@@ -170,17 +170,17 @@ class RspGetCurSession(RspBase):
     """Current session params (0x20)."""
 
     opened: bool
-    ses_num: int
-    rcp_num: int
+    ses_n: int
+    rcp_n: int
 
     @classmethod
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
-        v = _data_decode(data, '<?HH', cls)
+        val = _data_decode(data, '<?HH', cls)
         return cls(
-            opened=v[0],
-            ses_num=v[1],
-            rcp_num=v[2]
+            opened=val[0],
+            ses_n=val[1],
+            rcp_n=val[2]
         )
 
 
@@ -188,18 +188,18 @@ class RspGetCurSession(RspBase):
 class _RspSessionAnyCommit(RspBase):
     """Base for RspSessionOpenCommit/RspSessionCloseCommit."""
 
-    ses_num: int
-    fd_num: int
-    fp: int
+    ses_n: int
+    fdoc_n: int
+    fpd: int
 
     @classmethod
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
-        v = _data_decode(data, '<HII', cls)
+        val = _data_decode(data, '<HII', cls)
         return cls(
-            ses_num=v[0],
-            fd_num=v[1],
-            fp=v[2]
+            ses_n=val[0],
+            fdoc_n=val[1],
+            fpd=val[2]
         )
 
 
@@ -221,26 +221,26 @@ class ADocRegRpt(ADoc):
     """Archive document. Registration report."""
 
     datime: datetime.datetime
-    no: int
-    fp: int
+    fdoc_n: int
+    fpd: int
     # ^^^ repeate because of auto __str__
     inn: str
-    rn: str
+    reg_n: str
     tax: flag.TaxModes  # TODO: really?
     mode: flag.FRModes  # TODO: really?
 
     @classmethod
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
-        v = _data_decode(data, '<BBBBBII12s20sBB', cls)  # 47
+        val = _data_decode(data, '<BBBBBII12s20sBB', cls)  # 47
         return cls(
-            datime=util.b2dt(v[0:5]),
-            no=v[5],
-            fp=v[6],
-            inn=util.b2s(v[7]).rstrip(),
-            rn=util.b2s(v[8]).rstrip(),
-            tax=flag.TaxModes(v[9]),
-            mode=flag.FRModes(v[10])
+            datime=util.b2dt(val[0:5]),
+            fdoc_n=val[5],
+            fpd=val[6],
+            inn=util.b2s(val[7]).rstrip(),
+            reg_n=util.b2s(val[8]).rstrip(),
+            tax=flag.TaxModes(val[9]),
+            mode=flag.FRModes(val[10])
         )
 
 
@@ -249,10 +249,10 @@ class ADocReRegRpt(ADoc):
     """Archive document. Re-Registration report."""
 
     datime: datetime.datetime
-    no: int
-    fp: int
+    fdoc_n: int
+    fpd: int
     inn: str
-    rn: str
+    reg_n: str
     tax: flag.TaxModes  # TODO: really?
     mode: flag.FRModes  # TODO: really
     reason: const.IEnumReRegReason
@@ -260,16 +260,16 @@ class ADocReRegRpt(ADoc):
     @classmethod
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
-        v = _data_decode(data, '<BBBBBII12s20sBBB', cls)  # 48
+        val = _data_decode(data, '<BBBBBII12s20sBBB', cls)  # 48
         return cls(
-            datime=util.b2dt(v[0:5]),
-            no=v[5],
-            fp=v[6],
-            inn=util.b2s(v[7]).rstrip(),
-            rn=util.b2s(v[8]).rstrip(),
-            tax=flag.TaxModes(v[9]),
-            mode=flag.FRModes(v[10]),
-            reason=const.IEnumReRegReason(v[11])
+            datime=util.b2dt(val[0:5]),
+            fdoc_n=val[5],
+            fpd=val[6],
+            inn=util.b2s(val[7]).rstrip(),
+            reg_n=util.b2s(val[8]).rstrip(),
+            tax=flag.TaxModes(val[9]),
+            mode=flag.FRModes(val[10]),
+            reason=const.IEnumReRegReason(val[11])
         )
 
 
@@ -278,19 +278,19 @@ class _ADocSesRpt(ADoc):
     """Archive document. Session open/close report."""
 
     datime: datetime.datetime
-    no: int
-    fp: int
-    sno: int
+    fdoc_n: int
+    fpd: int
+    ses_n: int
 
     @classmethod
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
-        v = _data_decode(data, '<BBBBBIIH', cls)  # 15
+        val = _data_decode(data, '<BBBBBIIH', cls)  # 15
         return cls(
-            datime=util.b2dt(v[0:5]),
-            no=v[5],
-            fp=v[6],
-            sno=v[7]
+            datime=util.b2dt(val[0:5]),
+            fdoc_n=val[5],
+            fpd=val[6],
+            ses_n=val[7]
         )
 
 
@@ -307,21 +307,21 @@ class ADocReceipt(ADoc):
     """Archive document. Receipt."""
 
     datime: datetime.datetime
-    no: int
-    fp: int
+    fdoc_n: int
+    fpd: int
     req_type: const.IEnumReceiptType
-    amount: int
+    total: int
 
     @classmethod
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
-        v = _data_decode(data, '<BBBBBIIBBBBBB', cls)  # 19
+        val = _data_decode(data, '<BBBBBIIBBBBBB', cls)  # 19
         return cls(
-            datime=util.b2dt(v[0:5]),
-            no=v[5],
-            fp=v[6],
-            req_type=const.IEnumReceiptType(v[7]),
-            amount=(int.from_bytes(v[8:], 'little'))
+            datime=util.b2dt(val[0:5]),
+            fdoc_n=val[5],
+            fpd=val[6],
+            req_type=const.IEnumReceiptType(val[7]),
+            total=(int.from_bytes(val[8:], 'little'))
         )
 
 
@@ -389,11 +389,11 @@ class RspGetOFDXchgStatus(RspBase):
     @classmethod
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
-        v = _data_decode(data, '<BBHIBBBBB', cls)  # 13
-        return cls(  # Note: v[0..1] skipped as service
-            out_count=v[2],
-            next_doc_n=v[3],
-            next_doc_d=util.b2dt(v[4:])
+        val = _data_decode(data, '<BBHIBBBBB', cls)  # 13
+        return cls(  # Note: val[0..1] skipped as service
+            out_count=val[2],
+            next_doc_n=val[3],
+            next_doc_d=util.b2dt(val[4:])
         )
 
 
@@ -406,13 +406,13 @@ class RspGetDateTime(RspBase):
     @classmethod
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
-        v = _data_decode(data, '<HHBBBBB', cls)  # 9; TODO: quick hack of TLV
-        if v[0] != 30000:
-            raise exc.KitPOSRspDecodeError(f"{cls.__name__}: bad TAG: {v[0]}")
-        if v[1] != 5:
-            raise exc.KitPOSRspDecodeError(f"{cls.__name__}: bad TLV len: {v[1]}")
+        val = _data_decode(data, '<HHBBBBB', cls)  # 9; TODO: quick hack of TLV
+        if val[0] != 30000:
+            raise exc.KitPOSRspDecodeError(f"{cls.__name__}: bad TAG: {val[0]}")
+        if val[1] != 5:
+            raise exc.KitPOSRspDecodeError(f"{cls.__name__}: bad TLV len: {val[1]}")
         return cls(
-            datime=util.b2dt(v[2:])
+            datime=util.b2dt(val[2:])
         )
 
 
@@ -420,18 +420,18 @@ class RspGetDateTime(RspBase):
 class RspCorrReceiptCommit(RspBase):
     """Commit Corr. Receipt (0x26)."""
 
-    doc_num: int  # (2) doc number in session
-    fd_num: int  # (4) fiscal doc no
-    fp: int  # (4)
+    sdoc_n: int  # (2) doc number in session
+    fdoc_n: int  # (4) fiscal doc no
+    fpd: int  # (4)
 
     @classmethod
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
-        v = _data_decode(data, '<HII', cls)
+        val = _data_decode(data, '<HII', cls)
         return cls(
-            doc_num=v[0],
-            fd_num=v[1],
-            fp=v[2]
+            sdoc_n=val[0],
+            fdoc_n=val[1],
+            fpd=val[2]
         )
 
 
@@ -439,22 +439,22 @@ class RspCorrReceiptCommit(RspBase):
 class RspReceiptCommit(RspBase):
     """Commit Receipt (0x24)."""
 
-    doc_num: int  # (2) doc number in session
-    fd_num: int  # (4) fiscal doc no
-    fp: int  # (4)
+    sdoc_n: int  # (2) doc number in session
+    fdoc_n: int  # (4) fiscal doc no
+    fpd: int  # (4)
     datime: datetime.datetime  # (5) YMDHm
-    ses_no: int  # (2)
+    ses_n: int  # (2)
 
     @classmethod
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
-        v = _data_decode(data, '<HIIBBBBBH', cls)
+        val = _data_decode(data, '<HIIBBBBBH', cls)
         return cls(
-            doc_num=v[0],
-            fd_num=v[1],
-            fp=v[2],
-            datime=util.b2dt(v[3:8]),
-            ses_no=v[9]
+            sdoc_n=val[0],
+            fdoc_n=val[1],
+            fpd=val[2],
+            datime=util.b2dt(val[3:8]),
+            ses_n=val[9]
         )
 
 

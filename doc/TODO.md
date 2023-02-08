@@ -8,7 +8,7 @@
     - [ ] `pylint`
       + [ ] cmd, flag, tag (`import error`)
       + [ ] const
-      + [ ] rsp
+      + [x] rsp
       + [x] tag
       + [x] util
   + [ ] Exceptions (catch, wrap into KitPOS&hellip;)
