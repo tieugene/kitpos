@@ -1,6 +1,7 @@
 # TODO
 
 - [ ] Fixing (0.0.1):
+  + [ ] Python min version
   + [ ] Exceptions (catch, wrap into KitPOS&hellip;)
   + [ ] Tests (&rArr; coverage)
   + [ ] Logging(v)
@@ -29,12 +30,19 @@
   + [ ] Async txrx
   + [ ] Multitag
   + [ ] Online tests (w/ live FRs)
+- Maybe:
+  + POS State diagramm
+  + flag._Flags: metaclass
 
-## Maybe
-- [ ] FR: State diagramm
-- [ ] flag._Flags: metaclass
+## Exceptions:
 
-## Tags used:
-1009, 1021, 1023, 1030, 1031, 1036, 1055, 1059, 1079, 1081,
-1103, 1104, 1105, 1106, 1107, 1173, 1174, 1177, 1178, 1179,
-1187, 1192, 1199, 1203, 1212, 1214, 1215, 1216, 1217, 30000
+Wrap underlied exception and/or add text
+
+- [ ] `net`: `KpeNet`
+- [ ] `util`: 
+- [ ] `tag`
+- [ ] `const`: `__init__()`
+- [ ] `flag`: `__init__()`
+- [ ] `cmd`: `__init__`, `to_bytes()`
+- [ ] `rsp`
+- [ ] `cli`: bad arg (type, value)

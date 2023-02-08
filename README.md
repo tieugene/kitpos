@@ -2,11 +2,17 @@
 
 KIT POS python library
 
-## Similar
-- [pyshtrih](https://github.com/oleg-golovanov/pyshtrih)
+## Requirements
+- Python 3.9+
+- [crcmod](https://crcmod.sourceforge.net) python library
+
+## Installation
+
+```py
+pip3 install -e .
+```
 
 ## Who's'who
-
 - [`kitpos/`](`kitpos`): Library itself
   + [`cli`](kitpos/cli.py): CLI helpers
   + [`cmd`](kitpos/cmd.py): CmdXXX - POS commands handlers
@@ -19,3 +25,6 @@ KIT POS python library
   + [`rsp`](kitpos/rsp.py): RspXX - POS responses handlers
   + [`tag`](kitpos/tag.py): Tags handlers
   + [`util`](kitpos/util.py): Misc common utility functions
+
+## Similar
+- [pyshtrih](https://github.com/oleg-golovanov/pyshtrih)

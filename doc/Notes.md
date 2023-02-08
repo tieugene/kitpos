@@ -36,6 +36,12 @@
   + 77: 56 tickets; 50x1000 &check; (31" = 30 ops/s)
   + 80: 3342 tickets; 3000x2000 &check; (5'20" = 6 ops/s)
 
+
+## Tags used:
+1009, 1021, 1023, 1030, 1031, 1036, 1055, 1059, 1079, 1081,
+1103, 1104, 1105, 1106, 1107, 1173, 1174, 1177, 1178, 1179,
+1187, 1192, 1199, 1203, 1212, 1214, 1215, 1216, 1217, 30000
+
 ## QA
 - Q: Can I txrx 2+ commands per connection?
 - A: Standalone - no, sequences - maybe but not recommended (due timeout)

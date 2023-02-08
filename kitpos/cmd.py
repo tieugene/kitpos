@@ -161,7 +161,7 @@ class CmdSetDateTime(_CmdBase):
     def to_bytes(self) -> bytes:
         """Serialize to bytes.
 
-        :note: const: TAG=30000 + LEN=5
+        :todo: TAG_30000
         """
         return super().to_bytes() \
             + b'\x30\x75\x05\x00' \

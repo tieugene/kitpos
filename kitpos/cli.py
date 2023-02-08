@@ -52,7 +52,7 @@ def __cmd_22() -> cmd.CmdSessionOpenCommit:
     return cmd.CmdSessionOpenCommit()
 
 
-def __cmd_29(val: Optional[str]) -> cmd.CmdSessionCloseBegin:
+def __cmd_29(val: Optional[str]) -> Optional[cmd.CmdSessionCloseBegin]:
     """Begin closing session [0 (default)|1 - skip prn]."""
     if val:
         if val not in {'0', '1'}:
