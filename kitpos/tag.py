@@ -19,10 +19,13 @@ def tagdict_unjson(data: Dict[str, Any]) -> TagDict:
         if i_key not in const.IEnumTag:
             raise exc.KpeTagUnjson(f"Unknown tag '{i_key}' in json")
         __tag = const.IEnumTag(i_key)
-        if __tag not in TAG2FUNC:
-            raise exc.KpeTagUnjson(f"Tag '{i_key}' unprocessable by TAG2FUNC yet")
+        # if __tag not in TAG2FUNC:  # not need in normal use
+        #    raise exc.KpeTagUnjson(f"Tag '{i_key}' unprocessable by TAG2FUNC yet")
         t_func = TAG2FUNC[__tag][0]
-        real_val = t_func(val)  # TODO: handle exceptions (e.g. ValueError for EnumType)
+        try:
+            real_val = t_func(val)
+        except ValueError as e:  # EnumType[/Flag] init
+            raise exc.KpeTagUnjson(e) from e
         retvalue[__tag] = real_val
     return retvalue
 
@@ -32,7 +35,10 @@ def tagdict_pack(t_dict: TagDict) -> bytes:
     retvalue: bytes = b''
     for k, val in t_dict.items():
         t_func = TAG2FUNC[k][1]
-        out_bytes = t_func(val)  # TODO: handle exceptions
+        try:
+            out_bytes = t_func(val)
+        except ValueError as e:  # EnumType[/Flag] init
+            raise exc.KpeTagPack(e) from e
         retvalue += util.ui2b2(k.value)
         retvalue += util.ui2b2(len(out_bytes))
         retvalue += out_bytes

@@ -54,8 +54,16 @@ class KpeTag(Kpe):
     """Base tag exception."""
 
 
-class KpeTagUnjson(Kpe):
-    """Base json-to-tags conversion exception."""
+class KpeTagUnjson(KpeTag):
+    """Base json-to-tags conversion exceptions."""
+
+
+class KpeTagPack(KpeTag):
+    """Base tags-to-bytes conversion exceptions."""
+
+
+class KpeTagUnpack(KpeTag):
+    """Base bytes-to-tag conversion exceptions."""
 
 
 class KpePOS(Kpe):
