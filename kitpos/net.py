@@ -4,7 +4,8 @@ from typing import Optional
 import socket
 import time
 # 3. local
-from kitpos import const
+from kitpos import const, exc
+
 
 def txrx(
         host: str,
@@ -12,20 +13,16 @@ def txrx(
         data_out: bytes,
         conn_timeout: Optional[float] = None,
         txrx_timeout: Optional[float] = None) -> bytes:
-    """Communicate with net device - send output data and get response data (sample).
-
-    :exception:
-    - OSError: Network is unreachable
-    - socket.gaierror - bad hostname
-    - ConnectionRefusedError - port not accepts
-    - ...
-    """
+    """Communicate with net device - send output data and get response data (sample)."""
     def __rx(__sock):
         return sock.recv(2048, socket.MSG_WAITALL)
-    with socket.create_connection((host, port), timeout=conn_timeout or socket.getdefaulttimeout()) as sock:
+    try:
+        sock = socket.create_connection((host, port), timeout=conn_timeout or socket.getdefaulttimeout())
         sock.sendall(data_out)  # or .send()
         retvalue = __rx(sock)
-        if retvalue == const.FRAME_HEADER and txrx_timeout:  # hack: wait for slow response after single FRAME_HEADER
+        if retvalue == const.FRAME_HEADER and txrx_timeout:  # hack: wait for slow response after single header
             time.sleep(txrx_timeout)
             retvalue += __rx(sock)
         return retvalue
+    except (socket.gaierror, socket.timeout, socket.error) as e:
+        raise exc.KpeNet(e) from e

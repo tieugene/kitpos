@@ -2,34 +2,28 @@
 
 
 class Kpe(RuntimeError):
-    """KitPOS basic error."""
-
-
-class Kpw(RuntimeWarning):
-    """KitPOS basic warning."""
-
-
-class KpeNoted(Kpe):
-    """KitPOS annotated errer exceptions."""
-
-    msg: str
-
-    def __init__(self, msg: str):
-        """No comments."""
-        super().__init__(self)
-        self.msg = msg
+    """Basic error."""
 
     def __str__(self):
         """Make string representation of exception."""
-        return self.msg
+        if uplink := super().__str__():
+            return f"{self.__class__.__name__}: {uplink}"
+        return self.__class__.__name__
+        # py3.11+ only
+        # if '__notes__' in self.__dict__ and self.__notes__:
+        #    retvalue += (': ' + ', '.join(self.__notes__))
 
 
-class KpeNet(KpeNoted):
-    """KitPOS frame [un]wrap exceptions."""
+class Kpw(RuntimeWarning):
+    """Basic warning."""
 
 
-class KpeFrame(KpeNoted):
-    """KitPOS frame [un]wrap exceptions."""
+class KpeNet(Kpe):
+    """POS network connection errors."""
+
+
+class KpeFrame(Kpe):
+    """Frame [un]wrap exceptions."""
 
 
 class KpePOS(Kpe):
@@ -54,5 +48,5 @@ class KpePOS(Kpe):
         return f"Device response '{self.rsname}' error {self.code}: {self.desc}"
 
 
-class KpeRspDecode(KpeNoted):
-    """KitPOS response object decoding exceptions."""
+class KpeRspDecode(Kpe):
+    """Response object decoding exceptions."""

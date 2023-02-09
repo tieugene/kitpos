@@ -6,8 +6,9 @@ from types import FunctionType
 import sys
 import json
 import argparse
+import logging
 # 3. local
-from kitpos import cli, net, rsp, util, errs
+from kitpos import cli, net, rsp, util, errs, exc
 # x. consts
 CONN_TIMEOUT = 3  # TODO: too fast; can be 20+
 
@@ -37,7 +38,7 @@ def __mk_args_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def __do_it(host: str, port: int, cmd_name: str, arg: Optional[str], dry_run: bool, from_file: bool, _: bool):
+def __do_it(host: str, port: int, cmd_name: str, arg: Optional[str], dry_run: bool, from_file: bool):
     """Execute CLI.
 
     :param host: POS IP
@@ -46,7 +47,6 @@ def __do_it(host: str, port: int, cmd_name: str, arg: Optional[str], dry_run: bo
     :param arg: Command argument (optional)
     :param dry_run: If True: dump bytes to send and exit
     :param from_file: Whether read json data from file instead of argv
-    :param _: Be verbose
     """
     __cmd_xx = cli.COMMANDS[cmd_name]
     if isinstance(__cmd_xx, FunctionType):
@@ -70,7 +70,7 @@ def __do_it(host: str, port: int, cmd_name: str, arg: Optional[str], dry_run: bo
         print(frame_o.hex().upper())
         return
     # 2. txrx
-    frame_i = net.txrx(host, port, frame_o, conn_timeout=CONN_TIMEOUT, txrx_timeout=0.1)
+    frame_i = net.txrx(host, port, frame_o, conn_timeout=CONN_TIMEOUT, txrx_timeout=1)
     # 3. dispatch response
     # - unwrap frame
     payload_i = util.frame2bytes(frame_i)
@@ -87,8 +87,13 @@ def __do_it(host: str, port: int, cmd_name: str, arg: Optional[str], dry_run: bo
 
 def main():
     """CLI entry point."""
+    logger = logging.getLogger(__name__)
     args = __mk_args_parser().parse_args(sys.argv[1:])
-    __do_it(args.host, args.port, args.cmd, args.arg, args.dry_run, args.file, args.verbose)
+    try:
+        __do_it(args.host, args.port, args.cmd, args.arg, args.dry_run, args.file)
+    except exc.Kpe as e:
+        msg = f"Exception occurs ({e})"
+        logger.exception(msg) if args.verbose else logger.error(msg)
 
 
 if __name__ == '__main__':

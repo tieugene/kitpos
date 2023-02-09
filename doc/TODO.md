@@ -1,10 +1,9 @@
 # TODO
 
 - [ ] Fixing (0.0.1):
-  + [ ] Python min version
   + [ ] Exceptions (catch, wrap into KitPOS&hellip;)
   + [ ] Tests (&rArr; coverage)
-  + [ ] Logging(v)
+  + […] Logging(`-v`)
   + [ ] Dox
 - [ ] Sequences:
   + [ ] SessionOpen
@@ -33,12 +32,13 @@
 - Maybe:
   + POS State diagramm
   + flag._Flags: metaclass
+  + Nice exception traceback
 
 ## Exceptions:
 
-Wrap underlied exception and/or add text
+Wrap underlied exception and/or add text: function name, 
 
-- [ ] `net`: `KpeNet`
+- [x] `net`: `KpeNet`
 - [ ] `util`: 
 - [ ] `tag`
 - [ ] `const`: `__init__()`
