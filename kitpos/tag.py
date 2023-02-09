@@ -1,12 +1,9 @@
 """Tags things."""
 # 1. std
 from typing import Dict, Any, Tuple, Callable
-import sys
 import datetime
-
-import exc
 # 3. local
-from kitpos import const, flag, util
+from kitpos import const, flag, util, exc
 # y. typedefs
 TagDict = Dict[const.IEnumTag, Any]
 
@@ -51,20 +48,27 @@ def tagdict_unpack(t_list: bytes) -> TagDict:
         __l_tl = len(__tl)  # whole data len
         __i = 0
         while __i < __l_tl:
-            __l_t = util.b2ui(__tl[__i+2:__i+4])  # trag raw data len
+            __l_t = util.b2ui(__tl[__i+2:__i+4])  # current tag raw data len
+            if __i + __l_t + 2 > __l_tl:
+                raise exc.KpeTagUnpack(f"Tag [{__i}:] too big")
             yield util.b2ui(__tl[__i:__i+2]), __tl[__i+4:__i+4+__l_t]  # tag (id, raw data)
             __i += (4 + __l_t)
+        # TODO: check last (__i == __l_tl)
     retvalue = {}
     for t_id, t_data in __walk_taglist(t_list):
         if t_id not in const.TAGS_UNKNOWN:  # skip not documented
             # print(f"{t_id} ({util.b2hex(util.ui2b2(t_id))}): {util.b2hex(t_data)} ({len(t_data)})")
+            if t_id not in const.IEnumTag:
+                raise exc.KpeTagUnpack(f"Unknown tag '{t_id}'")
             __tag = const.IEnumTag(t_id)
-            if __tag in retvalue:  # FIXME: RTFM multitags
-                raise RuntimeError(f"{__tag} already counted.")
+            if __tag in retvalue:  # FIXME: multitags
+                raise exc.KpeTagUnpack(f"Tag '{__tag}' already counted.")
             if __tag not in TAG2FUNC:
-                print(f"Tag {__tag} not processed ({util.b2hex(t_data)}).", file=sys.stderr)
-                continue
-            retvalue[__tag] = TAG2FUNC[__tag][2](t_data)
+                exc.KpeTagUnpack(f"Tag '{__tag}' not processing yet (payload '{util.b2hex(t_data)}').")
+            try:
+                retvalue[__tag] = TAG2FUNC[__tag][2](t_data)
+            except ValueError as e:  # EnumType[/Flag] init
+                raise exc.KpeTagUnpack(e) from e
     return retvalue
 
 

@@ -1,9 +1,9 @@
 # TODO
 
 - [ ] Fixing (0.0.1):
-  + [ ] Exceptions (catch, wrap into KitPOS&hellip;)
-  + [ ] Tests (&rArr; coverage)
   + […] Logging(`-v`)
+  + […] Exceptions (catch, wrap into KitPOS&hellip;)
+  + [ ] Tests (&rArr; coverage)
   + [ ] Dox
 - [ ] Sequences:
   + [ ] SessionOpen
@@ -30,6 +30,7 @@
   + [ ] Multitag
   + [ ] Online tests (w/ live FRs)
 - Maybe:
+  + Mypy
   + POS State diagramm
   + flag._Flags: metaclass
   + Nice exception traceback
@@ -40,9 +41,7 @@ Wrap underlied exception and/or add text: function name,
 
 - [x] `net`: `KpeNet`
 - [x] `util`: `KpeByte*`, `KpeFrame*`
-- [ ] `tag`: `KpeTag*`
-  + [ ] `const`: `__init__()`
-  + [ ] `flag`: `__init__()`
-- [ ] `cmd`: `__init__`, `to_bytes()`
+- [x] `tag`: `KpeTag*`
+- [ ] `cmd`: `KpeCmd*` (`__init__`, `to_bytes()`)
 - [ ] `rsp`: `KpeRsp*`
 - [ ] `cli`: `KpeCLI` (bad arg (type, value))
