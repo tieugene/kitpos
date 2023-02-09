@@ -22,8 +22,32 @@ class KpeNet(Kpe):
     """POS network connection errors."""
 
 
+class KpeBytePack(Kpe):
+    """Converting to bytes errors."""
+
+
+class KpeByteUnpack(Kpe):
+    """Converting from bytes errors."""
+
+
+class KpeByteUnpackBool(KpeByteUnpack):
+    """Converting from bytes to bool errors."""
+
+
+class KpeByteUnpackFVLN(KpeByteUnpack):
+    """Converting from FVLN to int/float errors."""
+
+
 class KpeFrame(Kpe):
     """Frame [un]wrap exceptions."""
+
+
+class KpeFramePack(KpeFrame):
+    """Frame wrap exceptions."""
+
+
+class KpeFrameUnpack(KpeFrame):
+    """Frame unwrap exceptions."""
 
 
 class KpePOS(Kpe):

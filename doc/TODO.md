@@ -39,7 +39,7 @@
 Wrap underlied exception and/or add text: function name, 
 
 - [x] `net`: `KpeNet`
-- [ ] `util`: 
+- [x] `util`: `KpeByte*`, `KpeFrame*`
 - [ ] `tag`
 - [ ] `const`: `__init__()`
 - [ ] `flag`: `__init__()`

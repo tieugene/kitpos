@@ -10,7 +10,7 @@ from tests.samples import RAW_A, RSP
 
 def __x(i: int) -> bytes:
     """Extract frame payload for RspX.from_bytes()."""
-    # return util.frame2bytes(RAW_A[i])[1:]
+    # return util.frame_unpack(RAW_A[i])[1:]
     return RAW_A[i][5:-2]
 
 

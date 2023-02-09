@@ -65,7 +65,7 @@ def __do_it(host: str, port: int, cmd_name: str, arg: Optional[str], dry_run: bo
     if cmd_object is None:
         return
     bytes_o = cmd_object.to_bytes()  # 1. make command...
-    frame_o = util.bytes2frame(bytes_o)  # ..., frame it
+    frame_o = util.frame_pack(bytes_o)  # ..., frame it
     if dry_run:
         print(frame_o.hex().upper())
         return
@@ -73,9 +73,9 @@ def __do_it(host: str, port: int, cmd_name: str, arg: Optional[str], dry_run: bo
     frame_i = net.txrx(host, port, frame_o, conn_timeout=CONN_TIMEOUT, txrx_timeout=1)
     # 3. dispatch response
     # - unwrap frame
-    payload_i = util.frame2bytes(frame_i)
+    payload_i = util.frame_unpack(frame_i)
     # - ok/err
-    decoded_ok, bytes_i = util.bytes_as_response(payload_i)
+    decoded_ok, bytes_i = util.frame_payload_dispatch(payload_i)
     # - dispatch last
     if decoded_ok:
         cmd_class = type(cmd_object)
