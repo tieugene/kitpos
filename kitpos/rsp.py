@@ -374,7 +374,7 @@ class RspGetDocData(RspBase):
     @classmethod
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
-        return cls(tags=tag.tag_list_unpack(data))
+        return cls(tags=tag.tagdict_unpack(data))
 
 
 @dataclass

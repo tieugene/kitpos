@@ -205,7 +205,7 @@ class CmdCorrReceiptData(_CmdBase):
 
     def to_bytes(self) -> bytes:
         """Serialize to bytes."""
-        return super().to_bytes() + tag.tag_dict_pack(self.payload)
+        return super().to_bytes() + tag.tagdict_pack(self.payload)
 
 
 class CmdCorrReceiptAutomat(_CmdBase):
@@ -229,7 +229,7 @@ class CmdCorrReceiptAutomat(_CmdBase):
 
     def to_bytes(self) -> bytes:
         """Serialize to bytes."""
-        return super().to_bytes() + tag.tag_dict_pack(self.payload)
+        return super().to_bytes() + tag.tagdict_pack(self.payload)
 
 
 class CmdCorrReceiptCommit(_CmdBase):
@@ -290,7 +290,7 @@ class CmdReceiptItem(_CmdBase):
 
     def to_bytes(self) -> bytes:
         """Serialize to bytes."""
-        return super().to_bytes() + tag.tag_dict_pack(self.payload)
+        return super().to_bytes() + tag.tagdict_pack(self.payload)
 
 
 class CmdReceiptAutomat(_CmdBase):
@@ -314,7 +314,7 @@ class CmdReceiptAutomat(_CmdBase):
 
     def to_bytes(self) -> bytes:
         """Serialize to bytes."""
-        return super().to_bytes() + tag.tag_dict_pack(self.payload)
+        return super().to_bytes() + tag.tagdict_pack(self.payload)
 
 
 class CmdReceiptPayment(_CmdBase):
@@ -339,7 +339,7 @@ class CmdReceiptPayment(_CmdBase):
 
     def to_bytes(self) -> bytes:
         """Serialize to bytes."""
-        return super().to_bytes() + tag.tag_dict_pack(self.payload)
+        return super().to_bytes() + tag.tagdict_pack(self.payload)
 
 
 class CmdReceiptCommit(_CmdBase):

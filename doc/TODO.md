@@ -40,9 +40,9 @@ Wrap underlied exception and/or add text: function name,
 
 - [x] `net`: `KpeNet`
 - [x] `util`: `KpeByte*`, `KpeFrame*`
-- [ ] `tag`
-- [ ] `const`: `__init__()`
-- [ ] `flag`: `__init__()`
+- [ ] `tag`: `KpeTag*`
+  + [ ] `const`: `__init__()`
+  + [ ] `flag`: `__init__()`
 - [ ] `cmd`: `__init__`, `to_bytes()`
-- [ ] `rsp`
-- [ ] `cli`: bad arg (type, value)
+- [ ] `rsp`: `KpeRsp*`
+- [ ] `cli`: `KpeCLI` (bad arg (type, value))

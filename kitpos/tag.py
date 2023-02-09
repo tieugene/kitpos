@@ -3,39 +3,43 @@
 from typing import Dict, Any, Tuple, Callable
 import sys
 import datetime
+
+import exc
 # 3. local
 from kitpos import const, flag, util
 # y. typedefs
 TagDict = Dict[const.IEnumTag, Any]
 
 
-def json2tagdict(data: dict) -> TagDict:
+def tagdict_unjson(data: Dict[str, Any]) -> TagDict:
     """Convert raw json data into TagDict."""
     retvalue = {}
-    for key, val in data.items():  # or: select keys by required iteration
-        i_key = int(key)              # - check #1: tag is int
-        __tag = const.IEnumTag(i_key)  # TODO: exception if not in
+    for k, val in data.items():  # or: select keys by required iteration
+        i_key = int(k)              # - check #1: tag is int
+        if i_key not in const.IEnumTag:
+            raise exc.KpeTagUnjson(f"Unknown tag '{i_key}' in json")
+        __tag = const.IEnumTag(i_key)
+        if __tag not in TAG2FUNC:
+            raise exc.KpeTagUnjson(f"Tag '{i_key}' unprocessable by TAG2FUNC yet")
         t_func = TAG2FUNC[__tag][0]
-        # print(t, v)
-        real_val = t_func(val)
+        real_val = t_func(val)  # TODO: handle exceptions (e.g. ValueError for EnumType)
         retvalue[__tag] = real_val
     return retvalue
 
 
-def tag_dict_pack(t_dict: TagDict) -> bytes:
+def tagdict_pack(t_dict: TagDict) -> bytes:
     """Pack TagDict into bytes."""
     retvalue: bytes = b''
     for k, val in t_dict.items():
-        # print(k, v)
         t_func = TAG2FUNC[k][1]
-        out_bytes = t_func(val)
+        out_bytes = t_func(val)  # TODO: handle exceptions
         retvalue += util.ui2b2(k.value)
         retvalue += util.ui2b2(len(out_bytes))
         retvalue += out_bytes
     return retvalue
 
 
-def tag_list_unpack(t_list: bytes) -> TagDict:
+def tagdict_unpack(t_list: bytes) -> TagDict:
     """Unpack raw TLV[]:bytes into TagDict."""
     def __walk_taglist(__tl: bytes) -> Tuple[int, bytes]:
         __l_tl = len(__tl)  # whole data len
@@ -105,9 +109,9 @@ TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
         lambda v: v.as_bytes(),
         lambda v: flag.TaxModes(util.b2ui(v))),  # 0x2D, 0x2E; FIXME: .bit_count() == 1
     const.IEnumTag.TAG_1059: (
-        json2tagdict,
-        tag_dict_pack,
-        tag_list_unpack),  # STLV; recur
+        tagdict_unjson,
+        tagdict_pack,
+        tagdict_unpack),  # STLV; recur
     const.IEnumTag.TAG_1079: (
         lambda v: v,
         util.ui2vln,
@@ -149,9 +153,9 @@ TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
         util.l2b,
         util.b2l),
     const.IEnumTag.TAG_1174: (
-        json2tagdict,
-        tag_dict_pack,
-        tag_list_unpack),  # STLV; recur
+        tagdict_unjson,
+        tagdict_pack,
+        tagdict_unpack),  # STLV; recur
     const.IEnumTag.TAG_1177: (
         lambda v: v[:255].strip(),
         lambda v: util.s2b(v[:255]),

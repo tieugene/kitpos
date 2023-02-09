@@ -101,12 +101,12 @@ def __cmd_25() -> cmd.CmdCorrReceiptBegin:
 
 def __cmd_2e(val: Dict) -> cmd.CmdCorrReceiptData:
     """Corr. Receipt. Step #2/4 - send data."""
-    return cmd.CmdCorrReceiptData(tag.json2tagdict(val))
+    return cmd.CmdCorrReceiptData(tag.tagdict_unjson(val))
 
 
 def __cmd_3f(val: Dict) -> cmd.CmdCorrReceiptAutomat:
     """Corr. Receipt. Step #3/4 - send automat number (option)."""
-    return cmd.CmdCorrReceiptAutomat(tag.json2tagdict(val))
+    return cmd.CmdCorrReceiptAutomat(tag.tagdict_unjson(val))
 
 
 def __cmd_26(val: Dict) -> cmd.CmdCorrReceiptCommit:
@@ -125,17 +125,17 @@ def __cmd_23() -> cmd.CmdReceiptBegin:
 
 def __cmd_2b(val: Dict) -> cmd.CmdReceiptItem:
     """Receipt. Step #2/6 - send receipt item."""
-    return cmd.CmdReceiptItem(tag.json2tagdict(val))
+    return cmd.CmdReceiptItem(tag.tagdict_unjson(val))
 
 
 def __cmd_1f(val: Dict) -> cmd.CmdReceiptAutomat:
     """Receipt. Step #4/6 - send receipt automat details."""
-    return cmd.CmdReceiptAutomat(tag.json2tagdict(val))
+    return cmd.CmdReceiptAutomat(tag.tagdict_unjson(val))
 
 
 def __cmd_2d(val: Dict) -> cmd.CmdReceiptPayment:
     """Receipt. Step #5/6 - send receipt payment details."""
-    return cmd.CmdReceiptPayment(tag.json2tagdict(val))
+    return cmd.CmdReceiptPayment(tag.tagdict_unjson(val))
 
 
 def __cmd_24(val: Dict) -> cmd.CmdReceiptCommit:

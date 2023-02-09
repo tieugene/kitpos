@@ -39,7 +39,7 @@ class KpeByteUnpackFVLN(KpeByteUnpack):
 
 
 class KpeFrame(Kpe):
-    """Frame [un]wrap exceptions."""
+    """Base frame [un]wrap exception."""
 
 
 class KpeFramePack(KpeFrame):
@@ -48,6 +48,14 @@ class KpeFramePack(KpeFrame):
 
 class KpeFrameUnpack(KpeFrame):
     """Frame unwrap exceptions."""
+
+
+class KpeTag(Kpe):
+    """Base tag exception."""
+
+
+class KpeTagUnjson(Kpe):
+    """Base json-to-tags conversion exception."""
 
 
 class KpePOS(Kpe):
