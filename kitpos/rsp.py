@@ -387,9 +387,10 @@ class RspGetDocInfo(RspBase):
         if (l_data := len(data)) <= 3:
             raise exc.KpeRspUnpack(f"{cls.__name__}: too few data: {l_data} bytes.")
         # 1. decode last
-        if data[0] not in const.IEnumADocType:
-            raise exc.KpeRspUnpack(f"Unknown doc type'{data[0]}'")
-        doc_type = const.IEnumADocType(data[0])
+        try:
+            doc_type = const.IEnumADocType(data[0])
+        except ValueError as e:
+            raise exc.KpeRspUnpack(e) from e
         if (doc_class := ADOC_CLASS.get(doc_type)) is None:
             raise exc.KpeRspUnpack(
                 f"{cls.__name__}: Doc type={doc_type} unprocessable yet ({util.b2hex(data[1:])})."

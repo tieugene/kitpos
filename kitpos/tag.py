@@ -13,9 +13,10 @@ def tagdict_unjson(data: Dict[str, Any]) -> TagDict:
     retvalue = {}
     for k, val in data.items():  # or: select keys by required iteration
         i_key = int(k)              # - check #1: tag is int
-        if i_key not in const.IEnumTag:
-            raise exc.KpeTagUnjson(f"Unknown tag '{i_key}' in json")
-        __tag = const.IEnumTag(i_key)
+        try:
+            __tag = const.IEnumTag(i_key)
+        except ValueError as e:
+            raise exc.KpeTagUnjson(e) from e
         # if __tag not in TAG2FUNC:  # not need in normal use
         #    raise exc.KpeTagUnjson(f"Tag '{i_key}' unprocessable by TAG2FUNC yet")
         t_func = TAG2FUNC[__tag][0]
@@ -50,16 +51,18 @@ def tag_unpack(data: bytes) -> Tuple[const.IEnumTag, Any]:
     if (d_len := len(data)) < 4:
         raise exc.KpeRspUnpack(f"Too few data to unpack ({d_len} bytes)")
     # 1. get tag
-    if (t_id := util.b2ui(data[:2])) not in const.IEnumTag:
-        raise exc.KpeTagUnpack(f"Unknown tag '{t_id}'")
-    __tag = const.IEnumTag(t_id)
+    t_id = util.b2ui(data[:2])
+    try:
+        __tag = const.IEnumTag(t_id)
+    except ValueError as e:
+        raise exc.KpeTagUnpack(e) from e
     # 2. get data len
     if (t_len := util.b2ui(data[2:4])) != (d_len - 4):
         raise exc.KpeTagUnpack(f"Shipped tag data len ({t_len}) != real ({(d_len - 4)}).")
     t_data = data[4:]
     # 3. convert data
     if __tag not in TAG2FUNC:
-        exc.KpeTagUnpack(f"Tag '{__tag}' not processing yet (payload '{util.b2hex(t_data)}').")
+        raise exc.KpeTagUnpack(f"Tag '{__tag}' not processing yet (payload '{util.b2hex(t_data)}').")
     try:
         __val = TAG2FUNC[__tag][2](t_data)
     except ValueError as e:  # EnumType[/Flag] init
@@ -83,9 +86,10 @@ def tagdict_unpack(t_list: bytes) -> TagDict:
     for t_id, t_data in __walk_taglist(t_list):
         if t_id not in const.TAGS_UNKNOWN:  # skip not documented
             # print(f"{t_id} ({util.b2hex(util.ui2b2(t_id))}): {util.b2hex(t_data)} ({len(t_data)})")
-            if t_id not in const.IEnumTag:
-                raise exc.KpeTagUnpack(f"Unknown tag '{t_id}'")
-            __tag = const.IEnumTag(t_id)
+            try:
+                __tag = const.IEnumTag(t_id)
+            except ValueError as e:
+                raise exc.KpeTagUnpack(e) from e
             if __tag in retvalue:  # FIXME: multitags
                 raise exc.KpeTagUnpack(f"Tag '{__tag}' already counted.")
             if __tag not in TAG2FUNC:
