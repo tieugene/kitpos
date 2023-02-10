@@ -8,7 +8,7 @@ import json
 import argparse
 import logging
 # 3. local
-from kitpos import cli, net, rsp, util, errs, exc
+from kitpos import cli, net, rsp, util, exc
 # x. consts
 CONN_TIMEOUT = 3  # TODO: too fast; can be 20+
 
@@ -82,7 +82,7 @@ def __do_it(host: str, port: int, cmd_name: str, arg: Optional[str], dry_run: bo
         rsp_object = rsp.bytes2rsp(cmd_class.cmd_id, bytes_i)
         print(rsp_object.str('\n'))
     else:
-        print("Err: %02x '%s'" % (bytes_i, errs.ERR_TEXT['ru'].get(bytes_i, '<Unknown>.')))
+        print("Err: %02x '%s'" % (bytes_i, cli.ERR_TEXT['ru'].get(bytes_i, '<Unknown>.')))
 
 
 def main():

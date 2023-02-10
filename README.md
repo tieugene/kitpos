@@ -17,7 +17,6 @@ pip3 install -e .
   + [`cli`](kitpos/cli.py): CLI helpers
   + [`cmd`](kitpos/cmd.py): CmdXXX - POS commands handlers
   + [`const`](kitpos/const.py): Common constants
-  + [`errs`](kitpos/errs.py): POS error response descriptions (ru)
   + [`exc`](kitpos/exc.py): Exception classes
   + [`flag`](kitpos/flag.py): &hellip;
   + [`main`](kitpos/main.py): CLI entry point

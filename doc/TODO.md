@@ -3,6 +3,7 @@
 - [ ] Fixing (0.0.1):
   + […] Logging(`-v`)
   + […] Exceptions (catch, wrap into KitPOS&hellip;)
+  + [ ] FIXME: tagdict_unpack() <= tag_unpack
   + [ ] Tests (&rArr; coverage)
   + [ ] Dox
 - [ ] Sequences:
