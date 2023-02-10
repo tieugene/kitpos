@@ -93,7 +93,7 @@ class IEnumTag(_IEnumPrintable):
     TAG_1216 = 1216    # ! VLN, PostPayment (kop)
     TAG_1217 = 1217    # ! VLN, Counter provosion (kop)
     # Mode = 9999      # byte[1] bitmap flags (addon 7); Note: Terminal-FA always stay auto
-    # TAG_30000 = 30000  # byte[5], DateTime
+    TAG_30000 = 30000  # byte[5], DateTime
 
 
 @enum.unique

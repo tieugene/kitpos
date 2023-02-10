@@ -27,18 +27,21 @@ def tagdict_unjson(data: Dict[str, Any]) -> TagDict:
     return retvalue
 
 
+def tag_pack(tag: const.IEnumTag, payload: bytes) -> bytes:
+    """Pack tag-value pair into bytes."""
+    return util.ui2b2(tag.value) + util.ui2b2(len(payload)) + payload
+
+
 def tagdict_pack(t_dict: TagDict) -> bytes:
     """Pack TagDict into bytes."""
     retvalue: bytes = b''
     for k, val in t_dict.items():
         t_func = TAG2FUNC[k][1]
         try:
-            out_bytes = t_func(val)
+            payload = t_func(val)
         except ValueError as e:  # EnumType[/Flag] init
             raise exc.KpeTagPack(e) from e
-        retvalue += util.ui2b2(k.value)
-        retvalue += util.ui2b2(len(out_bytes))
-        retvalue += out_bytes
+        retvalue += tag_pack(k, payload)
     return retvalue
 
 
@@ -214,5 +217,8 @@ TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
         lambda v: v,
         util.ui2vln,
         util.b2ui),  # VLN
-    # 30000: datetime[5]
+    const.IEnumTag.TAG_30000: (
+        datetime.datetime.fromisoformat,
+        util.dt2b5,
+        util.b2dt),  # TODO: check
 }

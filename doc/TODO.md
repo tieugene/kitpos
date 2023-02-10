@@ -42,6 +42,6 @@ Wrap underlied exception and/or add text: function name,
 - [x] `net`: `KpeNet`
 - [x] `util`: `KpeByte*`, `KpeFrame*`
 - [x] `tag`: `KpeTag*`
-- [ ] `cmd`: `KpeCmd*` (`__init__`, `to_bytes()`)
+- [x] `cmd`: `KpeCmd*`
 - [ ] `rsp`: `KpeRsp*`
 - [ ] `cli`: `KpeCLI` (bad arg (type, value))

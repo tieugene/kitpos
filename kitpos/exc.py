@@ -66,6 +66,22 @@ class KpeTagUnpack(KpeTag):
     """Base bytes-to-tag conversion exceptions."""
 
 
+class KpeCmd(Kpe):
+    """Base cmd exception."""
+
+
+class KpeCmdInit(KpeCmd):
+    """Cmd.__init__ exceptions."""
+
+
+class KpeCmdPack(KpeCmd):
+    """Cmd-to-bytes exceptions."""
+
+
+class KpeRspDecode(Kpe):
+    """Response object decoding exceptions."""
+
+
 class KpePOS(Kpe):
     """POS error response."""
 
@@ -86,7 +102,3 @@ class KpePOS(Kpe):
     def __str__(self):
         """Make string representation of the exception."""
         return f"Device response '{self.rsname}' error {self.code}: {self.desc}"
-
-
-class KpeRspDecode(Kpe):
-    """Response object decoding exceptions."""

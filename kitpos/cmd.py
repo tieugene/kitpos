@@ -1,12 +1,9 @@
-"""Commands to send.
-
-:todo: .to_frame()
-"""
+"""Commands to send."""
 # 1. std
 from typing import Optional, Iterable
 import datetime
 # 3. local
-from kitpos import const, util, tag
+from kitpos import const, util, tag, exc
 
 
 class _CmdBase:
@@ -15,24 +12,21 @@ class _CmdBase:
     cmd_id: const.IEnumCmd
 
     @staticmethod
-    def chk_tags(payload: tag.TagDict, tags_required: Iterable[int], tags_optional: Iterable[int] = ()):
-        """Check given payload on consistency.
-
-        :fixme: Add back check (extra tags)
-        """
+    def _chk_tags(payload: tag.TagDict, tags_required: Iterable[int], tags_optional: Iterable[int] = ()):
+        """Check given payload on consistency (no less, no more)."""
         # step #1: All required tags shipped
         for __tag in tags_required:
             if __tag not in payload:
-                raise RuntimeError(f"Required tag '{__tag}' not found in given data.")
+                raise exc.KpeCmdInit(f"Required tag '{__tag}' not found in given data.")
         # step #2: No one shipped tag excess
         __tag_set = set(tags_required).union(set(tags_optional))
         for __tag in payload.keys():
             if __tag.value not in __tag_set:
-                raise RuntimeError(f"Extra tag '{__tag.value}' in given data.")
+                raise exc.KpeCmdInit(f"Extra tag '{__tag.value}' in given data.")
 
     def to_bytes(self) -> bytes:
         """Serialize to bytes."""
-        return self.cmd_id.value.to_bytes(1, 'little')
+        return util.ui2b1(self.cmd_id.value)
 
 
 class CmdGetDeviceStatus(_CmdBase):
@@ -159,13 +153,8 @@ class CmdSetDateTime(_CmdBase):
         self.datime = datime
 
     def to_bytes(self) -> bytes:
-        """Serialize to bytes.
-
-        :todo: TAG_30000
-        """
-        return super().to_bytes() \
-            + b'\x30\x75\x05\x00' \
-            + util.dt2b5(self.datime)
+        """Serialize to bytes."""
+        return super().to_bytes() + tag.tag_pack(const.IEnumTag.TAG_30000, util.dt2b5(self.datime))
 
 
 class CmdGetDateTime(_CmdBase):
@@ -199,7 +188,7 @@ class CmdCorrReceiptData(_CmdBase):
         :param payload: Dict of tag-value pairs.
         """
         super().__init__()
-        self.chk_tags(payload, self.__tags)
+        self._chk_tags(payload, self.__tags)
         # TODO: chk 1031+1081+1215+1216+1217 == sum(1102..1107)
         self.payload = payload
 
@@ -224,7 +213,7 @@ class CmdCorrReceiptAutomat(_CmdBase):
         :param payload: Dict of tag-value pairs.
         """
         super().__init__()
-        self.chk_tags(payload, self.__tags)
+        self._chk_tags(payload, self.__tags)
         self.payload = payload
 
     def to_bytes(self) -> bytes:
@@ -283,9 +272,9 @@ class CmdReceiptItem(_CmdBase):
         :param payload: Dict of tag-value pairs.
         """
         super().__init__()
-        if not (len(payload) == 1 and 1059 in payload):
-            raise RuntimeError("The only '1059' tag required.")
-        self.chk_tags(payload[const.IEnumTag.TAG_1059], self.__1059_tags)
+        if not (len(payload) == 1 and const.IEnumTag.TAG_1059 in payload):
+            raise exc.KpeCmdInit("The only '1059' tag required.")
+        self._chk_tags(payload[const.IEnumTag.TAG_1059], self.__1059_tags)
         self.payload = payload
 
     def to_bytes(self) -> bytes:
@@ -309,7 +298,7 @@ class CmdReceiptAutomat(_CmdBase):
         :param payload: Dict of tag-value pairs.
         """
         super().__init__()
-        self.chk_tags(payload, self.__tags)
+        self._chk_tags(payload, self.__tags)
         self.payload = payload
 
     def to_bytes(self) -> bytes:
@@ -334,7 +323,7 @@ class CmdReceiptPayment(_CmdBase):
         :param payload: Dict of tag-value pairs.
         """
         super().__init__()
-        self.chk_tags(payload, self.__tags, self.__opts)
+        self._chk_tags(payload, self.__tags, self.__opts)
         self.payload = payload
 
     def to_bytes(self) -> bytes:
