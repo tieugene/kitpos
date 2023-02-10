@@ -165,7 +165,10 @@ def __cmd_50() -> cmd.CmdGetOFDXchgStatus:
 def __cmd_72(val: Optional[str]) -> Optional[cmd.CmdSetDateTime]:
     """Set POS date/time."""
     if val:
-        datime = datetime.datetime.strptime(val, '%y%m%d%H%M')  # TODO: handle exception
+        try:
+            datime = datetime.datetime.strptime(val, '%y%m%d%H%M')
+        except ValueError as e:
+            exc.KpeCLI(e)
         return cmd.CmdSetDateTime(datime)
     raise exc.KpeCLI("Date/time required (yymmddHHMM).")
 
@@ -190,11 +193,12 @@ def __cmd_3f(val: Dict) -> cmd.CmdCorrReceiptAutomat:
     return cmd.CmdCorrReceiptAutomat(tag.tagdict_unjson(val))
 
 
-def __cmd_26(val: Dict) -> cmd.CmdCorrReceiptCommit:
+def __cmd_26(val: Dict[str, int]) -> cmd.CmdCorrReceiptCommit:
     """Corr. Receipt. Step #4/4 - commit."""
-    # TODO: chk value types
+    if (rcp_type := val['type']) in const.IEnumReceiptType:
+        raise exc.KpeCLI(f"Unknown corr. receipt type'{rcp_type}'")
     return cmd.CmdCorrReceiptCommit(
-        req_type=const.IEnumReceiptType(val['type']),
+        req_type=const.IEnumReceiptType(rcp_type),
         total=val['total']
     )
 
@@ -221,7 +225,8 @@ def __cmd_2d(val: Dict) -> cmd.CmdReceiptPayment:
 
 def __cmd_24(val: Dict) -> cmd.CmdReceiptCommit:
     """Receipt. Step #6/6 - commit."""
-    # TODO: chk value types
+    if (rcp_type := val['type']) in const.IEnumReceiptType:
+        raise exc.KpeCLI(f"Unknown receipt type'{rcp_type}'")
     return cmd.CmdReceiptCommit(
         req_type=const.IEnumReceiptType(val['type']),
         total=val['total'],

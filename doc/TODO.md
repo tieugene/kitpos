@@ -31,6 +31,7 @@
   + [ ] Multitag
   + [ ] Online tests (w/ live FRs)
 - Maybe:
+  + IEnumCmd &hArr; CmdX &hArr; RcpX
   + Mypy
   + POS State diagramm
   + flag._Flags: metaclass
@@ -45,4 +46,5 @@ Wrap underlied exception and/or add text: function name,
 - [x] `tag`: `KpeTag*`
 - [x] `cmd`: `KpeCmd*`
 - [x] `rsp`: `KpeRsp*`
-- [ ] `cli`, `main`: `KpeCLI` (bad arg (type, value))
+- [x] `cli`: `KpeCLI` (bad arg (type, value))
+- [ ] `main`: `KpeCLI`, `KpePOS`
