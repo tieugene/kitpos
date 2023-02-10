@@ -195,10 +195,12 @@ def __cmd_3f(val: Dict) -> cmd.CmdCorrReceiptAutomat:
 
 def __cmd_26(val: Dict[str, int]) -> cmd.CmdCorrReceiptCommit:
     """Corr. Receipt. Step #4/4 - commit."""
-    if (rcp_type := val['type']) in const.IEnumReceiptType:
-        raise exc.KpeCLI(f"Unknown corr. receipt type'{rcp_type}'")
+    try:
+        rcp_type = const.IEnumReceiptType(val['type'])
+    except ValueError as e:
+        raise exc.KpeCLI(e) from e
     return cmd.CmdCorrReceiptCommit(
-        req_type=const.IEnumReceiptType(rcp_type),
+        req_type=rcp_type,
         total=val['total']
     )
 
@@ -225,10 +227,12 @@ def __cmd_2d(val: Dict) -> cmd.CmdReceiptPayment:
 
 def __cmd_24(val: Dict) -> cmd.CmdReceiptCommit:
     """Receipt. Step #6/6 - commit."""
-    if (rcp_type := val['type']) in const.IEnumReceiptType:
-        raise exc.KpeCLI(f"Unknown receipt type'{rcp_type}'")
+    try:
+        rcp_type = const.IEnumReceiptType(val['type'])
+    except ValueError as e:
+        raise exc.KpeCLI(e) from e
     return cmd.CmdReceiptCommit(
-        req_type=const.IEnumReceiptType(val['type']),
+        req_type=rcp_type,
         total=val['total'],
         notes=val.get('notes')
     )
