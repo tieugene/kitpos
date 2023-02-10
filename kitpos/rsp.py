@@ -486,7 +486,7 @@ class RspReceiptCommit(RspBase):
             fdoc_n=val[1],
             fpd=val[2],
             datime=util.b2dt(val[3:8]),
-            ses_n=val[9]
+            ses_n=val[8]
         )
 
 
