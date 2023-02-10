@@ -78,23 +78,24 @@ def __do_it(host: str, port: int, cmd_name: str, arg: Optional[str], dry_run: bo
         rsp_object = rsp.bytes2rsp(cmd_class.cmd_id, bytes_i)
         return rsp_object.str('\n')
     else:
-        exc.KpePOS(bytes_i)
+        raise exc.KpePOS(bytes_i)
 
 
 def main():
     """CLI entry point."""
-    logger = logging.getLogger(__name__)
+    logging.basicConfig(level=logging.WARNING)
+    # logger = logging.getLogger(__name__)
     args = __mk_args_parser().parse_args(sys.argv[1:])
     try:
         result = __do_it(args.host, args.port, args.cmd, args.arg, args.dry_run, args.file)
     except exc.KpePOS as e:
         err_text = cli.ERR_TEXT['ru'].get(e.code, '<Unknown>.')
-        logger.error(f"POS error: {e.code:02x} '{err_text}'")
+        logging.error(f"POS error: {e.code:02x} '{err_text}'")
     except exc.Kpe as e:
         msg = f"Exception occurs ({e})"
-        logger.exception(msg) if args.verbose else logger.error(msg)
+        logging.exception(msg) if args.verbose else logging.error(msg)
     else:
-        logger.info(result)
+        print(result)
 
 
 if __name__ == '__main__':
