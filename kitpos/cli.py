@@ -3,7 +3,7 @@
 from typing import Optional, Dict
 import datetime
 # 3. local
-from kitpos import cmd, tag, const
+from kitpos import cmd, tag, const, exc
 # x. const
 JSON_ARG = '<json>'
 ERR_TEXT = {
@@ -119,7 +119,7 @@ def __cmd_21(val: Optional[str]) -> Optional[cmd.CmdSessionOpenBegin]:
     """Begin opening session [0 (default)|1 - skip prn]."""
     if val:
         if val not in {'0', '1'}:
-            return print("Skip printing must be '0' or '1'.")  # == return None
+            raise exc.KpeCLI("Skip printing must be '0' or '1'.")  # == return None
         return cmd.CmdSessionOpenBegin(val == '1')
     return cmd.CmdSessionOpenBegin()
 
@@ -133,7 +133,7 @@ def __cmd_29(val: Optional[str]) -> Optional[cmd.CmdSessionCloseBegin]:
     """Begin closing session [0 (default)|1 - skip prn]."""
     if val:
         if val not in {'0', '1'}:
-            return print("Skip printing must be '0' or '1'.")
+            raise exc.KpeCLI("Skip printing must be '0' or '1'.")
         return cmd.CmdSessionCloseBegin(val == '1')
     return cmd.CmdSessionCloseBegin()
 
@@ -145,12 +145,16 @@ def __cmd_2a() -> cmd.CmdSessionCloseCommit:
 
 def __cmd_30(val: Optional[str]) -> Optional[cmd.CmdGetDocInfo]:
     """Get document info."""
-    return cmd.CmdGetDocInfo(int(val)) if val else print("Doc number required.")
+    if val:
+        return cmd.CmdGetDocInfo(int(val))
+    raise exc.KpeCLI("Doc number required.")
 
 
 def __cmd_3a(val: Optional[str]) -> Optional[cmd.CmdGetDocData]:
     """Get doc content."""
-    return cmd.CmdGetDocData(int(val)) if val else print("Doc number required.")
+    if val:
+        return cmd.CmdGetDocData(int(val))
+    raise exc.KpeCLI("Doc number required.")
 
 
 def __cmd_50() -> cmd.CmdGetOFDXchgStatus:
@@ -163,7 +167,7 @@ def __cmd_72(val: Optional[str]) -> Optional[cmd.CmdSetDateTime]:
     if val:
         datime = datetime.datetime.strptime(val, '%y%m%d%H%M')  # TODO: handle exception
         return cmd.CmdSetDateTime(datime)
-    return print("Date/time required (yymmddHHMM).")
+    raise exc.KpeCLI("Date/time required (yymmddHHMM).")
 
 
 def __cmd_73() -> cmd.CmdGetDateTime:

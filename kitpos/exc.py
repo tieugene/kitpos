@@ -82,6 +82,10 @@ class KpeRspUnpack(Kpe):
     """Bytes-to-response errors exceptions."""
 
 
+class KpeCLI(Kpe):
+    """CLI errors."""
+
+
 class KpePOS(Kpe):
     """POS error response."""
 
