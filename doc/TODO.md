@@ -43,5 +43,5 @@ Wrap underlied exception and/or add text: function name,
 - [x] `util`: `KpeByte*`, `KpeFrame*`
 - [x] `tag`: `KpeTag*`
 - [x] `cmd`: `KpeCmd*`
-- [ ] `rsp`: `KpeRsp*`
+- [x] `rsp`: `KpeRsp*`
 - [ ] `cli`: `KpeCLI` (bad arg (type, value))

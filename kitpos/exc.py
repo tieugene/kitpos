@@ -78,8 +78,8 @@ class KpeCmdPack(KpeCmd):
     """Cmd-to-bytes exceptions."""
 
 
-class KpeRspDecode(Kpe):
-    """Response object decoding exceptions."""
+class KpeRspUnpack(Kpe):
+    """Bytes-to-response errors exceptions."""
 
 
 class KpePOS(Kpe):

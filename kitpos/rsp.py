@@ -19,7 +19,7 @@ def _dt2str(datime: datetime.datetime) -> str:
 def _data_decode(data: bytes, fmt: str, cls) -> Tuple[Any]:
     """Check and decode data length against struct format."""
     if (l_data := len(data)) != (l_fmt := struct.calcsize(fmt)):
-        raise exc.KpeRspDecode(f"{cls.__name__}: bad data len: {l_data} (must be {l_fmt}).")
+        raise exc.KpeRspUnpack(f"{cls.__name__}: bad data len: {l_data} (must be {l_fmt}).")
     return struct.unpack(fmt, data)
 
 
@@ -50,10 +50,10 @@ class _RspStub(RspBase):
         """Just dump payload."""
         return f"{self.payload.hex().upper()} ({len(self.payload)})"
 
-    @staticmethod
-    def from_bytes(data: bytes):
+    @classmethod
+    def from_bytes(cls, data: bytes):
         """Just store."""
-        return _RspStub(payload=data)
+        return cls(payload=data)
 
 
 @dataclass
@@ -68,8 +68,8 @@ class RspOK(RspBase):
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
         if l_data := len(data):
-            raise exc.KpeRspDecode(f"{cls.__name__}: bad data len: {l_data} (must be 0).")
-        return RspOK()
+            raise exc.KpeRspUnpack(f"{cls.__name__}: bad data len: {l_data} (must be 0).")
+        return cls()
 
 
 @dataclass
@@ -84,17 +84,22 @@ class RspGetDeviceStatus(RspBase):
     fs_phase: const.IEnumFSphase
     wtf: int  # TODO: WTF tail 1 byte?
 
-    @staticmethod
-    def from_bytes(data: bytes):
+    @classmethod
+    def from_bytes(cls, data: bytes):
         """Deserialize object."""
-        val = _data_decode(data, '12sBBBBB?B?BB', RspGetDeviceStatus)
-        return RspGetDeviceStatus(
+        val = _data_decode(data, '12sBBBBB?B?BB', cls)
+        try:
+            v7 = const.IEnumPrnStatus(val[7])
+            v9 = const.IEnumFSphase(val[9])
+        except ValueError as e:
+            raise exc.KpeRspUnpack(e) from e
+        return cls(
             s_n=util.b2s(val[0]),
             datime=util.b2dt(val[1:6]),
             err=val[6],
-            prn_status=const.IEnumPrnStatus(val[7]),
+            prn_status=v7,
             is_fs=val[8],
-            fs_phase=const.IEnumFSphase(val[9]),
+            fs_phase=v9,
             wtf=val[10]
         )
 
@@ -105,11 +110,11 @@ class RspGetDeviceModel(RspBase):
 
     name: str
 
-    @staticmethod
-    def from_bytes(data: bytes):
+    @classmethod
+    def from_bytes(cls, data: bytes):
         """Deserialize object."""
         # FIXME: chk len
-        return RspGetDeviceModel(name=util.b2s(data))
+        return cls(name=util.b2s(data))
 
 
 @dataclass
@@ -125,16 +130,22 @@ class RspGetStorageStatus(RspBase):
     s_n: str
     last_fdoc_n: int
 
-    @staticmethod
-    def from_bytes(data: bytes):
+    @classmethod
+    def from_bytes(cls, data: bytes):
         """Deserialize object."""
-        val = _data_decode(data, '<BB??BBBBBB16sI', RspGetStorageStatus)
-        return RspGetStorageStatus(
-            phase=const.IEnumFSphase(val[0]),
-            cur_doc_type=const.IEnumFSCurDoc(val[1]),
+        val = _data_decode(data, '<BB??BBBBBB16sI', cls)
+        try:
+            v0 = const.IEnumFSphase(val[0])
+            v1 = const.IEnumFSCurDoc(val[1])
+            v4 = flag.FSErrors(val[4])
+        except ValueError as e:
+            raise exc.KpeRspUnpack(e) from e
+        return cls(
+            phase=v0,
+            cur_doc_type=v1,
             is_doc=val[2],
             is_session_open=val[3],
-            flags=flag.FSErrors(val[4]),
+            flags=v4,
             datime=util.b2dt(val[5:10]),
             s_n=util.b2s(val[10]),
             last_fdoc_n=val[11]
@@ -151,16 +162,22 @@ class RspGetRegisterParms(RspBase):
     tax: flag.TaxModes
     agent: flag.AgentModes
 
-    @staticmethod
-    def from_bytes(data: bytes):
+    @classmethod
+    def from_bytes(cls, data: bytes):
         """Deserialize object."""
-        val = _data_decode(data, '20s12sBBB', RspGetRegisterParms)
-        return RspGetRegisterParms(
+        val = _data_decode(data, '20s12sBBB', cls)
+        try:
+            v2 = flag.FRModes(val[2])
+            v3 = flag.TaxModes(val[3])
+            v4 = flag.AgentModes(val[4])
+        except ValueError as e:
+            raise exc.KpeRspUnpack(e) from e
+        return cls(
             reg_n=util.b2s(val[0]).rstrip(),
             inn=util.b2s(val[1]).rstrip(),
-            fr_mode=flag.FRModes(val[2]),
-            tax=flag.TaxModes(val[3]),
-            agent=flag.AgentModes(val[4])
+            fr_mode=v2,
+            tax=v3,
+            agent=v4
         )
 
 
@@ -232,14 +249,19 @@ class ADocRegRpt(ADoc):
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
         val = _data_decode(data, '<BBBBBII12s20sBB', cls)  # 47
+        try:
+            v9 = flag.TaxModes(val[9])
+            v10 = flag.FRModes(val[10])
+        except ValueError as e:
+            raise exc.KpeRspUnpack(e) from e
         return cls(
             datime=util.b2dt(val[0:5]),
             fdoc_n=val[5],
             fpd=val[6],
             inn=util.b2s(val[7]).rstrip(),
             reg_n=util.b2s(val[8]).rstrip(),
-            tax=flag.TaxModes(val[9]),
-            mode=flag.FRModes(val[10])
+            tax=v9,
+            mode=v10
         )
 
 
@@ -260,15 +282,21 @@ class ADocReRegRpt(ADoc):
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
         val = _data_decode(data, '<BBBBBII12s20sBBB', cls)  # 48
+        try:
+            v9 = flag.TaxModes(val[9])
+            v10 = flag.FRModes(val[10])
+            v11 = const.IEnumReRegReason(val[11])
+        except ValueError as e:
+            raise exc.KpeRspUnpack(e) from e
         return cls(
             datime=util.b2dt(val[0:5]),
             fdoc_n=val[5],
             fpd=val[6],
             inn=util.b2s(val[7]).rstrip(),
             reg_n=util.b2s(val[8]).rstrip(),
-            tax=flag.TaxModes(val[9]),
-            mode=flag.FRModes(val[10]),
-            reason=const.IEnumReRegReason(val[11])
+            tax=v9,
+            mode=v10,
+            reason=v11
         )
 
 
@@ -315,19 +343,23 @@ class ADocReceipt(ADoc):
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
         val = _data_decode(data, '<BBBBBIIBBBBBB', cls)  # 19
+        try:
+            v7 = const.IEnumReceiptType(val[7])
+        except ValueError as e:
+            raise exc.KpeRspUnpack(e) from e
         return cls(
             datime=util.b2dt(val[0:5]),
             fdoc_n=val[5],
             fpd=val[6],
-            req_type=const.IEnumReceiptType(val[7]),
-            total=(int.from_bytes(val[8:], 'little'))
+            req_type=v7,
+            total=(int.from_bytes(val[8:], 'little'))  # Note: specioal UINT40
         )
 
 
 class ADocCorReceipt(ADocReceipt):
     """Archive document. Corr. Receipt.
 
-    :not: Not documented.
+    :note: Not documented.
     """
 
 
@@ -353,16 +385,18 @@ class RspGetDocInfo(RspBase):
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
         if (l_data := len(data)) <= 3:
-            raise exc.KpeRspDecode(f"{cls.__name__}: too few data: {l_data} bytes.")
+            raise exc.KpeRspUnpack(f"{cls.__name__}: too few data: {l_data} bytes.")
         # 1. decode last
-        doc_type = const.IEnumADocType(data[0])  # ValueSomething exception if unknown
+        if data[0] not in const.IEnumADocType:
+            raise exc.KpeRspUnpack(f"Unknown doc type'{data[0]}'")
+        doc_type = const.IEnumADocType(data[0])
         if (doc_class := ADOC_CLASS.get(doc_type)) is None:
-            raise exc.KpeRspDecode(
+            raise exc.KpeRspUnpack(
                 f"{cls.__name__}: Doc type={doc_type} unprocessable yet ({util.b2hex(data[1:])})."
             )
         doc = doc_class.from_bytes(data[2:])
         # 2. init self
-        return cls(doc_type=doc_type, ofd=bool(data[1]), doc=doc)
+        return cls(doc_type=doc_type, ofd=bool(data[1]), doc=doc)  # TODO: ofd=i2l(...)
 
 
 @dataclass
@@ -405,13 +439,11 @@ class RspGetDateTime(RspBase):
     @classmethod
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
-        val = _data_decode(data, '<HHBBBBB', cls)  # 9; TODO: quick hack of TLV
-        if val[0] != 30000:
-            raise exc.KpeRspDecode(f"{cls.__name__}: bad TAG: {val[0]}")
-        if val[1] != 5:
-            raise exc.KpeRspDecode(f"{cls.__name__}: bad TLV len: {val[1]}")
+        __tag, __val = tag.tag_unpack(data)
+        if __tag != const.IEnumTag.TAG_30000:
+            raise exc.KpeRspUnpack(f"{cls.__name__}: bad TAG: {__tag}")
         return cls(
-            datime=util.b2dt(val[2:])
+            datime=__val
         )
 
 
@@ -490,4 +522,4 @@ def bytes2rsp(cmd_code: const.IEnumCmd, data: bytes) -> RspBase:
     """Decode inbound bytes into RspX object."""
     if (rsp := _CODE2CLASS.get(cmd_code)) is not None:
         return rsp.from_bytes(data)
-    raise exc.KpeRspDecode(f"Unknown response object (cmd {cmd_code}): {util.b2hex(data)}")
+    raise exc.KpeRspUnpack(f"Unknown response object (cmd {cmd_code}): {util.b2hex(data)}")

@@ -45,6 +45,28 @@ def tagdict_pack(t_dict: TagDict) -> bytes:
     return retvalue
 
 
+def tag_unpack(data: bytes) -> Tuple[const.IEnumTag, Any]:
+    """Unpack tag from bytes (tag:uin16, len:uin16, value:Any)."""
+    if (d_len := len(data)) < 4:
+        raise exc.KpeRspUnpack(f"Too few data to unpack ({d_len} bytes)")
+    # 1. get tag
+    if (t_id := util.b2ui(data[:2])) not in const.IEnumTag:
+        raise exc.KpeTagUnpack(f"Unknown tag '{t_id}'")
+    __tag = const.IEnumTag(t_id)
+    # 2. get data len
+    if (t_len := util.b2ui(data[2:4])) != (d_len - 4):
+        raise exc.KpeTagUnpack(f"Shipped tag data len ({t_len}) != real ({(d_len - 4)}).")
+    t_data = data[4:]
+    # 3. convert data
+    if __tag not in TAG2FUNC:
+        exc.KpeTagUnpack(f"Tag '{__tag}' not processing yet (payload '{util.b2hex(t_data)}').")
+    try:
+        __val = TAG2FUNC[__tag][2](t_data)
+    except ValueError as e:  # EnumType[/Flag] init
+        raise exc.KpeTagUnpack(e) from e
+    return __tag, __val
+
+
 def tagdict_unpack(t_list: bytes) -> TagDict:
     """Unpack raw TLV[]:bytes into TagDict."""
     def __walk_taglist(__tl: bytes) -> Tuple[int, bytes]:
