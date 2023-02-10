@@ -90,19 +90,15 @@ class KpePOS(Kpe):
     """POS error response."""
 
     code: int       # Result/ErrorInfo/Code
-    desc: str       # Result/ErrorInfo/Description
 
-    def __init__(self, rsname: str, code: int, desc: str):
+    def __init__(self, code: int):
         """Make new POS error reponse.
 
         :param code: Pre-defined code
-        :param desc: Error description
         """
-        super().__init__(self)
-        self.rsname = rsname
+        super().__init__()
         self.code = code
-        self.desc = desc
 
     def __str__(self):
         """Make string representation of the exception."""
-        return f"Device response '{self.rsname}' error {self.code}: {self.desc}"
+        return f"POS error response {self.code}"

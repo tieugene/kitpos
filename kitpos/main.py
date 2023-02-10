@@ -38,7 +38,7 @@ def __mk_args_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def __do_it(host: str, port: int, cmd_name: str, arg: Optional[str], dry_run: bool, from_file: bool):
+def __do_it(host: str, port: int, cmd_name: str, arg: Optional[str], dry_run: bool, from_file: bool) -> str:
     """Execute CLI.
 
     :param host: POS IP
@@ -54,21 +54,17 @@ def __do_it(host: str, port: int, cmd_name: str, arg: Optional[str], dry_run: bo
     else:  # isinstance(__cmd_XX, tuple)
         if __cmd_xx[1] == cli.JSON_ARG:
             if arg is None:
-                print("JSON data required")
-                return
+                exc.KpeCLI("JSON data required")
             if from_file:
-                with open(arg, 'rt', encoding='utf-8') as infile:
-                    arg = json.load(infile)
+                with open(arg, 'rt', encoding='utf-8') as infile:  # TODO: handle opening error
+                    arg = json.load(infile)  # TODO: handle json.load() exceptions
             else:
-                arg = json.loads(arg)
+                arg = json.loads(arg)  # TODO: handle json.loads() exceptions
         cmd_object = __cmd_xx[0](arg)
-    if cmd_object is None:
-        return
     bytes_o = cmd_object.to_bytes()  # 1. make command...
     frame_o = util.frame_pack(bytes_o)  # ..., frame it
     if dry_run:
-        print(frame_o.hex().upper())
-        return
+        return frame_o.hex().upper()
     # 2. txrx
     frame_i = net.txrx(host, port, frame_o, conn_timeout=CONN_TIMEOUT, txrx_timeout=1)
     # 3. dispatch response
@@ -80,9 +76,9 @@ def __do_it(host: str, port: int, cmd_name: str, arg: Optional[str], dry_run: bo
     if decoded_ok:
         cmd_class = type(cmd_object)
         rsp_object = rsp.bytes2rsp(cmd_class.cmd_id, bytes_i)
-        print(rsp_object.str('\n'))
+        return rsp_object.str('\n')
     else:
-        print("Err: %02x '%s'" % (bytes_i, cli.ERR_TEXT['ru'].get(bytes_i, '<Unknown>.')))
+        exc.KpePOS(bytes_i)
 
 
 def main():
@@ -90,10 +86,15 @@ def main():
     logger = logging.getLogger(__name__)
     args = __mk_args_parser().parse_args(sys.argv[1:])
     try:
-        __do_it(args.host, args.port, args.cmd, args.arg, args.dry_run, args.file)
+        result = __do_it(args.host, args.port, args.cmd, args.arg, args.dry_run, args.file)
+    except exc.KpePOS as e:
+        err_text = cli.ERR_TEXT['ru'].get(e.code, '<Unknown>.')
+        logger.error(f"POS error: {e.code:02x} '{err_text}'")
     except exc.Kpe as e:
         msg = f"Exception occurs ({e})"
         logger.exception(msg) if args.verbose else logger.error(msg)
+    else:
+        logger.info(result)
 
 
 if __name__ == '__main__':
