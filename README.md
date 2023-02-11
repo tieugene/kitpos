@@ -22,7 +22,7 @@ Type `kitpos -h` for help.
 
 Some commands require simple digit arguments (like `kitpos 1.2.3.4 SetDateTime 2302100046`).
 But another ones need more comlicated data as json.
-One way is to put json string as argumnet itself:
+One way is to put json string as argument itself with same content:
 ```sh
 kitpos <host> <cmd> 'json_string_without_spaces'
 ```
@@ -49,7 +49,7 @@ Some minimal samples:
   4. `ReceiptPayment <json>`
   5. `ReceiptCommit <json>`
 - Correction Receipt:
-  1. `CorReceiptBegin`
+  1. `CorrReceiptBegin`
   2. `CorrReceiptData <json>`
   3. `CorrReceiptAutomat <json>`
   4. `CorrReceiptCommit <json>`

@@ -1,8 +1,6 @@
 # TODO
 
-- [ ] Fixing (0.0.1):
-  + [ ] Tests (&rArr; coverage)
-  + [ ] Dox
+- [ ] Tests (&rArr; coverage)
 - [ ] Sequences:
   + [ ] SessionOpen
   + [ ] SessionClose
