@@ -3,6 +3,8 @@
 from typing import Optional
 import socket
 import time
+# 3. local
+from kitpos import const, exc
 
 
 def txrx(
@@ -14,10 +16,13 @@ def txrx(
     """Communicate with net device - send output data and get response data (sample)."""
     def __rx(__sock):
         return sock.recv(2048, socket.MSG_WAITALL)
-    with socket.create_connection((host, port), timeout=conn_timeout or socket.getdefaulttimeout()) as sock:
+    try:
+        sock = socket.create_connection((host, port), timeout=conn_timeout or socket.getdefaulttimeout())
         sock.sendall(data_out)  # or .send()
         retvalue = __rx(sock)
-        if retvalue == b'\xb6\x29' and txrx_timeout:  # hack: wait for slow response after single FRAME_HEADEF
+        if retvalue == const.FRAME_HEADER and txrx_timeout:  # hack: wait for slow response after single header
             time.sleep(txrx_timeout)
             retvalue += __rx(sock)
         return retvalue
+    except (socket.gaierror, socket.timeout, socket.error) as __e:
+        raise exc.KpeNet(__e) from __e

@@ -1,71 +1,74 @@
-"""Commands to send.
-
-:todo: .to_frame()
-"""
+"""Commands to send."""
+# pylint: disable=R0903
 # 1. std
-import datetime
 from typing import Optional, Iterable
+import datetime
 # 3. local
-from kitfr import const, util, tag
+from kitpos import const, util, tag, exc
 
 
 class _CmdBase:
     """Base for commands."""
+
     cmd_id: const.IEnumCmd
 
     @staticmethod
-    def chk_tags(payload: tag.TagDict, tags_required: Iterable[int], tags_optional: Iterable[int] = ()):
-        """Check given payload on consistency.
-
-        :fixme: Add back check (extra tags)
-        """
+    def _chk_tags(payload: tag.TagDict, tags_required: Iterable[int], tags_optional: Iterable[int] = ()):
+        """Check given payload on consistency (no less, no more)."""
         # step #1: All required tags shipped
-        for t in tags_required:
-            if t not in payload:
-                raise RuntimeError(f"Required tag '{t}' not found in given data.")
+        for __tag in tags_required:
+            if __tag not in payload:
+                raise exc.KpeCmdInit(f"Required tag '{__tag}' not found in given data.")
         # step #2: No one shipped tag excess
         __tag_set = set(tags_required).union(set(tags_optional))
-        for t in payload.keys():
-            if t.value not in __tag_set:
-                raise RuntimeError(f"Extra tag '{t.value}' in given data.")
+        for __tag in payload.keys():
+            if __tag.value not in __tag_set:
+                raise exc.KpeCmdInit(f"Extra tag '{__tag.value}' in given data.")
 
     def to_bytes(self) -> bytes:
         """Serialize to bytes."""
-        return self.cmd_id.value.to_bytes(1, 'little')
+        return util.ui2b1(self.cmd_id.value)
 
 
 class CmdGetDeviceStatus(_CmdBase):
     """0x01: Get POS status."""
-    cmd_id = const.IEnumCmd.GetDeviceStatus
+
+    cmd_id = const.IEnumCmd.GET_POS_STATUS
 
 
 class CmdGetDeviceModel(_CmdBase):
     """0x04: Get POS model."""
-    cmd_id = const.IEnumCmd.GetDeviceModel
+
+    cmd_id = const.IEnumCmd.GET_POS_MODEL
 
 
 class CmdGetStorageStatus(_CmdBase):
     """0x08: Get FS status."""
-    cmd_id = const.IEnumCmd.GetStorageStatus
+
+    cmd_id = const.IEnumCmd.GET_FS_STATUS
 
 
 class CmdGetRegisterParms(_CmdBase):
     """0x0A: Get POS/FS registering parameters."""
-    cmd_id = const.IEnumCmd.GetRegisterParms
+
+    cmd_id = const.IEnumCmd.GET_REG_PARMS
 
 
 class CmdDocCancel(_CmdBase):
     """0x10: Cancel any opened document."""
-    cmd_id = const.IEnumCmd.DocCancel
+
+    cmd_id = const.IEnumCmd.DOC_CANCEL
 
 
 class CmdGetCurSession(_CmdBase):
     """0x20: Get current session params."""
-    cmd_id = const.IEnumCmd.GetCurSession
+
+    cmd_id = const.IEnumCmd.GET_CUR_SES
 
 
 class _CmdSessionAnyBegin(_CmdBase):
-    """Base for CmdSessionOpenBegin/CmdSessioCloseBegin"""
+    """Base for CmdSessionOpenBegin/CmdSessioCloseBegin."""
+
     skip_prn: Optional[bool]  # Skip printing report (None = False)
 
     def __init__(self, skip_prn: Optional[bool] = None):
@@ -82,26 +85,31 @@ class _CmdSessionAnyBegin(_CmdBase):
 
 class CmdSessionOpenBegin(_CmdSessionAnyBegin):
     """0x21: Begin opening session."""
-    cmd_id = const.IEnumCmd.SessionOpenBegin
+
+    cmd_id = const.IEnumCmd.SES_OPEN_BEGIN
 
 
 class CmdSessionOpenCommit(_CmdBase):
     """0x22: Commit opening session."""
-    cmd_id = const.IEnumCmd.SessionOpenCommit
+
+    cmd_id = const.IEnumCmd.SES_OPEN_COMMIT
 
 
 class CmdSessionCloseBegin(_CmdSessionAnyBegin):
     """0x29: Begin closing session."""
-    cmd_id = const.IEnumCmd.SessionCloseBegin
+
+    cmd_id = const.IEnumCmd.SES_CLOSE_BEGIN
 
 
 class CmdSessionCloseCommit(_CmdBase):
     """0x2A: Commit opening session."""
-    cmd_id = const.IEnumCmd.SessionCloseCommit
+
+    cmd_id = const.IEnumCmd.SES_CLOSE_COMMIT
 
 
 class _CmdGetDocAny(_CmdBase):
     """Base CmdGetDocInfo/CmdGetDocData."""
+
     num: int
 
     def __init__(self, num: int):
@@ -115,41 +123,45 @@ class _CmdGetDocAny(_CmdBase):
 
 class CmdGetDocInfo(_CmdGetDocAny):
     """0x30: Find document by its number."""
-    cmd_id = const.IEnumCmd.GetDocInfo
+
+    cmd_id = const.IEnumCmd.GET_DOC_INFO
 
 
 class CmdGetDocData(_CmdGetDocAny):
     """0x3A: Read document content."""
-    cmd_id = const.IEnumCmd.GetDocData
+
+    cmd_id = const.IEnumCmd.GET_DOC_DATA
 
 
 class CmdGetOFDXchgStatus(_CmdBase):
     """0x50: Get OFD exchange status."""
-    cmd_id = const.IEnumCmd.GetOFDXchgStatus
+
+    cmd_id = const.IEnumCmd.GET_OFD_XCHG_STATUS
 
 
 class CmdSetDateTime(_CmdBase):
     """0x72: Set POS date/time."""
-    cmd_id = const.IEnumCmd.SetDateTime
+
+    cmd_id = const.IEnumCmd.SET_DATETIME
     datime: datetime.datetime
 
     def __init__(self, datime: datetime.datetime):
+        """Make CmdSetDateTime object.
+
+        :param datime: Date/time to set.
+        """
         super().__init__()
         self.datime = datime
 
     def to_bytes(self) -> bytes:
-        """Serialize to bytes.
-
-        :note: const: TAG=30000 + LEN=5
-        """
-        return super().to_bytes() \
-            + b'\x30\x75\x05\x00' \
-            + util.dt2b5(self.datime)
+        """Serialize to bytes."""
+        return super().to_bytes() + tag.tag_pack(const.IEnumTag.TAG_30000, util.dt2b5(self.datime))
 
 
 class CmdGetDateTime(_CmdBase):
     """0x73: Get POS date/time."""
-    cmd_id = const.IEnumCmd.GetDateTime
+
+    cmd_id = const.IEnumCmd.GET_DATETIME
 
 
 class CmdCorrReceiptBegin(_CmdBase):
@@ -157,7 +169,8 @@ class CmdCorrReceiptBegin(_CmdBase):
 
     Response: RspOK
     """
-    cmd_id = const.IEnumCmd.CorrReceiptBegin
+
+    cmd_id = const.IEnumCmd.COR_RCP_BEGIN
 
 
 class CmdCorrReceiptData(_CmdBase):
@@ -165,19 +178,24 @@ class CmdCorrReceiptData(_CmdBase):
 
     Response: RspOK
     """
+
     __tags = (1021, 1203, 1173, 1055, 1031, 1081, 1215, 1216, 1217, 1102, 1103, 1104, 1105, 1106, 1107, 1174)
-    cmd_id = const.IEnumCmd.CorrReceiptData
+    cmd_id = const.IEnumCmd.COR_RCP_DATA
     payload: tag.TagDict
 
     def __init__(self, payload: tag.TagDict):
+        """Make CmdCorrReceiptData object.
+
+        :param payload: Dict of tag-value pairs.
+        """
         super().__init__()
-        self.chk_tags(payload, self.__tags)
+        self._chk_tags(payload, self.__tags)
         # TODO: chk 1031+1081+1215+1216+1217 == sum(1102..1107)
         self.payload = payload
 
     def to_bytes(self) -> bytes:
         """Serialize to bytes."""
-        return super().to_bytes() + tag.tag_dict_pack(self.payload)
+        return super().to_bytes() + tag.tagdict_pack(self.payload)
 
 
 class CmdCorrReceiptAutomat(_CmdBase):
@@ -185,18 +203,23 @@ class CmdCorrReceiptAutomat(_CmdBase):
 
     Response: RspOK
     """
+
     __tags = (1009, 1187, 1036)
-    cmd_id = const.IEnumCmd.CorrReceiptAutomat
+    cmd_id = const.IEnumCmd.COR_RCP_AUTOMAT
     payload: tag.TagDict
 
     def __init__(self, payload: tag.TagDict):
+        """Make CmdCorrReceiptAutomat object.
+
+        :param payload: Dict of tag-value pairs.
+        """
         super().__init__()
-        self.chk_tags(payload, self.__tags)
+        self._chk_tags(payload, self.__tags)
         self.payload = payload
 
     def to_bytes(self) -> bytes:
         """Serialize to bytes."""
-        return super().to_bytes() + tag.tag_dict_pack(self.payload)
+        return super().to_bytes() + tag.tagdict_pack(self.payload)
 
 
 class CmdCorrReceiptCommit(_CmdBase):
@@ -204,11 +227,17 @@ class CmdCorrReceiptCommit(_CmdBase):
 
     Response: RspCorrReceiptCommit
     """
-    cmd_id = const.IEnumCmd.CorrReceiptCommit
+
+    cmd_id = const.IEnumCmd.COR_RCP_COMMIT
     req_type: const.IEnumReceiptType
     total: int
 
     def __init__(self, req_type: const.IEnumReceiptType, total: int):
+        """Make CmdCorrReceiptCommit object.
+
+        :param req_type: Corr. receipt type (enum)
+        :param total: Total of corr. receipt items prices.
+        """
         super().__init__()
         self.req_type = req_type
         self.total = total
@@ -224,7 +253,8 @@ class CmdReceiptBegin(_CmdBase):
 
     Response: RspOK
     """
-    cmd_id = const.IEnumCmd.ReceiptBegin
+
+    cmd_id = const.IEnumCmd.RCP_BEGIN
 
 
 class CmdReceiptItem(_CmdBase):
@@ -232,20 +262,25 @@ class CmdReceiptItem(_CmdBase):
 
     Response: RspOK
     """
+
     __1059_tags = (1030, 1079, 1023, 1199, 1214, 1212)
-    cmd_id = const.IEnumCmd.ReceiptItem
+    cmd_id = const.IEnumCmd.RCP_ITEM
     payload: tag.TagDict
 
     def __init__(self, payload: tag.TagDict):
+        """Make CmdReceiptItem object.
+
+        :param payload: Dict of tag-value pairs.
+        """
         super().__init__()
-        if not (len(payload) == 1 and 1059 in payload):
-            raise RuntimeError("The only '1059' tag required.")
-        self.chk_tags(payload[const.IEnumTag.Tag_1059], self.__1059_tags)
+        if not (len(payload) == 1 and const.IEnumTag.TAG_1059 in payload):
+            raise exc.KpeCmdInit("The only '1059' tag required.")
+        self._chk_tags(payload[const.IEnumTag.TAG_1059], self.__1059_tags)
         self.payload = payload
 
     def to_bytes(self) -> bytes:
         """Serialize to bytes."""
-        return super().to_bytes() + tag.tag_dict_pack(self.payload)
+        return super().to_bytes() + tag.tagdict_pack(self.payload)
 
 
 class CmdReceiptAutomat(_CmdBase):
@@ -253,18 +288,23 @@ class CmdReceiptAutomat(_CmdBase):
 
     Response: RspOK
     """
+
     __tags = (1009, 1187, 1036)
-    cmd_id = const.IEnumCmd.ReceiptAutomat
+    cmd_id = const.IEnumCmd.RCP_AUTOMAT
     payload: tag.TagDict
 
     def __init__(self, payload: tag.TagDict):
+        """Make CmdReceiptAutomat object.
+
+        :param payload: Dict of tag-value pairs.
+        """
         super().__init__()
-        self.chk_tags(payload, self.__tags)
+        self._chk_tags(payload, self.__tags)
         self.payload = payload
 
     def to_bytes(self) -> bytes:
         """Serialize to bytes."""
-        return super().to_bytes() + tag.tag_dict_pack(self.payload)
+        return super().to_bytes() + tag.tagdict_pack(self.payload)
 
 
 class CmdReceiptPayment(_CmdBase):
@@ -272,19 +312,24 @@ class CmdReceiptPayment(_CmdBase):
 
     Response: RspOK
     """
+
     __tags = (1055, 1031, 1081, 1215, 1216, 1217)
     __opts = (1021, 1203, 1008, 1192)  # ... 1228, 1227, 1085, 1086
-    cmd_id = const.IEnumCmd.ReceiptPayment
+    cmd_id = const.IEnumCmd.RCP_PAYMENT
     payload: tag.TagDict
 
     def __init__(self, payload: tag.TagDict):
+        """Make CmdReceiptPayment object.
+
+        :param payload: Dict of tag-value pairs.
+        """
         super().__init__()
-        self.chk_tags(payload, self.__tags, self.__opts)
+        self._chk_tags(payload, self.__tags, self.__opts)
         self.payload = payload
 
     def to_bytes(self) -> bytes:
         """Serialize to bytes."""
-        return super().to_bytes() + tag.tag_dict_pack(self.payload)
+        return super().to_bytes() + tag.tagdict_pack(self.payload)
 
 
 class CmdReceiptCommit(_CmdBase):
@@ -292,12 +337,19 @@ class CmdReceiptCommit(_CmdBase):
 
     Response: RspReceiptCommit
     """
-    cmd_id = const.IEnumCmd.ReceiptCommit
+
+    cmd_id = const.IEnumCmd.RCP_COMMIT
     req_type: const.IEnumReceiptType
     total: int
     notes: Optional[str]
 
     def __init__(self, req_type: const.IEnumReceiptType, total: int, notes: Optional[str]):
+        """Create CmdReceiptCommit object.
+
+        :param req_type: Receipt type (enum)
+        :param total: Total of receipt items prices.
+        :param notes: Subj.
+        """
         super().__init__()
         self.req_type = req_type
         self.total = total

@@ -2,7 +2,7 @@
 # 1. std
 import enum
 # 3. local
-from kitfr import const
+from kitpos import const
 
 x_table = str.maketrans({'0': '.', '1': '+'})
 
@@ -12,17 +12,18 @@ class _Flags:
 
     :todo: Metaclass
     """
+
     _v: int
     _v_cls: enum.IntEnum
 
-    def __init__(self, b: int):
-        self._v = b
+    def __init__(self, val: int):
+        self._v = val
 
-    def is_set(self, f: enum.IntFlag) -> bool:
+    def is_set(self, flg: enum.IntFlag) -> bool:
         """Check the flag is set."""
-        return bool(f & self._v)
+        return bool(flg & self._v)
 
-    def b(self) -> bytes:
+    def as_bytes(self) -> bytes:
         """Get value as byte."""
         return self._v.to_bytes(1, 'little')
 
@@ -36,6 +37,7 @@ class FSErrors(_Flags):
     Used:
     - ...
     """
+
     _v_cls: const.IFlagFSErr
 
 
@@ -45,6 +47,7 @@ class FRModes(_Flags):
     Used:
     - ...
     """
+
     _v_cls: const.IFlagFRMode
 
 
@@ -54,6 +57,7 @@ class TaxModes(_Flags):
     Used:
     - ...
     """
+
     _v_cls: const.IFlagTax
 
 
@@ -63,4 +67,5 @@ class AgentModes(_Flags):
     Used:
     - ...
     """
+
     _v_cls: const.IFlagAgent

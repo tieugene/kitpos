@@ -1,0 +1,1 @@
+"""Kit POS library tests."""

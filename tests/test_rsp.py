@@ -2,15 +2,15 @@
 # 1. std
 import datetime
 
-import kitfr.util
+import kitpos.util
 # 3. local
-from kitfr import const, rsp
+from kitpos import const, rsp
 from tests.samples import RAW_A, RSP
 
 
 def __x(i: int) -> bytes:
     """Extract frame payload for RspX.from_bytes()."""
-    # return util.frame2bytes(RAW_A[i])[1:]
+    # return util.frame_unpack(RAW_A[i])[1:]
     return RAW_A[i][5:-2]
 
 
@@ -18,7 +18,7 @@ def test_rsp_get_device_status():
     cls = rsp.RspGetDeviceStatus
     assert cls.from_bytes(__x(0)) == cls(
         sn='550101006105',
-        datime=kitfr.util.b2dt((23, 1, 21, 18, 1)),
+        datime=kitpos.util.b2dt((23, 1, 21, 18, 1)),
         err=0,
         status=0,
         is_fs=True,
@@ -42,7 +42,7 @@ def test_rsp_get_storage_status():
         is_doc=False,
         is_session_open=True,
         flags=8,
-        datime=kitfr.util.b2dt((22, 4, 18, 12, 41)),
+        datime=kitpos.util.b2dt((22, 4, 18, 12, 41)),
         sn='9999078902003867',
         last_doc_no=10
     )
@@ -81,13 +81,13 @@ def test_rsp_get_date_time():
 
 def test_bytes2rsp():
     cls_list = (
-        const.IEnumCmd.GetDeviceStatus,
-        const.IEnumCmd.GetDeviceModel,
-        const.IEnumCmd.GetStorageStatus,
-        const.IEnumCmd.GetRegisterParms,
-        const.IEnumCmd.GetOFDXchgStatus,
-        const.IEnumCmd.SetDateTime,
-        const.IEnumCmd.GetDateTime,
+        const.IEnumCmd.GET_POS_STATUS,
+        const.IEnumCmd.GET_POS_MODEL,
+        const.IEnumCmd.GET_FS_STATUS,
+        const.IEnumCmd.GET_REG_PARMS,
+        const.IEnumCmd.GET_OFD_XCHG_STATUS,
+        const.IEnumCmd.SET_DATETIME,
+        const.IEnumCmd.GET_DATETIME,
     )
     for i, c in enumerate(cls_list):
         assert rsp.bytes2rsp(c, RSP[i]) is not None  # compare type

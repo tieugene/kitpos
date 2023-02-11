@@ -1,13 +1,6 @@
 # TODO
 
-- [ ] Fixing (0.0.1):
-  + [ ] Rename to `kitpos`
-  + [ ] Logging(v)
-  + [ ] Dox
-  + [ ] Exceptions (catch, wrap into KitFR&hellip;)
-  + [ ] Tests
-  + [ ] Lint, coverage
-  + [ ] Packaging (`requirements.txt`, `setup.{py,cfg}`, `kitfr.spec`, `?MANIFEST.in`, `?tox.*`)
+- [ ] Tests (&rArr; coverage)
 - [ ] Sequences:
   + [ ] SessionOpen
   + [ ] SessionClose
@@ -28,15 +21,14 @@
   + [ ] 41: CorBSO
   + [ ]  7: OpConfirm
 - [ ] Misc
+  + [ ] `tox.ini`
   + [ ] Async txrx
   + [ ] Multitag
   + [ ] Online tests (w/ live FRs)
-
-## Maybe
-- [ ] FR: State diagramm
-- [ ] flag._Flags: metaclass
-
-## Tags used:
-1009, 1021, 1023, 1030, 1031, 1036, 1055, 1059, 1079, 1081,
-1103, 1104, 1105, 1106, 1107, 1173, 1174, 1177, 1178, 1179,
-1187, 1192, 1199, 1203, 1212, 1214, 1215, 1216, 1217, 30000
+- Maybe:
+  + Verbosity: up to 6 lvls
+  + IEnumCmd &hArr; CmdX &hArr; RcpX
+  + Mypy
+  + POS State diagramm
+  + flag._Flags: metaclass
+  + Nice exception traceback
