@@ -24,5 +24,5 @@ def txrx(
             time.sleep(txrx_timeout)
             retvalue += __rx(sock)
         return retvalue
-    except (socket.gaierror, socket.timeout, socket.error) as e:
-        raise exc.KpeNet(e) from e
+    except (socket.gaierror, socket.timeout, socket.error) as __e:
+        raise exc.KpeNet(__e) from __e

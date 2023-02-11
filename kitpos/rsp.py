@@ -31,13 +31,13 @@ class RspBase:
         """Class name shorthand."""
         return self.__class__.__name__
 
-    def str(self, sep: str = ', ') -> str:
+    def to_str(self, sep: str = ', ') -> str:
         """Get response attrs as string."""
-        return sep.join([f"{f}={self.__dict__[f]}" for f in self.__annotations__])
+        return sep.join([f"{f}={self.__dict__[f]}" for f in self.__annotations__])  # FIXME: pylint: disable=E1101
 
-    def __str__(self) -> str:
+    def __str__(self) -> to_str:
         """Make string representation of response object."""
-        return f"{self.cls_name()}: {self.str()}"
+        return f"{self.cls_name()}: {self.to_str()}"
 
 
 @dataclass
@@ -46,7 +46,7 @@ class _RspStub(RspBase):
 
     payload: bytes
 
-    def str(self, sep: str = ', ') -> str:
+    def to_str(self, sep: str = ', ') -> str:
         """Just dump payload."""
         return f"{self.payload.hex().upper()} ({len(self.payload)})"
 
@@ -60,7 +60,7 @@ class _RspStub(RspBase):
 class RspOK(RspBase):
     """Just OK."""
 
-    def str(self, _: str = '') -> str:
+    def to_str(self, _: str = '') -> str:
         """Get response attrs as string."""
         return "OK"  # TODO: ''?
 
@@ -89,17 +89,17 @@ class RspGetDeviceStatus(RspBase):
         """Deserialize object."""
         val = _data_decode(data, '12sBBBBB?B?BB', cls)
         try:
-            v7 = const.IEnumPrnStatus(val[7])
-            v9 = const.IEnumFSphase(val[9])
-        except ValueError as e:
-            raise exc.KpeRspUnpack(e) from e
+            v_7 = const.IEnumPrnStatus(val[7])
+            v_9 = const.IEnumFSphase(val[9])
+        except ValueError as __e:
+            raise exc.KpeRspUnpack(__e) from __e
         return cls(
             s_n=util.b2s(val[0]),
             datime=util.b2dt(val[1:6]),
             err=val[6],
-            prn_status=v7,
+            prn_status=v_7,
             is_fs=val[8],
-            fs_phase=v9,
+            fs_phase=v_9,
             wtf=val[10]
         )
 
@@ -120,6 +120,7 @@ class RspGetDeviceModel(RspBase):
 @dataclass
 class RspGetStorageStatus(RspBase):
     """Fiscal storage status (0x08)."""
+    # pylint: disable=R0902
 
     phase: const.IEnumFSphase
     cur_doc_type: int  # TODO: enum
@@ -135,17 +136,17 @@ class RspGetStorageStatus(RspBase):
         """Deserialize object."""
         val = _data_decode(data, '<BB??BBBBBB16sI', cls)
         try:
-            v0 = const.IEnumFSphase(val[0])
-            v1 = const.IEnumFSCurDoc(val[1])
-            v4 = flag.FSErrors(val[4])
-        except ValueError as e:
-            raise exc.KpeRspUnpack(e) from e
+            v_0 = const.IEnumFSphase(val[0])
+            v_1 = const.IEnumFSCurDoc(val[1])
+            v_4 = flag.FSErrors(val[4])
+        except ValueError as __e:
+            raise exc.KpeRspUnpack(__e) from __e
         return cls(
-            phase=v0,
-            cur_doc_type=v1,
+            phase=v_0,
+            cur_doc_type=v_1,
             is_doc=val[2],
             is_session_open=val[3],
-            flags=v4,
+            flags=v_4,
             datime=util.b2dt(val[5:10]),
             s_n=util.b2s(val[10]),
             last_fdoc_n=val[11]
@@ -167,17 +168,17 @@ class RspGetRegisterParms(RspBase):
         """Deserialize object."""
         val = _data_decode(data, '20s12sBBB', cls)
         try:
-            v2 = flag.FRModes(val[2])
-            v3 = flag.TaxModes(val[3])
-            v4 = flag.AgentModes(val[4])
-        except ValueError as e:
-            raise exc.KpeRspUnpack(e) from e
+            v_2 = flag.FRModes(val[2])
+            v_3 = flag.TaxModes(val[3])
+            v_4 = flag.AgentModes(val[4])
+        except ValueError as __e:
+            raise exc.KpeRspUnpack(__e) from __e
         return cls(
             reg_n=util.b2s(val[0]).rstrip(),
             inn=util.b2s(val[1]).rstrip(),
-            fr_mode=v2,
-            tax=v3,
-            agent=v4
+            fr_mode=v_2,
+            tax=v_3,
+            agent=v_4
         )
 
 
@@ -250,24 +251,25 @@ class ADocRegRpt(ADoc):
         """Deserialize object."""
         val = _data_decode(data, '<BBBBBII12s20sBB', cls)  # 47
         try:
-            v9 = flag.TaxModes(val[9])
-            v10 = flag.FRModes(val[10])
-        except ValueError as e:
-            raise exc.KpeRspUnpack(e) from e
+            v_9 = flag.TaxModes(val[9])
+            v_10 = flag.FRModes(val[10])
+        except ValueError as __e:
+            raise exc.KpeRspUnpack(__e) from __e
         return cls(
             datime=util.b2dt(val[0:5]),
             fdoc_n=val[5],
             fpd=val[6],
             inn=util.b2s(val[7]).rstrip(),
             reg_n=util.b2s(val[8]).rstrip(),
-            tax=v9,
-            mode=v10
+            tax=v_9,
+            mode=v_10
         )
 
 
 @dataclass
 class ADocReRegRpt(ADoc):
     """Archive document. Re-Registration report."""
+    # pylint: disable=R0902
 
     datime: datetime.datetime
     fdoc_n: int
@@ -283,20 +285,20 @@ class ADocReRegRpt(ADoc):
         """Deserialize object."""
         val = _data_decode(data, '<BBBBBII12s20sBBB', cls)  # 48
         try:
-            v9 = flag.TaxModes(val[9])
-            v10 = flag.FRModes(val[10])
-            v11 = const.IEnumReRegReason(val[11])
-        except ValueError as e:
-            raise exc.KpeRspUnpack(e) from e
+            v_9 = flag.TaxModes(val[9])
+            v_10 = flag.FRModes(val[10])
+            v_11 = const.IEnumReRegReason(val[11])
+        except ValueError as __e:
+            raise exc.KpeRspUnpack(__e) from __e
         return cls(
             datime=util.b2dt(val[0:5]),
             fdoc_n=val[5],
             fpd=val[6],
             inn=util.b2s(val[7]).rstrip(),
             reg_n=util.b2s(val[8]).rstrip(),
-            tax=v9,
-            mode=v10,
-            reason=v11
+            tax=v_9,
+            mode=v_10,
+            reason=v_11
         )
 
 
@@ -344,15 +346,15 @@ class ADocReceipt(ADoc):
         """Deserialize object."""
         val = _data_decode(data, '<BBBBBIIBBBBBB', cls)  # 19
         try:
-            v7 = const.IEnumReceiptType(val[7])
-        except ValueError as e:
-            raise exc.KpeRspUnpack(e) from e
+            v_7 = const.IEnumReceiptType(val[7])
+        except ValueError as __e:
+            raise exc.KpeRspUnpack(__e) from __e
         return cls(
             datime=util.b2dt(val[0:5]),
             fdoc_n=val[5],
             fpd=val[6],
-            req_type=v7,
-            total=(int.from_bytes(val[8:], 'little'))  # Note: specioal UINT40
+            req_type=v_7,
+            total=int.from_bytes(val[8:], 'little')  # Note: specioal UINT40
         )
 
 
@@ -389,8 +391,8 @@ class RspGetDocInfo(RspBase):
         # 1. decode last
         try:
             doc_type = const.IEnumADocType(data[0])
-        except ValueError as e:
-            raise exc.KpeRspUnpack(e) from e
+        except ValueError as __e:
+            raise exc.KpeRspUnpack(__e) from __e
         if (doc_class := ADOC_CLASS.get(doc_type)) is None:
             raise exc.KpeRspUnpack(
                 f"{cls.__name__}: Doc type={doc_type} unprocessable yet ({util.b2hex(data[1:])})."

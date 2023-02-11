@@ -33,8 +33,8 @@ def ui2b_n(val: int, num: int) -> bytes:
     """
     try:
         return val.to_bytes(num, 'little')
-    except OverflowError as e:
-        raise exc.KpeBytePack(e)
+    except OverflowError as __e:
+        raise exc.KpeBytePack(__e) from __e
 
 
 def ui2b1(val: int) -> bytes:

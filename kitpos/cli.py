@@ -166,10 +166,10 @@ def __cmd_72(val: Optional[str]) -> Optional[cmd.CmdSetDateTime]:
     """Set POS date/time."""
     if val:
         try:
-            datime = datetime.datetime.strptime(val, '%y%m%d%H%M')
-        except ValueError as e:
-            exc.KpeCLI(e)
-        return cmd.CmdSetDateTime(datime)
+            __dt = datetime.datetime.strptime(val, '%y%m%d%H%M')
+        except ValueError as __e:
+            raise exc.KpeCLI(__e)
+        return cmd.CmdSetDateTime(__dt)
     raise exc.KpeCLI("Date/time required (yymmddHHMM).")
 
 
@@ -197,8 +197,8 @@ def __cmd_26(val: Dict[str, int]) -> cmd.CmdCorrReceiptCommit:
     """Corr. Receipt. Step #4/4 - commit."""
     try:
         rcp_type = const.IEnumReceiptType(val['type'])
-    except ValueError as e:
-        raise exc.KpeCLI(e) from e
+    except ValueError as __e:
+        raise exc.KpeCLI(__e) from __e
     return cmd.CmdCorrReceiptCommit(
         req_type=rcp_type,
         total=val['total']
@@ -229,8 +229,8 @@ def __cmd_24(val: Dict) -> cmd.CmdReceiptCommit:
     """Receipt. Step #6/6 - commit."""
     try:
         rcp_type = const.IEnumReceiptType(val['type'])
-    except ValueError as e:
-        raise exc.KpeCLI(e) from e
+    except ValueError as __e:
+        raise exc.KpeCLI(__e) from __e
     return cmd.CmdReceiptCommit(
         req_type=rcp_type,
         total=val['total'],

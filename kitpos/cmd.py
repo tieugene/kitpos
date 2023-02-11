@@ -1,4 +1,5 @@
 """Commands to send."""
+# pylint: disable=R0903
 # 1. std
 from typing import Optional, Iterable
 import datetime

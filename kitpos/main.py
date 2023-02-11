@@ -38,6 +38,7 @@ def __mk_args_parser() -> argparse.ArgumentParser:
     return parser
 
 
+# FIXME: pylint: disable=R0913,R1710
 def __do_it(host: str, port: int, cmd_name: str, arg: Optional[str], dry_run: bool, from_file: bool) -> Optional[str]:
     """Execute CLI.
 
@@ -48,13 +49,14 @@ def __do_it(host: str, port: int, cmd_name: str, arg: Optional[str], dry_run: bo
     :param dry_run: If True: dump bytes to send and exit
     :param from_file: Whether read json data from file instead of argv
     """
+    # FIXME: pylint: disable=R0914
     __cmd_xx = cli.COMMANDS[cmd_name]
     if isinstance(__cmd_xx, FunctionType):
         cmd_object = __cmd_xx()
     else:  # isinstance(__cmd_XX, tuple)
         if __cmd_xx[1] == cli.JSON_ARG:
             if arg is None:
-                exc.KpeCLI("JSON data required")
+                raise exc.KpeCLI("JSON data required")
             if from_file:
                 with open(arg, 'rt', encoding='utf-8') as infile:  # TODO: handle opening error
                     arg = json.load(infile)  # TODO: handle json.load() exceptions
@@ -62,28 +64,27 @@ def __do_it(host: str, port: int, cmd_name: str, arg: Optional[str], dry_run: bo
                 arg = json.loads(arg)  # TODO: handle json.loads() exceptions
         cmd_object = __cmd_xx[0](arg)
     bytes_o = cmd_object.to_bytes()  # 1. make command...
-    logging.debug(f"Cmd bytes: {util.b2hex(bytes_o)}")
+    logging.debug("Cmd bytes: %s", util.b2hex(bytes_o))
     frame_o = util.frame_pack(bytes_o)  # ..., frame it
-    logging.debug(f"Cmd frame: {util.b2hex(frame_o)}")
+    logging.debug("Cmd frame: %s", util.b2hex(frame_o))
     if dry_run:
         return
     # 2. txrx
     frame_i = net.txrx(host, port, frame_o, conn_timeout=CONN_TIMEOUT, txrx_timeout=1)
-    logging.debug(f"Rsp frame: {util.b2hex(frame_i)}")
+    logging.debug("Rsp frame: %s", util.b2hex(frame_i))
     # 3. dispatch response
     # - unwrap frame
     payload_i = util.frame_unpack(frame_i)
-    logging.debug(f"Rsp payload: {util.b2hex(payload_i)}")
+    logging.debug("Rsp payload: %s", util.b2hex(payload_i))
     # - ok/err
     decoded_ok, bytes_i = util.frame_payload_dispatch(payload_i)
     # - dispatch last
     if decoded_ok:
-        logging.debug(f"Rsp bytes: {util.b2hex(bytes_i)}")
+        logging.debug("Rsp bytes: %s", util.b2hex(bytes_i))
         cmd_class = type(cmd_object)
         rsp_object = rsp.bytes2rsp(cmd_class.cmd_id, bytes_i)
-        return rsp_object.str('\n')
-    else:
-        raise exc.KpePOS(bytes_i)
+        return rsp_object.to_str('\n')
+    raise exc.KpePOS(bytes_i)
 
 
 def main():
@@ -93,12 +94,15 @@ def main():
     # logger = logging.getLogger(__name__)
     try:
         result = __do_it(args.host, args.port, args.cmd, args.arg, args.dry_run, args.file)
-    except exc.KpePOS as e:
-        err_text = cli.ERR_TEXT['ru'].get(e.code, '<Unknown>.')
-        logging.error(f"POS error: {e.code:02x} '{err_text}'")
-    except exc.Kpe as e:
-        msg = f"Exception occurs ({e})"
-        logging.exception(msg) if args.verbose else logging.error(msg)
+    except exc.KpePOS as __e:
+        err_text = cli.ERR_TEXT['ru'].get(__e.code, '<Unknown>.')
+        logging.error("POS error: %02X '%s'", __e.code, err_text)
+    except exc.Kpe as __e:
+        msg = "Exception occurs (%s)"
+        if args.verbose:
+            logging.exception(msg, __e)
+        else:
+            logging.error(msg, __e)
     else:
         if result:
             print(result)

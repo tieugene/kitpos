@@ -16,15 +16,15 @@ def tagdict_unjson(data: Dict[str, Any]) -> TagDict:
         i_key = int(k)              # - check #1: tag is int
         try:
             __tag = const.IEnumTag(i_key)
-        except ValueError as e:
-            raise exc.KpeTagUnjson(e) from e
+        except ValueError as __e:
+            raise exc.KpeTagUnjson(__e) from __e
         # if __tag not in TAG2FUNC:  # not need in normal use
         #    raise exc.KpeTagUnjson(f"Tag '{i_key}' unprocessable by TAG2FUNC yet")
         t_func = TAG2FUNC[__tag][0]
         try:
             real_val = t_func(val)
-        except ValueError as e:  # EnumType[/Flag] init
-            raise exc.KpeTagUnjson(e) from e
+        except ValueError as __e:  # EnumType[/Flag] init
+            raise exc.KpeTagUnjson(__e) from __e
         retvalue[__tag] = real_val
     return retvalue
 
@@ -41,13 +41,13 @@ def tagdict_pack(t_dict: TagDict) -> bytes:
         t_func = TAG2FUNC[k][1]
         try:
             payload = t_func(val)
-        except ValueError as e:  # EnumType[/Flag] init
-            raise exc.KpeTagPack(e) from e
+        except ValueError as __e:  # EnumType[/Flag] init
+            raise exc.KpeTagPack(__e) from __e
         retvalue += tag_pack(k, payload)
     return retvalue
 
 
-def tag_unpack(data: bytes, skip_unknown: bool = False) -> Optional[TagPair]:
+def tag_unpack(data: bytes, skip_unknown: bool = False) -> Optional[TagPair]:  # FIXME: pylint: disable=R1710
     """Unpack tag from bytes (tag:uin16, len:uin16, value:Any)."""
     if (d_len := len(data)) < 4:
         raise exc.KpeRspUnpack(f"Too few data to unpack ({d_len} bytes)")
@@ -57,8 +57,8 @@ def tag_unpack(data: bytes, skip_unknown: bool = False) -> Optional[TagPair]:
         return
     try:
         __tag = const.IEnumTag(t_id)
-    except ValueError as e:
-        raise exc.KpeTagUnpack(e) from e
+    except ValueError as __e:
+        raise exc.KpeTagUnpack(__e) from __e
     # 2. get data len
     if (t_len := util.b2ui(data[2:4])) != (d_len - 4):
         raise exc.KpeTagUnpack(f"Shipped tag data len ({t_len}) != real ({(d_len - 4)}).")
@@ -68,8 +68,8 @@ def tag_unpack(data: bytes, skip_unknown: bool = False) -> Optional[TagPair]:
         raise exc.KpeTagUnpack(f"Tag '{__tag}' not processing yet (payload '{util.b2hex(t_data)}').")
     try:
         __val = TAG2FUNC[__tag][2](t_data)
-    except ValueError as e:  # EnumType[/Flag] init
-        raise exc.KpeTagUnpack(e) from e
+    except ValueError as __e:  # EnumType[/Flag] init
+        raise exc.KpeTagUnpack(__e) from __e
     return __tag, __val
 
 
