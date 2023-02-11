@@ -62,7 +62,7 @@ class RspOK(RspBase):
 
     def str(self, _: str = '') -> str:
         """Get response attrs as string."""
-        return "OK"
+        return "OK"  # TODO: ''?
 
     @classmethod
     def from_bytes(cls, data: bytes):
