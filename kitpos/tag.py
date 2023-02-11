@@ -1,11 +1,12 @@
 """Tags things."""
 # 1. std
-from typing import Dict, Any, Tuple, Callable
+from typing import Dict, Any, Tuple, Callable, Optional
 import datetime
 # 3. local
 from kitpos import const, flag, util, exc
 # y. typedefs
 TagDict = Dict[const.IEnumTag, Any]
+TagPair = Tuple[const.IEnumTag, Any]
 
 
 def tagdict_unjson(data: Dict[str, Any]) -> TagDict:
@@ -46,12 +47,14 @@ def tagdict_pack(t_dict: TagDict) -> bytes:
     return retvalue
 
 
-def tag_unpack(data: bytes) -> Tuple[const.IEnumTag, Any]:
+def tag_unpack(data: bytes, skip_unknown: bool = False) -> Optional[TagPair]:
     """Unpack tag from bytes (tag:uin16, len:uin16, value:Any)."""
     if (d_len := len(data)) < 4:
         raise exc.KpeRspUnpack(f"Too few data to unpack ({d_len} bytes)")
     # 1. get tag
     t_id = util.b2ui(data[:2])
+    if skip_unknown and t_id in const.TAGS_UNKNOWN:
+        return
     try:
         __tag = const.IEnumTag(t_id)
     except ValueError as e:
@@ -72,32 +75,26 @@ def tag_unpack(data: bytes) -> Tuple[const.IEnumTag, Any]:
 
 def tagdict_unpack(t_list: bytes) -> TagDict:
     """Unpack raw TLV[]:bytes into TagDict."""
-    def __walk_taglist(__tl: bytes) -> Tuple[int, bytes]:
+    def __walk_chunks(__tl: bytes) -> bytes:
+        """Split TLV[] by TLVs."""
         __l_tl = len(__tl)  # whole data len
-        __i = 0
+        __i = 0  # 'ptr'
         while __i < __l_tl:
+            if __i + 4 > __l_tl:
+                raise exc.KpeTagUnpack(f"Too few data to unpack [{__i}:{__l_tl}].")
             __l_t = util.b2ui(__tl[__i+2:__i+4])  # current tag raw data len
-            if __i + __l_t + 2 > __l_tl:
-                raise exc.KpeTagUnpack(f"Tag [{__i}:] too big")
-            yield util.b2ui(__tl[__i:__i+2]), __tl[__i+4:__i+4+__l_t]  # tag (id, raw data)
+            if __i + 4 + __l_t > __l_tl:
+                raise exc.KpeTagUnpack(f"Too few data for tag [{__i}:] (need {__l_t + 4} vs {__l_tl - __i} last).")
+            yield __tl[__i+4:__i+4+__l_t]
             __i += (4 + __l_t)
         # TODO: check last (__i == __l_tl)
     retvalue = {}
-    for t_id, t_data in __walk_taglist(t_list):
-        if t_id not in const.TAGS_UNKNOWN:  # skip not documented
-            # print(f"{t_id} ({util.b2hex(util.ui2b2(t_id))}): {util.b2hex(t_data)} ({len(t_data)})")
-            try:
-                __tag = const.IEnumTag(t_id)
-            except ValueError as e:
-                raise exc.KpeTagUnpack(e) from e
+    for chunk in __walk_chunks(t_list):
+        if __tag__val := tag_unpack(chunk, skip_unknown=True):
+            __tag, __val = __tag__val
             if __tag in retvalue:  # FIXME: multitags
                 raise exc.KpeTagUnpack(f"Tag '{__tag}' already counted.")
-            if __tag not in TAG2FUNC:
-                exc.KpeTagUnpack(f"Tag '{__tag}' not processing yet (payload '{util.b2hex(t_data)}').")
-            try:
-                retvalue[__tag] = TAG2FUNC[__tag][2](t_data)
-            except ValueError as e:  # EnumType[/Flag] init
-                raise exc.KpeTagUnpack(e) from e
+            retvalue[__tag] = __val
     return retvalue
 
 

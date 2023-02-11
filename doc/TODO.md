@@ -29,6 +29,7 @@
   + [ ] Multitag
   + [ ] Online tests (w/ live FRs)
 - Maybe:
+  + Verbosity: up to 6 lvls
   + IEnumCmd &hArr; CmdX &hArr; RcpX
   + Mypy
   + POS State diagramm
