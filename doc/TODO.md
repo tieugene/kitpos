@@ -1,7 +1,6 @@
 # TODO
 
 - [ ] Fixing (0.0.1):
-  + [ ] FIXME: tagdict_unpack() <= tag_unpack
   + [ ] Tests (&rArr; coverage)
   + [ ] Dox
 - [ ] Sequences:

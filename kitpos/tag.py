@@ -85,11 +85,13 @@ def tagdict_unpack(t_list: bytes) -> TagDict:
             __l_t = util.b2ui(__tl[__i+2:__i+4])  # current tag raw data len
             if __i + 4 + __l_t > __l_tl:
                 raise exc.KpeTagUnpack(f"Too few data for tag [{__i}:] (need {__l_t + 4} vs {__l_tl - __i} last).")
-            yield __tl[__i+4:__i+4+__l_t]
+            yield __tl[__i:__i+4+__l_t]
             __i += (4 + __l_t)
-        # TODO: check last (__i == __l_tl)
+        if __i != __l_tl:  # check tail
+            raise exc.KpeTagUnpack(f"Extra data: {util.b2hex(__tl[__i:])}.")
     retvalue = {}
     for chunk in __walk_chunks(t_list):
+        # logging.debug(util.b2hex(chunk))
         if __tag__val := tag_unpack(chunk, skip_unknown=True):
             __tag, __val = __tag__val
             if __tag in retvalue:  # FIXME: multitags
