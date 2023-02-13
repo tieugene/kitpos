@@ -69,3 +69,6 @@ Some minimal samples:
 
 ## Similar
 - [pyshtrih](https://github.com/oleg-golovanov/pyshtrih)
+
+## Licensing
+You may use this library under the terms of the [GPLv3](LICENSE) license.
