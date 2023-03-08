@@ -1,8 +1,7 @@
 # TODO
 
 ## 0.0.2:
-- [ ] Extend cmd #5 (14):
-  - [ ] GetX (simple): 0x02, 03, 05, 06, 07, 0B, 0E, 32, 33, 75, 77, 79, 81, BB
+- [ ] #29 Extend cmd #5 (12): GetX (simple)
 - [ ] Sequences:
   + [ ] SessionOpen
   + [ ] SessionClose
@@ -15,7 +14,7 @@
 ## 0.0.3:
 - [ ] Tests (&rArr; coverage)
 - [ ] Extend cmd #6 (8):
-  + [ ] GetX complex (0x09, 35..36, 3B)
+  + [ ] GetX complex (0x09, 35..36, 3B, 79, 81)
   + [ ] 0x40: ResetMLM
   + [ ] FSClose (3 (0x14, 0x17, 0x15)) - not documented
   + [ ] *Re*Register (4):

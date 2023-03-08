@@ -5,7 +5,7 @@ This file is part of the kitpos project.
 You may use this file under the terms of the GPLv3 license.
 """
 # 1. std
-from typing import Optional, Dict
+from typing import Optional, Dict, Callable
 import datetime
 # 3. local
 from kitpos import cmd, tag, const, exc
@@ -243,9 +243,9 @@ def __cmd_24(val: Dict) -> cmd.CmdReceiptCommit:
     )
 
 
-COMMANDS = {  # TODO: replace some functions w/ class directly
-    'GetDeviceStatus': __cmd_01,
-    'GetDeviceModel': __cmd_04,
+COMMANDS: Dict[str, Callable] = {  # TODO: replace some functions w/ class directly
+    'GetDeviceStatus': cmd.CmdGetDeviceStatus,
+    'GetDeviceModel': cmd.CmdGetDeviceModel,
     'GetStorageStatus': __cmd_08,
     'GetRegisterParms': __cmd_0a,
     'DocCancel': __cmd_10,
