@@ -101,7 +101,7 @@ def main():
         result = __do_it(args.host, args.port, args.cmd, args.arg, args.dry_run, args.file)
     except exc.KpePOS as __e:
         err_text = cli.ERR_TEXT['ru'].get(__e.code, '<Unknown>.')
-        logging.error("POS error: %02X '%s'", __e.code, err_text)
+        logging.error("POS error: 0x%02X '%s'", __e.code, err_text)
     except exc.Kpe as __e:
         msg = "Exception occurs (%s)"
         if args.verbose:

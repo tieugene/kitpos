@@ -60,7 +60,7 @@ def tag_unpack(data: bytes, skip_unknown: bool = False) -> Optional[TagPair]:  #
     # 1. get tag
     t_id = util.b2ui(data[:2])
     if skip_unknown and t_id in const.TAGS_UNKNOWN:
-        logging.debug(f"Unknow tag: {t_id}")
+        logging.warning(f"Unknow tag: {t_id}")
         return
     try:
         __tag = const.IEnumTag(t_id)

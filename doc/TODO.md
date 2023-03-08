@@ -1,10 +1,6 @@
 # TODO
 
-- [ ] New tags
-  + [ ] 1171
-  + [ ] 1222
-  + [ ] 1225
-  + [ ] 1226
+- [ ] New tags (36; `GetDocData`)
 - [ ] net:
   + [ ] strict (header, len, crc)
   + [ ] async
