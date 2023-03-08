@@ -193,6 +193,10 @@ TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
         lambda v: v[:64].strip(),
         lambda v: util.s2b(v[:64]),
         util.b2s),
+    const.IEnumTag.TAG_1171: (
+        lambda v: v[:20].strip(),
+        lambda v: util.s2b(v[:20]),
+        util.b2s),
     const.IEnumTag.TAG_1173: (
         lambda v: v,
         util.l2b,
@@ -249,6 +253,18 @@ TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
         lambda v: v,
         util.ui2vln,
         util.b2ui),  # VLN
+    const.IEnumTag.TAG_1222: (
+        lambda v: v,
+        util.ui2b1,
+        util.b2ui),  # TODO: flag
+    const.IEnumTag.TAG_1225: (
+        lambda v: v[:64].strip(),
+        lambda v: util.s2b(v[:64]),
+        util.b2s),
+    const.IEnumTag.TAG_1226: (
+        lambda v: v[:12].strip(),
+        lambda v: util.s2b(v[:12]).ljust(12),
+        util.b2s),
     const.IEnumTag.TAG_30000: (
         datetime.datetime.fromisoformat,
         util.dt2b5,

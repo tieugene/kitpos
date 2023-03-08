@@ -83,7 +83,8 @@ class IEnumTag(_IEnumPrintable):
     TAG_1106 = 1106    # ! VLN, Base sum for VAT 18/118
     TAG_1107 = 1107    # ! VLN, Base sum for VAT 10/110
     TAG_1117 = 1117    # str[..64], Sender email
-    TAG_1173 = 1173    # ! byte[1] = 0/1, Correction type
+    TAG_1171 = 1171    # str[..20], optional Supplier Phone
+    TAG_1173 = 1173    # ! bytes[1] = 0/1, Correction type
     TAG_1174 = 1174    # ! STLV(1177,1178,1179)
     TAG_1177 = 1177    # str[..255]
     TAG_1178 = 1178    # Unixtime(y,d,m[,h])
@@ -97,6 +98,9 @@ class IEnumTag(_IEnumPrintable):
     TAG_1215 = 1215    # ! VLN, PrePayment (kop)
     TAG_1216 = 1216    # ! VLN, PostPayment (kop)
     TAG_1217 = 1217    # ! VLN, Counter provosion (kop)
+    TAG_1222 = 1222    # bytes[1] bitmap flag (addon 7-4), optional Agent type
+    TAG_1225 = 1225    # str[..64], optional Supplier Name
+    TAG_1226 = 1226    # str[12], optional Supplier INN
     # Mode = 9999      # byte[1] bitmap flags (addon 7); Note: Terminal-FA always stay auto
     TAG_30000 = 30000  # byte[5], DateTime
 
