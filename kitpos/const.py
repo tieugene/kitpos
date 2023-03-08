@@ -50,8 +50,8 @@ class IEnumCmd(enum.IntEnum):
     RESTART = 0xEF
 
 
-TAGS_UNKNOWN = {  # not documented
-    1043, 1050, 1051, 1052, 1053, 1097, 1098, 1111, 1118
+TAGS_UNKNOWN = {  # to skip
+    # 1043, 1050, 1051, 1052, 1053, 1097, 1098, 1111, 1118
 }
 
 

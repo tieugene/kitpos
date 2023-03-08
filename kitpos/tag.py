@@ -188,6 +188,10 @@ TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
         lambda v: v,
         util.ui2b4,
         util.b2ui),
+    const.IEnumTag.TAG_1043: (  # get from POS only
+        lambda v: v,
+        util.ui2vln,
+        util.b2ui),  # VLN
     const.IEnumTag.TAG_1046: (
         lambda v: v[:64].strip(),
         lambda v: util.s2b(v[:64]),
@@ -196,6 +200,22 @@ TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
         lambda v: v[:128].strip(),
         lambda v: util.s2b(v[:128]),
         util.b2s),
+    const.IEnumTag.TAG_1050: (  # get from POS only
+        lambda v: v,
+        util.l2b,
+        util.b2l),
+    const.IEnumTag.TAG_1051: (  # get from POS only
+        lambda v: v,
+        util.l2b,
+        util.b2l),
+    const.IEnumTag.TAG_1052: (  # get from POS only
+        lambda v: v,
+        util.l2b,
+        util.b2l),
+    const.IEnumTag.TAG_1053: (  # get from POS only
+        lambda v: v,
+        util.l2b,
+        util.b2l),
     const.IEnumTag.TAG_1054: (  # get from POS only
         const.IEnumReceiptType,
         lambda v: util.ui2b1(v.value),
@@ -232,6 +252,14 @@ TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
         lambda v: v,
         util.ui2vln,
         util.b2ui),  # VLN
+    const.IEnumTag.TAG_1097: (  # get from POS only
+        lambda v: v,
+        util.ui2b4,
+        util.b2ui),
+    const.IEnumTag.TAG_1098: (  # get from POS only
+        datetime.date.fromisoformat,
+        lambda v: util.ui2b4(int(v.timestamp())),
+        util.b2ut),
     const.IEnumTag.TAG_1102: (
         lambda v: v,
         util.ui2vln,
@@ -268,10 +296,18 @@ TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
         lambda v: v,
         util.l2b,
         util.b2l),
+    const.IEnumTag.TAG_1111: (  # get from POS only
+        lambda v: v,
+        util.ui2b4,
+        util.b2ui),
     const.IEnumTag.TAG_1117: (
         lambda v: v[:64].strip(),
         lambda v: util.s2b(v[:64]),
         util.b2s),
+    const.IEnumTag.TAG_1118: (  # get from POS only
+        lambda v: v,
+        util.ui2b4,
+        util.b2ui),
     const.IEnumTag.TAG_1171: (
         lambda v: v[:20].strip(),
         lambda v: util.s2b(v[:20]),
