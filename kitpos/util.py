@@ -99,6 +99,11 @@ def b2ui(val: bytes) -> int:
     return int.from_bytes(val, 'little')
 
 
+def b2fpd(val: bytes) -> int:
+    """Convert 6 bytes into FPD (4 middle bytes as BE)."""
+    return int.from_bytes(val[2:], 'big')
+
+
 def fvln2n(val: bytes) -> Union[int, float]:
     """Convert FVLN bytes into number."""
     if len(val) < 1:  # or 2?

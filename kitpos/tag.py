@@ -60,7 +60,7 @@ def tag_unpack(data: bytes, skip_unknown: bool = False) -> Optional[TagPair]:  #
     # 1. get tag
     t_id = util.b2ui(data[:2])
     if skip_unknown and t_id in const.TAGS_UNKNOWN:
-        logging.debug(f"Unknow tag: {t_id}")
+        logging.warning(f"Unknow tag: {t_id}")
         return
     try:
         __tag = const.IEnumTag(t_id)
@@ -107,8 +107,19 @@ def tagdict_unpack(t_list: bytes) -> TagDict:
     return retvalue
 
 
-# Tag: (json_2_value, value_2_bytes (pack), bytes_2_value (unpack))
+# Tag: (
+#   json_2_value,  # for loading from cli to CmdX object
+#   value_2_bytes (pack),  # for converting CmdX attr into bytes => POS
+#   bytes_2_value (unpack))  # for converting POS bytes into RspX attr (tag)
 TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
+    const.IEnumTag.TAG_1001: (  # get from POS only
+        lambda v: v,
+        util.l2b,
+        util.b2l),
+    const.IEnumTag.TAG_1002: (  # get from POS only
+        lambda v: v,
+        util.l2b,
+        util.b2l),
     const.IEnumTag.TAG_1008: (
         lambda v: v[:64].strip(),
         lambda v: util.s2b(v[:64]),
@@ -117,10 +128,26 @@ TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
         lambda v: v[:164].strip(),
         lambda v: util.s2b(v[:164]),
         util.b2s),
+    const.IEnumTag.TAG_1012: (  # get from POS only
+        datetime.datetime.fromisoformat,
+        lambda v: util.ui2b4(int(v.timestamp())),
+        util.b2ut),
+    const.IEnumTag.TAG_1013: (  # get from POS only
+        lambda v: v[:20].strip(),
+        lambda v: util.s2b(v[:20]),
+        util.b2s),
     const.IEnumTag.TAG_1017: (
         lambda v: v[:12].strip(),
         lambda v: util.s2b(v[:12]).ljust(12),
         util.b2s),
+    const.IEnumTag.TAG_1018: (  # get from POS only
+        lambda v: v[:12].strip(),
+        lambda v: util.s2b(v[:12]).ljust(12),
+        util.b2s),
+    const.IEnumTag.TAG_1020: (  # get from POS only
+        lambda v: v,
+        util.ui2vln,
+        util.b2ui),  # VLN
     const.IEnumTag.TAG_1021: (
         lambda v: v[:64].strip(),
         lambda v: util.s2b(v[:64]),
@@ -141,6 +168,30 @@ TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
         lambda v: v[:21].strip(),
         lambda v: util.s2b(v[:21]),
         util.b2s),
+    const.IEnumTag.TAG_1037: (  # get from POS only
+        lambda v: v[:20].strip(),
+        lambda v: util.s2b(v[:20]),
+        util.b2s),
+    const.IEnumTag.TAG_1038: (  # get from POS only
+        lambda v: v,
+        util.ui2b4,
+        util.b2ui),
+    const.IEnumTag.TAG_1040: (  # get from POS only
+        lambda v: v,
+        util.ui2b4,
+        util.b2ui),
+    const.IEnumTag.TAG_1041: (  # get from POS only
+        lambda v: v[:16].strip(),
+        lambda v: util.s2b(v[:16]),
+        util.b2s),
+    const.IEnumTag.TAG_1042: (  # get from POS only
+        lambda v: v,
+        util.ui2b4,
+        util.b2ui),
+    const.IEnumTag.TAG_1043: (  # get from POS only
+        lambda v: v,
+        util.ui2vln,
+        util.b2ui),  # VLN
     const.IEnumTag.TAG_1046: (
         lambda v: v[:64].strip(),
         lambda v: util.s2b(v[:64]),
@@ -149,14 +200,50 @@ TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
         lambda v: v[:128].strip(),
         lambda v: util.s2b(v[:128]),
         util.b2s),
+    const.IEnumTag.TAG_1050: (  # get from POS only
+        lambda v: v,
+        util.l2b,
+        util.b2l),
+    const.IEnumTag.TAG_1051: (  # get from POS only
+        lambda v: v,
+        util.l2b,
+        util.b2l),
+    const.IEnumTag.TAG_1052: (  # get from POS only
+        lambda v: v,
+        util.l2b,
+        util.b2l),
+    const.IEnumTag.TAG_1053: (  # get from POS only
+        lambda v: v,
+        util.l2b,
+        util.b2l),
+    const.IEnumTag.TAG_1054: (  # get from POS only
+        const.IEnumReceiptType,
+        lambda v: util.ui2b1(v.value),
+        lambda v: const.IEnumReceiptType(util.b2ui(v))),
     const.IEnumTag.TAG_1055: (
         flag.TaxModes,  # byte[1] == int
         lambda v: v.as_bytes(),
         lambda v: flag.TaxModes(util.b2ui(v))),  # 0x2D, 0x2E; FIXME: .bit_count() == 1
+    const.IEnumTag.TAG_1056: (  # get from POS only
+        lambda v: v,
+        util.l2b,
+        util.b2l),
     const.IEnumTag.TAG_1059: (
         tagdict_unjson,
         tagdict_pack,
         tagdict_unpack),  # STLV; recur
+    const.IEnumTag.TAG_1060: (  # get from POS only
+        lambda v: v[:256].strip(),
+        lambda v: util.s2b(v[:256]),
+        util.b2s),
+    const.IEnumTag.TAG_1062: (  # get from POS only
+        flag.TaxModes,
+        lambda v: v.as_bytes(),
+        lambda v: flag.TaxModes(util.b2ui(v))),
+    const.IEnumTag.TAG_1077: (  # get from POS only
+        None,
+        None,
+        util.b2fpd),
     const.IEnumTag.TAG_1079: (
         lambda v: v,
         util.ui2vln,
@@ -165,6 +252,14 @@ TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
         lambda v: v,
         util.ui2vln,
         util.b2ui),  # VLN
+    const.IEnumTag.TAG_1097: (  # get from POS only
+        lambda v: v,
+        util.ui2b4,
+        util.b2ui),
+    const.IEnumTag.TAG_1098: (  # get from POS only
+        datetime.date.fromisoformat,
+        lambda v: util.ui2b4(int(v.timestamp())),
+        util.b2ut),  # FIXME: date only
     const.IEnumTag.TAG_1102: (
         lambda v: v,
         util.ui2vln,
@@ -189,9 +284,33 @@ TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
         lambda v: v,
         util.ui2vln,
         util.b2ui),  # VLN
+    const.IEnumTag.TAG_1108: (  # get from POS only
+        lambda v: v,
+        util.l2b,
+        util.b2l),
+    const.IEnumTag.TAG_1109: (  # get from POS only
+        lambda v: v,
+        util.l2b,
+        util.b2l),
+    const.IEnumTag.TAG_1110: (  # get from POS only
+        lambda v: v,
+        util.l2b,
+        util.b2l),
+    const.IEnumTag.TAG_1111: (  # get from POS only
+        lambda v: v,
+        util.ui2b4,
+        util.b2ui),
     const.IEnumTag.TAG_1117: (
         lambda v: v[:64].strip(),
         lambda v: util.s2b(v[:64]),
+        util.b2s),
+    const.IEnumTag.TAG_1118: (  # get from POS only
+        lambda v: v,
+        util.ui2b4,
+        util.b2ui),
+    const.IEnumTag.TAG_1171: (
+        lambda v: v[:20].strip(),
+        lambda v: util.s2b(v[:20]),
         util.b2s),
     const.IEnumTag.TAG_1173: (
         lambda v: v,
@@ -208,7 +327,7 @@ TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
     const.IEnumTag.TAG_1178: (
         datetime.datetime.fromisoformat,
         lambda v: util.ui2b4(int(v.timestamp())),  # FIXME: hours
-        util.b2ut),  # Unixtime(y,d,m[,h]), bytes[4]; 0x2E
+        util.b2ut),  # Unixtime(y,d,m), bytes[4]; 0x2E
     const.IEnumTag.TAG_1179: (
         lambda v: v[:32].strip(),
         lambda v: util.s2b(v[:32]),
@@ -217,6 +336,14 @@ TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
         lambda v: v[:64].strip(),
         lambda v: util.s2b(v[:64]),
         util.b2s),
+    const.IEnumTag.TAG_1188: (  # get from POS only
+        lambda v: v[:8].strip(),
+        lambda v: util.s2b(v[:8]),
+        util.b2s),
+    const.IEnumTag.TAG_1189: (  # get from POS only
+        const.IEnumFFDVer,
+        lambda v: util.ui2b1(v.value),
+        lambda v: const.IEnumFFDVer(util.b2ui(v))),
     const.IEnumTag.TAG_1192: (
         lambda v: v[:16].strip(),
         lambda v: util.s2b(v[:16]),
@@ -229,6 +356,10 @@ TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
         lambda v: v[:12].strip(),
         lambda v: util.s2b(v[:12]).ljust(12),
         util.b2s),
+    const.IEnumTag.TAG_1209: (  # get from POS only
+        const.IEnumFFDVer,
+        lambda v: util.ui2b1(v.value),
+        lambda v: const.IEnumFFDVer(util.b2ui(v))),
     const.IEnumTag.TAG_1212: (
         lambda v: v,
         util.ui2b1,
@@ -249,6 +380,22 @@ TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
         lambda v: v,
         util.ui2vln,
         util.b2ui),  # VLN
+    const.IEnumTag.TAG_1221: (  # get from POS only
+        lambda v: v,
+        util.l2b,
+        util.b2l),
+    const.IEnumTag.TAG_1222: (
+        flag.AgentModes,
+        lambda v: v.as_bytes(),
+        lambda v: flag.AgentModes(util.b2ui(v))),
+    const.IEnumTag.TAG_1225: (
+        lambda v: v[:64].strip(),
+        lambda v: util.s2b(v[:64]),
+        util.b2s),
+    const.IEnumTag.TAG_1226: (
+        lambda v: v[:12].strip(),
+        lambda v: util.s2b(v[:12]).ljust(12),
+        util.b2s),
     const.IEnumTag.TAG_30000: (
         datetime.datetime.fromisoformat,
         util.dt2b5,

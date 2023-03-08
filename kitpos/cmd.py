@@ -268,7 +268,8 @@ class CmdReceiptItem(_CmdBase):
     Response: RspOK
     """
 
-    __1059_tags = (1030, 1079, 1023, 1199, 1214, 1212)
+    __1059_tags_required = (1030, 1079, 1023, 1199, 1214)
+    __1059_tags_optional = (1212, 1222, 1171, 1225, 1226)
     cmd_id = const.IEnumCmd.RCP_ITEM
     payload: tag.TagDict
 
@@ -280,7 +281,7 @@ class CmdReceiptItem(_CmdBase):
         super().__init__()
         if not (len(payload) == 1 and const.IEnumTag.TAG_1059 in payload):
             raise exc.KpeCmdInit("The only '1059' tag required.")
-        self._chk_tags(payload[const.IEnumTag.TAG_1059], self.__1059_tags)
+        self._chk_tags(payload[const.IEnumTag.TAG_1059], self.__1059_tags_required, self.__1059_tags_optional)
         self.payload = payload
 
     def to_bytes(self) -> bytes:

@@ -50,11 +50,8 @@ class IEnumCmd(enum.IntEnum):
     RESTART = 0xEF
 
 
-TAGS_UNKNOWN = {  # not documented
-    1001, 1002, 1012, 1013, 1018, 1020, 1037, 1038, 1040, 1041,
-    1042, 1043, 1050, 1051, 1052, 1053, 1054, 1056, 1060, 1062,
-    1077, 1097, 1098, 1108, 1109, 1110, 1111, 1118, 1188, 1189,
-    1209, 1221
+TAGS_UNKNOWN = {  # to skip
+    # 1043, 1050, 1051, 1052, 1053, 1097, 1098, 1111, 1118
 }
 
 
@@ -62,42 +59,78 @@ TAGS_UNKNOWN = {  # not documented
 class IEnumTag(_IEnumPrintable):
     """Tags."""
 
+    TAG_1001 = 1001    # bytes[1] == bool (0/1), Automatic mode
+    TAG_1002 = 1002    # bytes[1] == bool (0/1), Autonomous mode
     TAG_1008 = 1008    # str[..64], Customer email
     TAG_1009 = 1009    # str[..164], POS address
-    TAG_1017 = 1017    # ! str[12], OFD INN
-    TAG_1021 = 1021    # ! str[..64] Authorized person's FIO (reg, session, receipt)
+    TAG_1012 = 1012    # bytes[4] == Unixtime(y-d-m HH:MM), datetime
+    TAG_1013 = 1013    # str[20], POS factory number
+    TAG_1017 = 1017    # str[12], OFD INN
+    TAG_1018 = 1018    # str[12], User INN
+    TAG_1020 = 1020    # VLN, Payment summary (kop)
+    TAG_1021 = 1021    # str[..64] Authorized person's FIO (reg, session, receipt)
     TAG_1023 = 1023    # FVLN, Subj number
     TAG_1030 = 1030    # str[..128], Subj name
-    TAG_1031 = 1031    # ! VLN, Payment as cash (kop)
-    TAG_1036 = 1036    # ! str[..21], Automatic sale device numer (mandatory for Termainal-FA)
-    TAG_1046 = 1046    # ! str[..64], OFD name
-    TAG_1048 = 1048    # ! str[..128], User name
-    TAG_1055 = 1055    # ! byte[1], Tax mode (addon 7)
+    TAG_1031 = 1031    # VLN, Payment as cash (kop)
+    TAG_1036 = 1036    # str[..21], Automatic sale device numer (mandatory for Termainal-FA)
+    TAG_1037 = 1037    # str[20], POS registration number
+    TAG_1038 = 1038    # byte[4] == uint32, Session number
+    TAG_1040 = 1040    # byte[4] == uint32, FD number
+    TAG_1041 = 1041    # str[16], FS number
+    TAG_1042 = 1042    # byte[4] == uint32, FD number @ session
+    TAG_1043 = 1043    # VLN, Item price inc. discounts and margins (kop)
+    TAG_1046 = 1046    # str[..64], OFD name
+    TAG_1048 = 1048    # str[..128], User name
+    TAG_1050 = 1050    # bytes[1] == bool (0/1), FS exhausted
+    TAG_1051 = 1051    # bytes[1] == bool (0/1), FS requires replacing urgently
+    TAG_1052 = 1052    # bytes[1] == bool (0/1), FS overfilled
+    TAG_1053 = 1053    # bytes[1] == bool (0/1), OFD timeout
+    TAG_1054 = 1054    # bytes[1] == enum, IEnumReceiptType
+    TAG_1055 = 1055    # byte[1] == bitmap, Tax mode (addon 7)
+    TAG_1056 = 1056    # bytes[1] == bool (0/1), Crypting
     TAG_1059 = 1059    # STLV (!), includes other
+    TAG_1060 = 1060    # str[..256], FTS url
+    TAG_1062 = 1062    # byte[1] == bimap, Tax mode, like 1055
+    TAG_1077 = 1077    # bytes[6], FPD
     TAG_1079 = 1079    # VLN, Subj price
-    TAG_1081 = 1081    # ! VLN, Payment as cashless (kop)
-    TAG_1102 = 1102    # ! VLN, Base sum for VAT 18%
-    TAG_1103 = 1103    # ! VLN, Base sum for VAT 10%
-    TAG_1104 = 1104    # ! VLN, Base sum for VAT 0%
-    TAG_1105 = 1105    # ! VLN, Base sum w/o VAT
-    TAG_1106 = 1106    # ! VLN, Base sum for VAT 18/118
-    TAG_1107 = 1107    # ! VLN, Base sum for VAT 10/110
+    TAG_1081 = 1081    # VLN, Payment as cashless (kop)
+    TAG_1097 = 1097    # bytes[4] == uint32, Unspent FDs number
+    TAG_1098 = 1098    # bytes[4] == Unixtime (y-m-d 00:00:00), Date/time of 1st unspent FD
+    TAG_1102 = 1102    # VLN, Base sum for VAT 18%
+    TAG_1103 = 1103    # VLN, Base sum for VAT 10%
+    TAG_1104 = 1104    # VLN, Base sum for VAT 0%
+    TAG_1105 = 1105    # VLN, Base sum w/o VAT
+    TAG_1106 = 1106    # VLN, Base sum for VAT 18/118
+    TAG_1107 = 1107    # VLN, Base sum for VAT 10/110
+    TAG_1108 = 1108    # bytes[1] == bool (0/1), iNet-only mode
+    TAG_1109 = 1109    # bytes[1] == bool (0/1), Service payment
+    TAG_1110 = 1110    # bytes[1] == bool (0/1), 'АС БСО'
+    TAG_1111 = 1111    # bytes[4] == uint32, Summary session FD number
     TAG_1117 = 1117    # str[..64], Sender email
-    TAG_1173 = 1173    # ! byte[1] = 0/1, Correction type
-    TAG_1174 = 1174    # ! STLV(1177,1178,1179)
+    TAG_1118 = 1118    # bytes[4] == uint32, Summary session Receipts number
+    TAG_1171 = 1171    # str[..20], optional Supplier Phone
+    TAG_1173 = 1173    # bytes[1] == bool (0/1), Correction type
+    TAG_1174 = 1174    # STLV(1177,1178,1179)
     TAG_1177 = 1177    # str[..255]
-    TAG_1178 = 1178    # Unixtime(y,d,m[,h])
+    TAG_1178 = 1178    # bytes[4] == Unixtime(y-d-m 00:00:00 (!))
     TAG_1179 = 1179    # str[..32]
     TAG_1187 = 1187    # str[..64], POS place
+    TAG_1188 = 1188    # str[8], POS version
+    TAG_1189 = 1189    # bytes[1] == enum, POS FFD version
     TAG_1192 = 1192    # str[..16]
-    TAG_1199 = 1199    # bytes[1], Subj VAT (1-6, addon 4)
+    TAG_1199 = 1199    # bytes[1] == bitmap, Subj VAT (1-6, addon 4)
     TAG_1203 = 1203    # str[12] Authorized person's INN (reg, session, receipt)
-    TAG_1212 = 1212    # bytes[1], optional (1-19, addon 4)
+    TAG_1209 = 1209    # bytes[1] == enum, FFD version (like 1189)
+    TAG_1212 = 1212    # bytes[1], (1-19, addon 4)
     TAG_1214 = 1214    # bytes[1] (1-7, addon 4)
-    TAG_1215 = 1215    # ! VLN, PrePayment (kop)
-    TAG_1216 = 1216    # ! VLN, PostPayment (kop)
-    TAG_1217 = 1217    # ! VLN, Counter provosion (kop)
-    # Mode = 9999      # byte[1] bitmap flags (addon 7); Note: Terminal-FA always stay auto
+    TAG_1215 = 1215    # VLN, PrePayment (kop)
+    TAG_1216 = 1216    # VLN, PostPayment (kop)
+    TAG_1217 = 1217    # VLN, Counter provosion (kop)
+    TAG_1221 = 1221    # bytes[1] == bool (0/1), Printer installed in automat
+    TAG_1222 = 1222    # bytes[1] == bitmap flag (addon 7-4), optional Agent type
+    TAG_1225 = 1225    # str[..64], Supplier Name
+    TAG_1226 = 1226    # str[12], Supplier INN
+    # Mode = 9999      # byte[1] == bitmap flags (addon 7); Note: Terminal-FA always stay auto
     TAG_30000 = 30000  # byte[5], DateTime
 
 
@@ -204,6 +237,15 @@ class IEnumVAT(_IEnumPrintable):
     VAT_1_11 = enum.auto()
     VAT_0 = enum.auto()
     NO_VAT = enum.auto()
+
+
+@enum.unique
+class IEnumFFDVer(_IEnumPrintable):
+    """FFD version."""
+
+    V_1_0 = enum.auto()
+    V_1_05 = enum.auto()
+    V_1_1 = enum.auto()
 
 
 class IFlagFSErr(enum.IntFlag):
