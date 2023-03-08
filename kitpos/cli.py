@@ -244,7 +244,7 @@ def __cmd_24(val: Dict) -> cmd.CmdReceiptCommit:
 
 
 COMMANDS: Dict[str, Callable] = {  # TODO: replace some functions w/ class directly
-    'GetDeviceStatus': cmd.CmdGetDeviceStatus,
+    'GetDeviceStatus': lambda: cmd.CmdGetDeviceStatus(),
     'GetDeviceModel': cmd.CmdGetDeviceModel,
     'GetStorageStatus': __cmd_08,
     'GetRegisterParms': __cmd_0a,
