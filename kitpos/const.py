@@ -51,11 +51,7 @@ class IEnumCmd(enum.IntEnum):
 
 
 TAGS_UNKNOWN = {  # not documented
-    # 1001, 1002, 1012, 1013, 1018, 1020, 1037, 1038, 1040, 1041,
-    # 1042, 1043, 1050, 1051, 1052, 1053, 1054, 1056, 1060, 1062,
-    1043, 1050, 1051, 1052, 1053,
-    1077, 1097, 1098, 1108, 1109, 1110, 1111, 1118, 1188, 1189,
-    1209, 1221
+    1043, 1050, 1051, 1052, 1053, 1097, 1098, 1111, 1118
 }
 
 
@@ -241,6 +237,15 @@ class IEnumVAT(_IEnumPrintable):
     VAT_1_11 = enum.auto()
     VAT_0 = enum.auto()
     NO_VAT = enum.auto()
+
+
+@enum.unique
+class IEnumFFDVer(_IEnumPrintable):
+    """FFD version."""
+
+    V_1_0 = enum.auto()
+    V_1_05 = enum.auto()
+    V_1_1 = enum.auto()
 
 
 class IFlagFSErr(enum.IntFlag):
