@@ -90,36 +90,6 @@ ERR_TEXT = {
 }
 
 
-def __cmd_01() -> cmd.CmdGetDeviceStatus:
-    """Get POS status."""
-    return cmd.CmdGetDeviceStatus()
-
-
-def __cmd_04() -> cmd.CmdGetDeviceModel:
-    """Get POS model."""
-    return cmd.CmdGetDeviceModel()
-
-
-def __cmd_08() -> cmd.CmdGetStorageStatus:
-    """Get FS status."""
-    return cmd.CmdGetStorageStatus()
-
-
-def __cmd_0a() -> cmd.CmdGetRegisterParms:
-    """Get POS/FS registering parameters."""
-    return cmd.CmdGetRegisterParms()
-
-
-def __cmd_10() -> cmd.CmdDocCancel:
-    """Cancel current document."""
-    return cmd.CmdDocCancel()
-
-
-def __cmd_20() -> cmd.CmdGetCurSession:
-    """Get session params."""
-    return cmd.CmdGetCurSession()
-
-
 def __cmd_21(val: Optional[str]) -> Optional[cmd.CmdSessionOpenBegin]:
     """Begin opening session [0 (default)|1 - skip prn]."""
     if val:
@@ -129,11 +99,6 @@ def __cmd_21(val: Optional[str]) -> Optional[cmd.CmdSessionOpenBegin]:
     return cmd.CmdSessionOpenBegin()
 
 
-def __cmd_22() -> cmd.CmdSessionOpenCommit:
-    """Commit opening session."""
-    return cmd.CmdSessionOpenCommit()
-
-
 def __cmd_29(val: Optional[str]) -> Optional[cmd.CmdSessionCloseBegin]:
     """Begin closing session [0 (default)|1 - skip prn]."""
     if val:
@@ -141,11 +106,6 @@ def __cmd_29(val: Optional[str]) -> Optional[cmd.CmdSessionCloseBegin]:
             raise exc.KpeCLI("Skip printing must be '0' or '1'.")
         return cmd.CmdSessionCloseBegin(val == '1')
     return cmd.CmdSessionCloseBegin()
-
-
-def __cmd_2a() -> cmd.CmdSessionCloseCommit:
-    """Commit closing session."""
-    return cmd.CmdSessionCloseCommit()
 
 
 def __cmd_30(val: Optional[str]) -> Optional[cmd.CmdGetDocInfo]:
@@ -162,11 +122,6 @@ def __cmd_3a(val: Optional[str]) -> Optional[cmd.CmdGetDocData]:
     raise exc.KpeCLI("Doc number required.")
 
 
-def __cmd_50() -> cmd.CmdGetOFDXchgStatus:
-    """Get OFD exchange status."""
-    return cmd.CmdGetOFDXchgStatus()
-
-
 def __cmd_72(val: Optional[str]) -> Optional[cmd.CmdSetDateTime]:
     """Set POS date/time."""
     if val:
@@ -176,16 +131,6 @@ def __cmd_72(val: Optional[str]) -> Optional[cmd.CmdSetDateTime]:
             raise exc.KpeCLI(__e)
         return cmd.CmdSetDateTime(__dt)
     raise exc.KpeCLI("Date/time required (yymmddHHMM).")
-
-
-def __cmd_73() -> cmd.CmdGetDateTime:
-    """Get POS date/time."""
-    return cmd.CmdGetDateTime()
-
-
-def __cmd_25() -> cmd.CmdCorrReceiptBegin:
-    """Corr. Receipt. Step #1/4 - begin."""
-    return cmd.CmdCorrReceiptBegin()
 
 
 def __cmd_2e(val: Dict) -> cmd.CmdCorrReceiptData:
@@ -208,11 +153,6 @@ def __cmd_26(val: Dict[str, int]) -> cmd.CmdCorrReceiptCommit:
         req_type=rcp_type,
         total=val['total']
     )
-
-
-def __cmd_23() -> cmd.CmdReceiptBegin:
-    """Receipt. Step #1/6 - begin."""
-    return cmd.CmdReceiptBegin()
 
 
 def __cmd_2b(val: Dict) -> cmd.CmdReceiptItem:
@@ -244,26 +184,26 @@ def __cmd_24(val: Dict) -> cmd.CmdReceiptCommit:
 
 
 COMMANDS: Dict[str, Callable] = {  # TODO: replace some functions w/ class directly
-    'GetDeviceStatus': lambda: cmd.CmdGetDeviceStatus(),
-    'GetDeviceModel': cmd.CmdGetDeviceModel,
-    'GetStorageStatus': __cmd_08,
-    'GetRegisterParms': __cmd_0a,
-    'DocCancel': __cmd_10,
-    'GetCurSession': __cmd_20,
+    'GetDeviceStatus': lambda: cmd.CmdGetDeviceStatus(),  # 0x01: Get POS status
+    'GetDeviceModel': lambda: cmd.CmdGetDeviceModel,  # 0x04: Get POS model
+    'GetStorageStatus': lambda: cmd.CmdGetStorageStatus(),  # 0x08: Get FS status
+    'GetRegisterParms': lambda: cmd.CmdGetRegisterParms(),  # 0x0A: Get POS/FS registering parameters
+    'DocCancel': lambda: cmd.CmdDocCancel(),  # 0x10: Cancel current document
+    'GetCurSession': lambda: cmd.CmdGetCurSession(),  # 0x20: Get session params
     'SessionOpenBegin': (__cmd_21, '[0/1]'),
-    'SessionOpenCommit': __cmd_22,
+    'SessionOpenCommit': lambda: cmd.CmdSessionOpenCommit(),  # 0x22: Commit opening session
     'SessionCloseBegin': (__cmd_29, '[0/1]'),
-    'SessionCloseCommit': __cmd_2a,
+    'SessionCloseCommit': lambda: cmd.CmdSessionCloseCommit(),  # 0x2A Commit closing session
     'GetDocInfo': (__cmd_30, '<int>'),
     'GetDocData': (__cmd_3a, '<int>'),
-    'GetOFDXchgStatus': __cmd_50,
+    'GetOFDXchgStatus': lambda: cmd.CmdGetOFDXchgStatus(),  # 0x50: Get OFD exchange status
     'SetDateTime': (__cmd_72, '<yymmddHHMM>'),
-    'GetDateTime': __cmd_73,
-    'CorrReceiptBegin': __cmd_25,
+    'GetDateTime': lambda: cmd.CmdGetDateTime(),  # 0x73: Get POS date/time
+    'CorrReceiptBegin': lambda: cmd.CmdCorrReceiptBegin(),  # 0x25: Corr. Receipt. Step #1/4 - begin
     'CorrReceiptData': (__cmd_2e, JSON_ARG),
     'CorrReceiptAutomat': (__cmd_3f, JSON_ARG),
     'CorrReceiptCommit': (__cmd_26, JSON_ARG),
-    'ReceiptBegin': __cmd_23,
+    'ReceiptBegin': lambda: cmd.CmdReceiptBegin(),  # 0x23: Receipt. Step #1/6 - begin
     'ReceiptItem': (__cmd_2b, JSON_ARG),
     'ReceiptAutomat': (__cmd_1f, JSON_ARG),
     'ReceiptPayment': (__cmd_2d, JSON_ARG),
