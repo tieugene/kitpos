@@ -15,7 +15,7 @@ import logging
 # 3. local
 from kitpos import cli, net, rsp, util, exc
 # x. consts
-CONN_TIMEOUT = 3  # TODO: too fast; can be 20+
+CONN_TIMEOUT = 5  # TODO: too fast; can be 20+
 
 
 def __mk_args_parser() -> argparse.ArgumentParser:
