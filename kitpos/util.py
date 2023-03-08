@@ -101,7 +101,7 @@ def b2ui(val: bytes) -> int:
 
 def b2fpd(val: bytes) -> int:
     """Convert 6 bytes into FPD (4 middle bytes as BE)."""
-    return int.from_bytes(val[1:5], 'big')
+    return int.from_bytes(val[2:], 'big')
 
 
 def fvln2n(val: bytes) -> Union[int, float]:
