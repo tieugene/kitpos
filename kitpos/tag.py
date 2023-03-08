@@ -181,6 +181,10 @@ TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
         lambda v: v[:16].strip(),
         lambda v: util.s2b(v[:16]),
         util.b2s),
+    const.IEnumTag.TAG_1042: (
+        lambda v: v,
+        util.ui2b4,
+        util.b2ui),
     const.IEnumTag.TAG_1046: (
         lambda v: v[:64].strip(),
         lambda v: util.s2b(v[:64]),
@@ -189,14 +193,30 @@ TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
         lambda v: v[:128].strip(),
         lambda v: util.s2b(v[:128]),
         util.b2s),
+    const.IEnumTag.TAG_1054: (
+        const.IEnumReceiptType,
+        lambda v: util.ui2b1(v.value),
+        lambda v: const.IEnumReceiptType(util.b2ui(v))),
     const.IEnumTag.TAG_1055: (
         flag.TaxModes,  # byte[1] == int
         lambda v: v.as_bytes(),
         lambda v: flag.TaxModes(util.b2ui(v))),  # 0x2D, 0x2E; FIXME: .bit_count() == 1
+    const.IEnumTag.TAG_1056: (
+        lambda v: v,
+        util.l2b,
+        util.b2l),
     const.IEnumTag.TAG_1059: (
         tagdict_unjson,
         tagdict_pack,
         tagdict_unpack),  # STLV; recur
+    const.IEnumTag.TAG_1060: (
+        lambda v: v[:256].strip(),
+        lambda v: util.s2b(v[:256]),
+        util.b2s),
+    const.IEnumTag.TAG_1062: (
+        flag.TaxModes,
+        lambda v: v.as_bytes(),
+        lambda v: flag.TaxModes(util.b2ui(v))),
     const.IEnumTag.TAG_1079: (
         lambda v: v,
         util.ui2vln,
