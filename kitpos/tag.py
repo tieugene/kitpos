@@ -259,7 +259,7 @@ TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
     const.IEnumTag.TAG_1098: (  # get from POS only
         datetime.date.fromisoformat,
         lambda v: util.ui2b4(int(v.timestamp())),
-        util.b2ut),
+        util.b2ut),  # FIXME: date only
     const.IEnumTag.TAG_1102: (
         lambda v: v,
         util.ui2vln,
