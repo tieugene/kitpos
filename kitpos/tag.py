@@ -109,6 +109,14 @@ def tagdict_unpack(t_list: bytes) -> TagDict:
 
 # Tag: (json_2_value, value_2_bytes (pack), bytes_2_value (unpack))
 TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
+    const.IEnumTag.TAG_1001: (
+        lambda v: v,
+        util.l2b,
+        util.b2l),
+    const.IEnumTag.TAG_1002: (
+        lambda v: v,
+        util.l2b,
+        util.b2l),
     const.IEnumTag.TAG_1008: (
         lambda v: v[:64].strip(),
         lambda v: util.s2b(v[:64]),
@@ -117,10 +125,26 @@ TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
         lambda v: v[:164].strip(),
         lambda v: util.s2b(v[:164]),
         util.b2s),
+    const.IEnumTag.TAG_1012: (
+        datetime.datetime.fromisoformat,
+        lambda v: util.ui2b4(int(v.timestamp())),
+        util.b2ut),
+    const.IEnumTag.TAG_1013: (
+        lambda v: v[:20].strip(),
+        lambda v: util.s2b(v[:20]),
+        util.b2s),
     const.IEnumTag.TAG_1017: (
         lambda v: v[:12].strip(),
         lambda v: util.s2b(v[:12]).ljust(12),
         util.b2s),
+    const.IEnumTag.TAG_1018: (
+        lambda v: v[:12].strip(),
+        lambda v: util.s2b(v[:12]).ljust(12),
+        util.b2s),
+    const.IEnumTag.TAG_1020: (
+        lambda v: v,
+        util.ui2vln,
+        util.b2ui),  # VLN
     const.IEnumTag.TAG_1021: (
         lambda v: v[:64].strip(),
         lambda v: util.s2b(v[:64]),
@@ -140,6 +164,14 @@ TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
     const.IEnumTag.TAG_1036: (
         lambda v: v[:21].strip(),
         lambda v: util.s2b(v[:21]),
+        util.b2s),
+    const.IEnumTag.TAG_1037: (
+        lambda v: v[:20].strip(),
+        lambda v: util.s2b(v[:20]),
+        util.b2s),
+    const.IEnumTag.TAG_1041: (
+        lambda v: v[:16].strip(),
+        lambda v: util.s2b(v[:16]),
         util.b2s),
     const.IEnumTag.TAG_1046: (
         lambda v: v[:64].strip(),
@@ -212,7 +244,7 @@ TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
     const.IEnumTag.TAG_1178: (
         datetime.datetime.fromisoformat,
         lambda v: util.ui2b4(int(v.timestamp())),  # FIXME: hours
-        util.b2ut),  # Unixtime(y,d,m[,h]), bytes[4]; 0x2E
+        util.b2ut),  # Unixtime(y,d,m), bytes[4]; 0x2E
     const.IEnumTag.TAG_1179: (
         lambda v: v[:32].strip(),
         lambda v: util.s2b(v[:32]),
@@ -254,9 +286,9 @@ TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
         util.ui2vln,
         util.b2ui),  # VLN
     const.IEnumTag.TAG_1222: (
-        lambda v: v,
-        util.ui2b1,
-        util.b2ui),  # TODO: flag
+        flag.AgentModes,
+        lambda v: v.as_bytes(),
+        lambda v: flag.AgentModes(util.b2ui(v))),
     const.IEnumTag.TAG_1225: (
         lambda v: v[:64].strip(),
         lambda v: util.s2b(v[:64]),
