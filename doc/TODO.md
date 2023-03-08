@@ -1,11 +1,19 @@
 # TODO
 
-- [ ] Tests (&rArr; coverage)
+- [ ] New tags
+  + [ ] 1171
+  + [ ] 1222
+  + [ ] 1225
+  + [ ] 1226
+- [ ] net:
+  + [ ] strict (header, len, crc)
+  + [ ] async
 - [ ] Sequences:
   + [ ] SessionOpen
   + [ ] SessionClose
   + [ ] Receipt
   + [ ] CorReceipt
+- [ ] Tests (&rArr; coverage)
 - [ ] Extend cmd #5 (8):
   + [ ] 0x40: ResetMLM
   + [ ] FSClose (3)
@@ -22,7 +30,6 @@
   + [ ]  7: OpConfirm
 - [ ] Misc
   + [ ] `tox.ini`
-  + [ ] Async txrx
   + [ ] Multitag
   + [ ] Online tests (w/ live FRs)
 - Maybe:
@@ -32,3 +39,4 @@
   + POS State diagramm
   + flag._Flags: metaclass
   + Nice exception traceback
+  + POS-stub

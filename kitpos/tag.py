@@ -7,6 +7,7 @@ You may use this file under the terms of the GPLv3 license.
 # 1. std
 from typing import Dict, Any, Tuple, Callable, Optional
 import datetime
+import logging
 # 3. local
 from kitpos import const, flag, util, exc
 # y. typedefs
@@ -59,6 +60,7 @@ def tag_unpack(data: bytes, skip_unknown: bool = False) -> Optional[TagPair]:  #
     # 1. get tag
     t_id = util.b2ui(data[:2])
     if skip_unknown and t_id in const.TAGS_UNKNOWN:
+        logging.debug(f"Unknow tag: {t_id}")
         return
     try:
         __tag = const.IEnumTag(t_id)
