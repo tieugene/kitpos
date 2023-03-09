@@ -46,6 +46,29 @@ class RspBase:
 
 
 @dataclass
+class _RspStr(RspBase):
+    """Base for 'just a string' responses."""
+    v: str
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        return cls(v=util.b2s(data).strip())
+
+
+@dataclass
+class _RspSTLV(RspBase):
+    """Base for STLV responses."""
+
+    tags: Dict[const.IEnumTag, Any]
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        return cls(tags=tag.tagdict_unpack(data))
+
+
+@dataclass
 class _RspStub(RspBase):
     """Stub base for response debugging."""
 
@@ -75,17 +98,6 @@ class RspOK(RspBase):
         if l_data := len(data):
             raise exc.KpeRspUnpack(f"{cls.__name__}: bad data len: {l_data} (must be 0).")
         return cls()
-
-
-@dataclass
-class _RspStr(RspBase):
-    """Just string."""
-    v: str
-
-    @classmethod
-    def from_bytes(cls, data: bytes):
-        """Deserialize object."""
-        return cls(v=util.b2s(data).strip())
 
 
 @dataclass
@@ -492,15 +504,8 @@ class RspGetStorageActResult(_RspStub):
 
 
 @dataclass
-class RspGetDocData(RspBase):
+class RspGetDocData(_RspSTLV):
     """0x3A: Read document content."""
-
-    tags: Dict[const.IEnumTag, Any]
-
-    @classmethod
-    def from_bytes(cls, data: bytes):
-        """Deserialize object."""
-        return cls(tags=tag.tagdict_unpack(data))
 
 
 @dataclass
@@ -523,45 +528,26 @@ class RspGetOFDXchgStatus(RspBase):
 
 
 @dataclass
-class RspGetDateTime(RspBase):
+class RspGetDateTime(_RspSTLV):
     """0x73: Get POS date/time."""
 
-    datime: datetime.datetime
-
-    @classmethod
-    def from_bytes(cls, data: bytes):
-        """Deserialize object."""
-        __tag, __val = tag.tag_unpack(data)
-        if __tag != const.IEnumTag.TAG_30000:
-            raise exc.KpeRspUnpack(f"{cls.__name__}: bad TAG: {__tag}")
-        return cls(
-            datime=__val
-        )
-
 
 @dataclass
-class RspGetDeviceNetParms(RspBase):
+class RspGetDeviceNetParms(_RspSTLV):
     """0x75: Get POS network settings."""
 
-    tags: Dict[const.IEnumTag, Any]
-
-    @classmethod
-    def from_bytes(cls, data: bytes):
-        """Deserialize object."""
-        return cls(tags=tag.tagdict_unpack(data))
-
 
 @dataclass
-class RspGetDeviceOFDParms(RspBase):
+class RspGetDeviceOFDParms(_RspStub):
     """0x77: Get POS OFD settings."""
-
+'''
     tags: Dict[const.IEnumTag, Any]
 
     @classmethod
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
         return cls(tags=tag.tagdict_unpack(data))
-
+'''
 
 @dataclass
 class RspGetPrnLineLen(RspBase):
