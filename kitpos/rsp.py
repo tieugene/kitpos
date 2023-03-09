@@ -80,7 +80,7 @@ class RspOK(RspBase):
 class RspGetDeviceStatus(RspBase):
     """0x01: Get POS status."""
 
-    s_n: str
+    f_n: str
     datime: datetime.datetime
     err: bool  # Critical errors; TODO: chk 0/1
     prn_status: const.IEnumPrnStatus
@@ -98,7 +98,7 @@ class RspGetDeviceStatus(RspBase):
         except ValueError as __e:
             raise exc.KpeRspUnpack(__e) from __e
         return cls(
-            s_n=util.b2s(val[0]),
+            f_n=util.b2s(val[0]),
             datime=util.b2dt(val[1:6]),
             err=val[6],
             prn_status=v_7,
@@ -109,13 +109,27 @@ class RspGetDeviceStatus(RspBase):
 
 
 @dataclass
-class RspGetDeviceFN(_RspStub):
+class RspGetDeviceFN(RspBase):
     """0x02: Get POS factory number."""
+
+    f_n: str
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        return cls(f_n=util.b2s(data).strip())
 
 
 @dataclass
-class RspGetDeviceFWVer(_RspStub):
+class RspGetDeviceFWVer(RspBase):
     """0x03: Get POS firmware version."""
+
+    ver: str
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        return cls(ver=util.b2s(data).strip())
 
 
 @dataclass
@@ -132,18 +146,45 @@ class RspGetDeviceModel(RspBase):
 
 
 @dataclass
-class RspGetStorageFN(_RspStub):
+class RspGetStorageFN(RspBase):
     """0x05: Get FS factory number."""
 
+    f_n: str
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        return cls(f_n=util.b2s(data).strip())
+
 
 @dataclass
-class RspGetStorageFWVer(_RspStub):
+class RspGetStorageFWVer(RspBase):
     """0x06: Get FS firmware version."""
 
+    ver: str
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        return cls(ver=util.b2s(data).strip())
+
 
 @dataclass
-class RspGetStorageExpired(_RspStub):
+class RspGetStorageExpired(RspBase):
     """0x07: Get FS date expired."""
+
+    date: datetime.date
+    done: int
+    last: int
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        val = _data_decode(data, 'BBBBB', cls)
+        return cls(
+            date=util.b2d(val[:3]),
+            done=val[3],
+            last=val[4])
 
 
 @dataclass
@@ -212,14 +253,35 @@ class RspGetRegisterParms(RspBase):
 
 
 @dataclass
-class RspGetDeviceCfgVer(_RspStub):
+class RspGetDeviceCfgVer(RspBase):
     """0x0B: Get POS config version."""
+
+    ver: str
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        return cls(ver=util.b2s(data).strip())
 
 
 @dataclass
-class RspGetNetParms(_RspStub):
+class RspGetNetParms(RspBase):
     """0x0E: Get current network parameters."""
+    ip: int
+    mask: int
+    gw: int
 
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        val = _data_decode(data, 'III', cls)
+        return cls(
+            ip=val[0],
+            mask=val[1],
+            gw=val[2]
+        )
+
+    # TODO: to_str()
 
 @dataclass
 class RspGetCurSession(RspBase):
