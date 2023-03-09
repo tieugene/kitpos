@@ -428,6 +428,10 @@ TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
         None,
         None,
         util.b2ui),
+    const.IEnumTag.TAG_30034: (
+        None,
+        None,
+        util.b2s),
     const.IEnumTag.TAG_30040: (
         None,
         None,

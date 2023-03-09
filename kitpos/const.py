@@ -151,6 +151,7 @@ class IEnumTag(_IEnumPrintable):
     TAG_30005 = 30005  # str[..15], OFD IP
     TAG_30006 = 30006  # byte[2] == uint16, IP port
     TAG_30009 = 30009  # byte[2] == uint16, Timout?
+    TAG_30034 = 30034  # str[?], <undocumented>
     TAG_30040 = 30040  # str[..128], OFD domain name
 
 

@@ -538,16 +538,9 @@ class RspGetDeviceNetParms(_RspSTLV):
 
 
 @dataclass
-class RspGetDeviceOFDParms(_RspStub):
+class RspGetDeviceOFDParms(_RspSTLV):
     """0x77: Get POS OFD settings."""
-'''
-    tags: Dict[const.IEnumTag, Any]
 
-    @classmethod
-    def from_bytes(cls, data: bytes):
-        """Deserialize object."""
-        return cls(tags=tag.tagdict_unpack(data))
-'''
 
 @dataclass
 class RspGetPrnLineLen(RspBase):
