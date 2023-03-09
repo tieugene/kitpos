@@ -557,7 +557,7 @@ class RspGetPrnLineLen(RspBase):
     @classmethod
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
-        return cls(num=int(data))
+        return cls(num=int(data[0]))
 
 
 @dataclass
