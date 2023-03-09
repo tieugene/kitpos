@@ -1,12 +1,6 @@
 # TODO
 
 ## 0.0.2:
-- [ ] #29 Extend cmd #5 (12): GetX (simple):
-  - [x] const.IEnumCmd
-  - [x] cmd.Cmd...
-  - [x] cli.COMMANDS
-  - […] rsp.RspGet...
-  - [x] rsp._CODE2CLASS
 - [ ] Sequences:
   + [ ] SessionOpen
   + [ ] SessionClose
@@ -17,7 +11,6 @@
   + [ ] async
 
 ## 0.0.3:
-- [ ] Tests (&rArr; coverage)
 - [ ] Extend cmd #6 (8):
   + [ ] GetX complex (0x09, 35..36, 3B, 79, 81)
   + [ ] 0x40: ResetMLM
@@ -37,7 +30,9 @@
   + [ ] `tox.ini`
   + [ ] Multitag
   + [ ] Online tests (w/ live FRs)
-- Maybe:
+- [ ] Tests (&rArr; coverage)
+
+## Maybe:
   + Verbosity: up to 6 lvls
   + IEnumCmd &hArr; CmdX &hArr; RcpX
   + Mypy
