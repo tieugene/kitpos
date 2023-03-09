@@ -78,6 +78,17 @@ class RspOK(RspBase):
 
 
 @dataclass
+class _RspStr(RspBase):
+    """Just string."""
+    v: str
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        return cls(v=util.b2s(data).strip())
+
+
+@dataclass
 class RspGetDeviceStatus(RspBase):
     """0x01: Get POS status."""
 
@@ -110,64 +121,28 @@ class RspGetDeviceStatus(RspBase):
 
 
 @dataclass
-class RspGetDeviceFN(RspBase):
+class RspGetDeviceFN(_RspStr):
     """0x02: Get POS factory number."""
 
-    f_n: str
-
-    @classmethod
-    def from_bytes(cls, data: bytes):
-        """Deserialize object."""
-        return cls(f_n=util.b2s(data).strip())
-
 
 @dataclass
-class RspGetDeviceFWVer(RspBase):
+class RspGetDeviceFWVer(_RspStr):
     """0x03: Get POS firmware version."""
 
-    ver: str
-
-    @classmethod
-    def from_bytes(cls, data: bytes):
-        """Deserialize object."""
-        return cls(ver=util.b2s(data).strip())
-
 
 @dataclass
-class RspGetDeviceModel(RspBase):
+class RspGetDeviceModel(_RspStr):
     """0x04: Get POS model."""
 
-    name: str
-
-    @classmethod
-    def from_bytes(cls, data: bytes):
-        """Deserialize object."""
-        # FIXME: chk len
-        return cls(name=util.b2s(data))
-
 
 @dataclass
-class RspGetStorageFN(RspBase):
+class RspGetStorageFN(_RspStr):
     """0x05: Get FS factory number."""
 
-    f_n: str
-
-    @classmethod
-    def from_bytes(cls, data: bytes):
-        """Deserialize object."""
-        return cls(f_n=util.b2s(data).strip())
-
 
 @dataclass
-class RspGetStorageFWVer(RspBase):
+class RspGetStorageFWVer(_RspStr):
     """0x06: Get FS firmware version."""
-
-    ver: str
-
-    @classmethod
-    def from_bytes(cls, data: bytes):
-        """Deserialize object."""
-        return cls(ver=util.b2s(data).strip())
 
 
 @dataclass
@@ -254,15 +229,8 @@ class RspGetRegisterParms(RspBase):
 
 
 @dataclass
-class RspGetDeviceCfgVer(RspBase):
+class RspGetDeviceCfgVer(_RspStr):
     """0x0B: Get POS config version."""
-
-    ver: str
-
-    @classmethod
-    def from_bytes(cls, data: bytes):
-        """Deserialize object."""
-        return cls(ver=util.b2s(data).strip())
 
 
 @dataclass
@@ -508,8 +476,14 @@ class RspGetDocInfo(RspBase):
 
 
 @dataclass
-class RspGetUnsentDocNum(_RspStub):
+class RspGetUnsentDocNum(RspBase):
     """0x32: Number of FD not confirmed by OFD."""
+    num: int
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        return cls(num=util.b2ui(data))
 
 
 @dataclass
@@ -576,8 +550,14 @@ class RspGetDeviceOFDParms(_RspStub):
 
 
 @dataclass
-class RspGetPrnLineLen(_RspStub):
+class RspGetPrnLineLen(RspBase):
     """0xBB: Get print line length (symbols)."""
+    num: int
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        return cls(num=int(data))
 
 
 @dataclass
