@@ -49,7 +49,7 @@ class IEnumCmd(enum.IntEnum):
     COR_RCP_DATA = 0x2E         # ✓ [CorRcpt]
     GET_DOC_INFO = 0x30         # ✓ [Archive]
     GET_UNSENT_DOC_NUM = 0x32
-    GET_FS_REG_RESULT = 0x33
+    GET_FS_REG_RPT = 0x33
     GET_DOC_DATA = 0x3A         # … [Info]
     COR_RCP_AUTOMAT = 0x3F      # ✓ [CorRcpt]
     # RESET_MGM = 0x40

@@ -7,7 +7,7 @@ You may use this file under the terms of the GPLv3 license.
 :todo: dataclass(frozen=True)
 """
 # 1. std
-from typing import Tuple, Any, Dict
+from typing import Tuple, Any, Dict, Optional
 from dataclasses import dataclass
 import struct
 import datetime
@@ -329,7 +329,7 @@ class ADocRegRpt(ADoc):
     inn: str
     reg_n: str
     tax: flag.TaxModes  # TODO: really?
-    mode: flag.FRModes  # TODO: really?
+    fr_mode: flag.FRModes  # TODO: really?
 
     @classmethod
     def from_bytes(cls, data: bytes):
@@ -347,7 +347,7 @@ class ADocRegRpt(ADoc):
             inn=util.b2s(val[7]).rstrip(),
             reg_n=util.b2s(val[8]).rstrip(),
             tax=v_9,
-            mode=v_10
+            fr_mode=v_10
         )
 
 
@@ -362,7 +362,7 @@ class ADocReRegRpt(ADoc):
     inn: str
     reg_n: str
     tax: flag.TaxModes  # TODO: really?
-    mode: flag.FRModes  # TODO: really
+    fr_mode: flag.FRModes  # TODO: really
     reason: const.IEnumReRegReason
 
     @classmethod
@@ -382,7 +382,7 @@ class ADocReRegRpt(ADoc):
             inn=util.b2s(val[7]).rstrip(),
             reg_n=util.b2s(val[8]).rstrip(),
             tax=v_9,
-            mode=v_10,
+            fr_mode=v_10,
             reason=v_11
         )
 
@@ -499,8 +499,74 @@ class RspGetUnsentDocNum(RspBase):
 
 
 @dataclass
-class RspGetStorageActResult(_RspStub):
-    """0x33: Get FS activation result."""
+class RspGetStorageRegRpt(RspBase):
+    """0x33: Get FS activation result.
+    Like ADocRegRpt
+    """
+    datime: datetime.datetime
+    inn: str
+    reg_n: str
+    tax: flag.TaxModes
+    fr_mode: flag.FRModes
+    fdoc_n: int
+    fpd: int
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        val = _data_decode(data, '<BBBBB12s20sBBII', cls)  # 47
+        try:
+            v_7 = flag.TaxModes(val[7])
+            v_8 = flag.FRModes(val[8])
+        except ValueError as __e:
+            raise exc.KpeRspUnpack(__e) from __e
+        return cls(
+            datime=util.b2dt(val[0:5]),
+            inn=util.b2s(val[5]).rstrip(),
+            reg_n=util.b2s(val[6]).rstrip(),
+            tax=v_7,
+            fr_mode=v_8,
+            fdoc_n=val[9],
+            fpd=val[10]
+        )
+
+
+@dataclass
+class RspGetStorageReRegRpt(RspBase):
+    """0x33: Get FS reactivation result.
+    Like ADocReRegRpt
+    """
+    datime: datetime.datetime
+    inn: str
+    reg_n: str
+    tax: flag.TaxModes
+    fr_mode: flag.FRModes
+    reason: Optional[const.IEnumReRegReason]
+    fdoc_n: int
+    fpd: int
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        if len(data) == 47:
+            return RspGetStorageRegRpt.from_bytes(data)
+        val = _data_decode(data, '<BBBBB12s20sBBBII', cls)  # 48
+        try:
+            v_7 = flag.TaxModes(val[7])
+            v_8 = flag.FRModes(val[8])
+            v_9 = const.IEnumReRegReason(val[9]) if val[9] else None
+        except ValueError as __e:
+            raise exc.KpeRspUnpack(__e) from __e
+        return cls(
+            datime=util.b2dt(val[0:5]),
+            inn=util.b2s(val[5]).rstrip(),
+            reg_n=util.b2s(val[6]).rstrip(),
+            tax=v_7,
+            fr_mode=v_8,
+            reason=v_9,
+            fdoc_n=val[10],
+            fpd=val[11]
+        )
 
 
 @dataclass
@@ -616,7 +682,7 @@ _CODE2CLASS = {
     const.IEnumCmd.SES_CLOSE_COMMIT: RspSessionCloseCommit,
     const.IEnumCmd.GET_DOC_INFO: RspGetDocInfo,
     const.IEnumCmd.GET_UNSENT_DOC_NUM: RspGetUnsentDocNum,
-    const.IEnumCmd.GET_FS_REG_RESULT: RspGetStorageActResult,
+    const.IEnumCmd.GET_FS_REG_RPT: RspGetStorageReRegRpt,
     const.IEnumCmd.GET_DOC_DATA: RspGetDocData,
     const.IEnumCmd.GET_OFD_XCHG_STATUS: RspGetOFDXchgStatus,
     const.IEnumCmd.SET_DATETIME: RspOK,

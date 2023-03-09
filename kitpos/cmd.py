@@ -180,10 +180,10 @@ class CmdGetUnsentDocNum(_CmdBase):
     cmd_id = const.IEnumCmd.GET_UNSENT_DOC_NUM
 
 
-class CmdGetStorageActResult(_CmdBase):
+class CmdGetStorageRegRpt(_CmdBase):
     """0x33: Get FS activation result."""
 
-    cmd_id = const.IEnumCmd.GET_FS_REG_RESULT
+    cmd_id = const.IEnumCmd.GET_FS_REG_RPT
     num: Optional[int]  # report number (default 1)
 
     def __init__(self, num: Optional[int] = None):

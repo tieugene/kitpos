@@ -115,11 +115,11 @@ def __cmd_30(val: Optional[str]) -> Optional[cmd.CmdGetDocInfo]:
     raise exc.KpeCLI("Doc number required.")
 
 
-def __cmd_33(val: Optional[str]) -> Optional[cmd.CmdGetStorageActResult]:
+def __cmd_33(val: Optional[str]) -> Optional[cmd.CmdGetStorageRegRpt]:
     """0x33: Get FS activation result [0 (default)|1 - skip prn]."""
     if val:  # TODO: check 1..255
-        return cmd.CmdGetStorageActResult(int(val))
-    return cmd.CmdGetStorageActResult()
+        return cmd.CmdGetStorageRegRpt(int(val))
+    return cmd.CmdGetStorageRegRpt()
 
 
 def __cmd_3a(val: Optional[str]) -> Optional[cmd.CmdGetDocData]:
@@ -210,7 +210,7 @@ COMMANDS: Dict[str, Callable] = {  # TODO: replace some functions w/ class direc
     'SessionCloseCommit': lambda: cmd.CmdSessionCloseCommit(),  # 0x2A Commit closing session
     'GetDocInfo': (__cmd_30, '<int>'),  # 0x30: Get document info
     'GetUnsentDocNum': lambda: cmd.CmdGetUnsentDocNum(),  # 0x32: Number of FD not confirmed by OFD
-    'GetStorageActResult': (__cmd_33, '[int]'),  # 0x33: Get FS activation result
+    'GetStorageRegRpt': (__cmd_33, '[int]'),  # 0x33: Get FS activation result
     'GetDocData': (__cmd_3a, '<int>'),  # 0x3A: Read document content
     'GetOFDXchgStatus': lambda: cmd.CmdGetOFDXchgStatus(),  # 0x50: Get OFD exchange status
     'SetDateTime': (__cmd_72, '<yymmddHHMM>'),  # 0x72: Set POS date/time
