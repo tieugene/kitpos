@@ -1,7 +1,12 @@
 # TODO
 
 ## 0.0.2:
-- [ ] #29 Extend cmd #5 (12): GetX (simple)
+- [ ] #29 Extend cmd #5 (12): GetX (simple):
+  - [x] const.IEnumCmd
+  - [x] cmd.Cmd...
+  - [x] cli.COMMANDS
+  - […] rsp.RspGet...
+  - [x] rsp._CODE2CLASS
 - [ ] Sequences:
   + [ ] SessionOpen
   + [ ] SessionClose

@@ -78,7 +78,7 @@ class RspOK(RspBase):
 
 @dataclass
 class RspGetDeviceStatus(RspBase):
-    """POS status (0x01)."""
+    """0x01: Get POS status."""
 
     s_n: str
     datime: datetime.datetime
@@ -109,8 +109,18 @@ class RspGetDeviceStatus(RspBase):
 
 
 @dataclass
+class RspGetDeviceFN(_RspStub):
+    """0x02: Get POS factory number."""
+
+
+@dataclass
+class RspGetDeviceFWVer(_RspStub):
+    """0x03: Get POS firmware version."""
+
+
+@dataclass
 class RspGetDeviceModel(RspBase):
-    """POS model (0x04)."""
+    """0x04: Get POS model."""
 
     name: str
 
@@ -122,8 +132,23 @@ class RspGetDeviceModel(RspBase):
 
 
 @dataclass
+class RspGetStorageFN(_RspStub):
+    """0x05: Get FS factory number."""
+
+
+@dataclass
+class RspGetStorageFWVer(_RspStub):
+    """0x06: Get FS firmware version."""
+
+
+@dataclass
+class RspGetStorageExpired(_RspStub):
+    """0x07: Get FS date expired."""
+
+
+@dataclass
 class RspGetStorageStatus(RspBase):
-    """Fiscal storage status (0x08)."""
+    """0x08: Get FS status."""
     # pylint: disable=R0902
 
     phase: const.IEnumFSphase
@@ -159,7 +184,7 @@ class RspGetStorageStatus(RspBase):
 
 @dataclass
 class RspGetRegisterParms(RspBase):
-    """POS+FS registering parameters (0x0A)."""
+    """0x0A: Get POS/FS registering parameters."""
 
     reg_n: str
     inn: str
@@ -187,8 +212,18 @@ class RspGetRegisterParms(RspBase):
 
 
 @dataclass
+class RspGetDeviceCfgVer(_RspStub):
+    """0x0B: Get POS config version."""
+
+
+@dataclass
+class RspGetNetParms(_RspStub):
+    """0x0E: Get current network parameters."""
+
+
+@dataclass
 class RspGetCurSession(RspBase):
-    """Current session params (0x20)."""
+    """0x20: Get current session params."""
 
     opened: bool
     ses_n: int
@@ -225,11 +260,11 @@ class _RspSessionAnyCommit(RspBase):
 
 
 class RspSessionOpenCommit(_RspSessionAnyCommit):
-    """Opened session response."""
+    """0x22: Commit opening session."""
 
 
 class RspSessionCloseCommit(_RspSessionAnyCommit):
-    """Closed session response."""
+    """0x2A: Commit closing session."""
 
 
 @dataclass
@@ -381,7 +416,7 @@ ADOC_CLASS = {
 
 @dataclass
 class RspGetDocInfo(RspBase):
-    """Document [meta-]info (0x30)."""
+    """0x30: Get document info."""
 
     doc_type: const.IEnumADocType
     ofd: bool  # TODO: chk 0/1
@@ -407,8 +442,18 @@ class RspGetDocInfo(RspBase):
 
 
 @dataclass
+class RspGetUnsentDocNum(_RspStub):
+    """0x32: Number of FD not confirmed by OFD."""
+
+
+@dataclass
+class RspGetStorageActResult(_RspStub):
+    """0x33: Get FS activation result."""
+
+
+@dataclass
 class RspGetDocData(RspBase):
-    """Document data (0x3A)."""
+    """0x3A: Read document content."""
 
     tags: Dict[const.IEnumTag, Any]
 
@@ -420,7 +465,7 @@ class RspGetDocData(RspBase):
 
 @dataclass
 class RspGetOFDXchgStatus(RspBase):
-    """OFD exchange status (0x50)."""
+    """0x50: Get OFD exchange status."""
 
     out_count: int
     next_doc_n: int
@@ -439,7 +484,7 @@ class RspGetOFDXchgStatus(RspBase):
 
 @dataclass
 class RspGetDateTime(RspBase):
-    """POS date/time (0x73)."""
+    """0x73: Get POS date/time."""
 
     datime: datetime.datetime
 
@@ -452,6 +497,21 @@ class RspGetDateTime(RspBase):
         return cls(
             datime=__val
         )
+
+
+@dataclass
+class RspGetDeviceNetParms(_RspStub):
+    """0x75: Get POS network settings."""
+
+
+@dataclass
+class RspGetDeviceOFDParms(_RspStub):
+    """0x77: Get POS OFD settings."""
+
+
+@dataclass
+class RspGetPrnLineLen(_RspStub):
+    """0xBB: Get print line length (symbols)."""
 
 
 @dataclass
@@ -499,9 +559,16 @@ class RspReceiptCommit(RspBase):
 # ----
 _CODE2CLASS = {
     const.IEnumCmd.GET_POS_STATUS: RspGetDeviceStatus,
+    const.IEnumCmd.GET_POS_FN: RspGetDeviceFN,
+    const.IEnumCmd.GET_POS_FW_VER: RspGetDeviceFWVer,
     const.IEnumCmd.GET_POS_MODEL: RspGetDeviceModel,
+    const.IEnumCmd.GET_FS_FN: RspGetStorageFN,
+    const.IEnumCmd.GET_FS_FW_VER: RspGetStorageFWVer,
+    const.IEnumCmd.GET_FS_EXPIRED: RspGetStorageExpired,
     const.IEnumCmd.GET_FS_STATUS: RspGetStorageStatus,
     const.IEnumCmd.GET_REG_PARMS: RspGetRegisterParms,
+    const.IEnumCmd.GET_POS_CFG_VER: RspGetDeviceCfgVer,
+    const.IEnumCmd.GET_NET_PARM: RspGetNetParms,
     const.IEnumCmd.DOC_CANCEL: RspOK,
     const.IEnumCmd.GET_CUR_SES: RspGetCurSession,
     const.IEnumCmd.SES_OPEN_BEGIN: RspOK,
@@ -509,10 +576,15 @@ _CODE2CLASS = {
     const.IEnumCmd.SES_CLOSE_BEGIN: RspOK,
     const.IEnumCmd.SES_CLOSE_COMMIT: RspSessionCloseCommit,
     const.IEnumCmd.GET_DOC_INFO: RspGetDocInfo,
+    const.IEnumCmd.GET_UNSENT_DOC_NUM: RspGetUnsentDocNum,
+    const.IEnumCmd.GET_FS_REG_RESULT: RspGetStorageActResult,
     const.IEnumCmd.GET_DOC_DATA: RspGetDocData,
     const.IEnumCmd.GET_OFD_XCHG_STATUS: RspGetOFDXchgStatus,
     const.IEnumCmd.SET_DATETIME: RspOK,
     const.IEnumCmd.GET_DATETIME: RspGetDateTime,
+    const.IEnumCmd.GET_POS_NET_PARM: RspGetDeviceNetParms,
+    const.IEnumCmd.GET_POS_OFD_PARM: RspGetDeviceOFDParms,
+    const.IEnumCmd.GET_PRN_LINE_LEN: RspGetPrnLineLen,
     const.IEnumCmd.COR_RCP_BEGIN: RspOK,
     const.IEnumCmd.COR_RCP_DATA: RspOK,
     const.IEnumCmd.COR_RCP_AUTOMAT: RspOK,
