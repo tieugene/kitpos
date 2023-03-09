@@ -11,6 +11,7 @@ from typing import Tuple, Any, Dict
 from dataclasses import dataclass
 import struct
 import datetime
+import ipaddress
 # 3. local
 from kitpos import const, flag, exc, util, tag
 
@@ -174,8 +175,8 @@ class RspGetStorageExpired(RspBase):
     """0x07: Get FS date expired."""
 
     date: datetime.date
+    rest: int
     done: int
-    last: int
 
     @classmethod
     def from_bytes(cls, data: bytes):
@@ -183,8 +184,8 @@ class RspGetStorageExpired(RspBase):
         val = _data_decode(data, 'BBBBB', cls)
         return cls(
             date=util.b2d(val[:3]),
-            done=val[3],
-            last=val[4])
+            rest=val[3],
+            done=val[4])
 
 
 @dataclass
@@ -267,21 +268,24 @@ class RspGetDeviceCfgVer(RspBase):
 @dataclass
 class RspGetNetParms(RspBase):
     """0x0E: Get current network parameters."""
-    ip: int
-    mask: int
-    gw: int
+    ip: ipaddress.IPv4Address
+    mask: ipaddress.IPv4Address
+    gw: ipaddress.IPv4Address
 
     @classmethod
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
-        val = _data_decode(data, 'III', cls)
+        val = _data_decode(data, '>III', cls)
         return cls(
-            ip=val[0],
-            mask=val[1],
-            gw=val[2]
+            ip=ipaddress.IPv4Address(val[0]),
+            mask=ipaddress.IPv4Address(val[1]),
+            gw=ipaddress.IPv4Address(val[2])
         )
 
-    # TODO: to_str()
+    def to_str(self, sep: str = ', ') -> str:
+        """Get response attrs as string."""
+        return sep.join([f"ip={format(self.ip)}{sep}mask={format(self.mask)}{sep}gw={format(self.gw)}"
+
 
 @dataclass
 class RspGetCurSession(RspBase):
