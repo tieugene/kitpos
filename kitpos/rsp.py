@@ -284,7 +284,7 @@ class RspGetNetParms(RspBase):
 
     def to_str(self, sep: str = ', ') -> str:
         """Get response attrs as string."""
-        return sep.join([f"ip={format(self.ip)}{sep}mask={format(self.mask)}{sep}gw={format(self.gw)}"
+        return f"ip={format(self.ip)}{sep}mask={format(self.mask)}{sep}gw={format(self.gw)}"
 
 
 @dataclass
