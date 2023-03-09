@@ -194,10 +194,10 @@ COMMANDS: Dict[str, Callable] = {  # TODO: replace some functions w/ class direc
     'GetDeviceStatus': lambda: cmd.CmdGetDeviceStatus(),  # 0x01: Get POS status
     'GetDeviceFN': lambda: cmd.CmdGetDeviceFN(),  # 0x02: Get POS factory number
     'GetDeviceFWVer': lambda: cmd.CmdGetDeviceFWVer(),  # 0x03: Get POS firmware version
-    'GetDeviceModel': lambda: cmd.CmdGetDeviceModel,  # 0x04: Get POS model
-    'GetStorageFN': lambda: cmd.CmdGetStorageFN,  # 0x05: Get FS factory number
-    'GetStorageFWVer': lambda: cmd.CmdGetStorageFWVer,  # 0x06: Get FS firmware version
-    'GetStorageExpired': lambda: cmd.CmdGetStorageExpired,  # 0x07: Get FS date expired
+    'GetDeviceModel': lambda: cmd.CmdGetDeviceModel(),  # 0x04: Get POS model
+    'GetStorageFN': lambda: cmd.CmdGetStorageFN(),  # 0x05: Get FS factory number
+    'GetStorageFWVer': lambda: cmd.CmdGetStorageFWVer(),  # 0x06: Get FS firmware version
+    'GetStorageExpired': lambda: cmd.CmdGetStorageExpired(),  # 0x07: Get FS date expired
     'GetStorageStatus': lambda: cmd.CmdGetStorageStatus(),  # 0x08: Get FS status
     'GetRegisterParms': lambda: cmd.CmdGetRegisterParms(),  # 0x0A: Get POS/FS registering parameters
     'GetDeviceCfgVer': lambda: cmd.CmdGetDeviceCfgVer(),  # 0x0B: Get POS config version
