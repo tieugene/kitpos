@@ -144,6 +144,14 @@ class IEnumTag(_IEnumPrintable):
     TAG_1226 = 1226    # str[12], Supplier INN
     # Mode = 9999      # byte[1] == bitmap flags (addon 7); Note: Terminal-FA always stay auto
     TAG_30000 = 30000  # byte[5], DateTime
+    TAG_30001 = 30001  # byte[1] == bool (0/1), DHCP
+    TAG_30002 = 30002  # str[..15], IP
+    TAG_30003 = 30003  # str[..15], Subnet mask
+    TAG_30004 = 30004  # str[..15], Default router
+    TAG_30005 = 30005  # str[..15], OFD IP
+    TAG_30006 = 30006  # byte[2] == uint16, IP port
+    TAG_30009 = 30009  # byte[2] == uint16, Timout?
+    TAG_30040 = 30040  # str[..128], OFD domain name
 
 
 @enum.unique

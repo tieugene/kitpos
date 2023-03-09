@@ -540,13 +540,27 @@ class RspGetDateTime(RspBase):
 
 
 @dataclass
-class RspGetDeviceNetParms(_RspStub):
+class RspGetDeviceNetParms(RspBase):
     """0x75: Get POS network settings."""
+
+    tags: Dict[const.IEnumTag, Any]
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        return cls(tags=tag.tagdict_unpack(data))
 
 
 @dataclass
-class RspGetDeviceOFDParms(_RspStub):
+class RspGetDeviceOFDParms(RspBase):
     """0x77: Get POS OFD settings."""
+
+    tags: Dict[const.IEnumTag, Any]
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        return cls(tags=tag.tagdict_unpack(data))
 
 
 @dataclass

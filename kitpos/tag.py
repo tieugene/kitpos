@@ -400,4 +400,36 @@ TAG2FUNC: Dict[const.IEnumTag, Tuple[Callable, Callable, Callable]] = {
         datetime.datetime.fromisoformat,
         util.dt2b5,
         util.b2dt),  # TODO: check
+    const.IEnumTag.TAG_30001: (
+        None,
+        None,
+        util.b2l),
+    const.IEnumTag.TAG_30002: (
+        None,
+        None,
+        util.b2s),
+    const.IEnumTag.TAG_30003: (
+        None,
+        None,
+        util.b2s),
+    const.IEnumTag.TAG_30004: (
+        None,
+        None,
+        util.b2s),
+    const.IEnumTag.TAG_30005: (
+        None,
+        None,
+        util.b2s),
+    const.IEnumTag.TAG_30006: (
+        None,
+        None,
+        util.b2ui),
+    const.IEnumTag.TAG_30009: (
+        None,
+        None,
+        util.b2ui),
+    const.IEnumTag.TAG_30040: (
+        None,
+        None,
+        util.b2s),
 }
