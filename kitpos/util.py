@@ -124,6 +124,11 @@ def b2dt(val: Tuple[int, int, int, int, int]) -> datetime.datetime:
     return datetime.datetime(2000 + val[0], val[1], val[2], val[3], val[4])
 
 
+def b2d(val: Tuple[int, int, int]) -> datetime.date:
+    """Convert 3xInt to date."""
+    return datetime.date(2000 + val[0], val[1], val[2])
+
+
 # ----
 def frame_pack(data: bytes) -> bytes:
     """Wrap data bytes into frame: <header><len><cmd>[data]<crc>."""

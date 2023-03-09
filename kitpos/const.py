@@ -22,9 +22,16 @@ class IEnumCmd(enum.IntEnum):
     """Commands."""
 
     GET_POS_STATUS = 0x01       # ✓ [Info] Get status
+    GET_POS_FN = 0x02
+    GET_POS_FW_VER = 0x03
     GET_POS_MODEL = 0x04        # ✓ [Info]
+    GET_FS_FN = 0x05
+    GET_FS_FW_VER = 0x06
+    GET_FS_EXPIRED = 0x07
     GET_FS_STATUS = 0x08        # ✓ [Info]
     GET_REG_PARMS = 0x0A        # ✓ [Info] (not used in C#)
+    GET_POS_CFG_VER = 0x0B
+    GET_NET_PARM = 0x0E
     DOC_CANCEL = 0x10           # ✓ [RegFS]
     RCP_AUTOMAT = 0x1F          # … [Receipt]
     GET_CUR_SES = 0x20          # ✓ [Session]
@@ -41,12 +48,17 @@ class IEnumCmd(enum.IntEnum):
     RCP_PAYMENT = 0x2D          # … [Receipt]
     COR_RCP_DATA = 0x2E         # ✓ [CorRcpt]
     GET_DOC_INFO = 0x30         # ✓ [Archive]
+    GET_UNSENT_DOC_NUM = 0x32
+    GET_FS_REG_RPT = 0x33
     GET_DOC_DATA = 0x3A         # … [Info]
     COR_RCP_AUTOMAT = 0x3F      # ✓ [CorRcpt]
     # RESET_MGM = 0x40
     GET_OFD_XCHG_STATUS = 0x50  # ✓ [Info]
     SET_DATETIME = 0x72         # ✓ [Settings]
     GET_DATETIME = 0x73         # ✓ [Settings] (not used in C#)
+    GET_POS_NET_PARM = 0x75
+    GET_POS_OFD_PARM = 0x77
+    GET_PRN_LINE_LEN = 0xBB
     RESTART = 0xEF
 
 
@@ -132,6 +144,15 @@ class IEnumTag(_IEnumPrintable):
     TAG_1226 = 1226    # str[12], Supplier INN
     # Mode = 9999      # byte[1] == bitmap flags (addon 7); Note: Terminal-FA always stay auto
     TAG_30000 = 30000  # byte[5], DateTime
+    TAG_30001 = 30001  # byte[1] == bool (0/1), DHCP
+    TAG_30002 = 30002  # str[..15], IP
+    TAG_30003 = 30003  # str[..15], Subnet mask
+    TAG_30004 = 30004  # str[..15], Default router
+    TAG_30005 = 30005  # str[..15], OFD IP
+    TAG_30006 = 30006  # byte[2] == uint16, IP port
+    TAG_30009 = 30009  # byte[2] == uint16, Timout?
+    TAG_30034 = 30034  # str[?], <undocumented>
+    TAG_30040 = 30040  # str[..128], OFD domain name
 
 
 @enum.unique

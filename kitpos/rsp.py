@@ -7,10 +7,11 @@ You may use this file under the terms of the GPLv3 license.
 :todo: dataclass(frozen=True)
 """
 # 1. std
-from typing import Tuple, Any, Dict
+from typing import Tuple, Any, Dict, Optional
 from dataclasses import dataclass
 import struct
 import datetime
+import ipaddress
 # 3. local
 from kitpos import const, flag, exc, util, tag
 
@@ -42,6 +43,29 @@ class RspBase:
     def __str__(self) -> to_str:
         """Make string representation of response object."""
         return f"{self.cls_name()}: {self.to_str()}"
+
+
+@dataclass
+class _RspStr(RspBase):
+    """Base for 'just a string' responses."""
+    v: str
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        return cls(v=util.b2s(data).strip())
+
+
+@dataclass
+class _RspSTLV(RspBase):
+    """Base for STLV responses."""
+
+    tags: Dict[const.IEnumTag, Any]
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        return cls(tags=tag.tagdict_unpack(data))
 
 
 @dataclass
@@ -78,9 +102,9 @@ class RspOK(RspBase):
 
 @dataclass
 class RspGetDeviceStatus(RspBase):
-    """POS status (0x01)."""
+    """0x01: Get POS status."""
 
-    s_n: str
+    f_n: str
     datime: datetime.datetime
     err: bool  # Critical errors; TODO: chk 0/1
     prn_status: const.IEnumPrnStatus
@@ -98,7 +122,7 @@ class RspGetDeviceStatus(RspBase):
         except ValueError as __e:
             raise exc.KpeRspUnpack(__e) from __e
         return cls(
-            s_n=util.b2s(val[0]),
+            f_n=util.b2s(val[0]),
             datime=util.b2dt(val[1:6]),
             err=val[6],
             prn_status=v_7,
@@ -109,21 +133,51 @@ class RspGetDeviceStatus(RspBase):
 
 
 @dataclass
-class RspGetDeviceModel(RspBase):
-    """POS model (0x04)."""
+class RspGetDeviceFN(_RspStr):
+    """0x02: Get POS factory number."""
 
-    name: str
+
+@dataclass
+class RspGetDeviceFWVer(_RspStr):
+    """0x03: Get POS firmware version."""
+
+
+@dataclass
+class RspGetDeviceModel(_RspStr):
+    """0x04: Get POS model."""
+
+
+@dataclass
+class RspGetStorageFN(_RspStr):
+    """0x05: Get FS factory number."""
+
+
+@dataclass
+class RspGetStorageFWVer(_RspStr):
+    """0x06: Get FS firmware version."""
+
+
+@dataclass
+class RspGetStorageExpired(RspBase):
+    """0x07: Get FS date expired."""
+
+    date: datetime.date
+    rest: int
+    done: int
 
     @classmethod
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
-        # FIXME: chk len
-        return cls(name=util.b2s(data))
+        val = _data_decode(data, 'BBBBB', cls)
+        return cls(
+            date=util.b2d(val[:3]),
+            rest=val[3],
+            done=val[4])
 
 
 @dataclass
 class RspGetStorageStatus(RspBase):
-    """Fiscal storage status (0x08)."""
+    """0x08: Get FS status."""
     # pylint: disable=R0902
 
     phase: const.IEnumFSphase
@@ -159,7 +213,7 @@ class RspGetStorageStatus(RspBase):
 
 @dataclass
 class RspGetRegisterParms(RspBase):
-    """POS+FS registering parameters (0x0A)."""
+    """0x0A: Get POS/FS registering parameters."""
 
     reg_n: str
     inn: str
@@ -187,8 +241,35 @@ class RspGetRegisterParms(RspBase):
 
 
 @dataclass
+class RspGetDeviceCfgVer(_RspStr):
+    """0x0B: Get POS config version."""
+
+
+@dataclass
+class RspGetNetParms(RspBase):
+    """0x0E: Get current network parameters."""
+    ip: ipaddress.IPv4Address
+    mask: ipaddress.IPv4Address
+    gw: ipaddress.IPv4Address
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        val = _data_decode(data, '>III', cls)
+        return cls(
+            ip=ipaddress.IPv4Address(val[0]),
+            mask=ipaddress.IPv4Address(val[1]),
+            gw=ipaddress.IPv4Address(val[2])
+        )
+
+    def to_str(self, sep: str = ', ') -> str:
+        """Get response attrs as string."""
+        return f"ip={format(self.ip)}{sep}mask={format(self.mask)}{sep}gw={format(self.gw)}"
+
+
+@dataclass
 class RspGetCurSession(RspBase):
-    """Current session params (0x20)."""
+    """0x20: Get current session params."""
 
     opened: bool
     ses_n: int
@@ -225,11 +306,11 @@ class _RspSessionAnyCommit(RspBase):
 
 
 class RspSessionOpenCommit(_RspSessionAnyCommit):
-    """Opened session response."""
+    """0x22: Commit opening session."""
 
 
 class RspSessionCloseCommit(_RspSessionAnyCommit):
-    """Closed session response."""
+    """0x2A: Commit closing session."""
 
 
 @dataclass
@@ -248,7 +329,7 @@ class ADocRegRpt(ADoc):
     inn: str
     reg_n: str
     tax: flag.TaxModes  # TODO: really?
-    mode: flag.FRModes  # TODO: really?
+    fr_mode: flag.FRModes  # TODO: really?
 
     @classmethod
     def from_bytes(cls, data: bytes):
@@ -266,7 +347,7 @@ class ADocRegRpt(ADoc):
             inn=util.b2s(val[7]).rstrip(),
             reg_n=util.b2s(val[8]).rstrip(),
             tax=v_9,
-            mode=v_10
+            fr_mode=v_10
         )
 
 
@@ -281,7 +362,7 @@ class ADocReRegRpt(ADoc):
     inn: str
     reg_n: str
     tax: flag.TaxModes  # TODO: really?
-    mode: flag.FRModes  # TODO: really
+    fr_mode: flag.FRModes  # TODO: really
     reason: const.IEnumReRegReason
 
     @classmethod
@@ -301,7 +382,7 @@ class ADocReRegRpt(ADoc):
             inn=util.b2s(val[7]).rstrip(),
             reg_n=util.b2s(val[8]).rstrip(),
             tax=v_9,
-            mode=v_10,
+            fr_mode=v_10,
             reason=v_11
         )
 
@@ -381,7 +462,7 @@ ADOC_CLASS = {
 
 @dataclass
 class RspGetDocInfo(RspBase):
-    """Document [meta-]info (0x30)."""
+    """0x30: Get document info."""
 
     doc_type: const.IEnumADocType
     ofd: bool  # TODO: chk 0/1
@@ -407,20 +488,95 @@ class RspGetDocInfo(RspBase):
 
 
 @dataclass
-class RspGetDocData(RspBase):
-    """Document data (0x3A)."""
-
-    tags: Dict[const.IEnumTag, Any]
+class RspGetUnsentDocNum(RspBase):
+    """0x32: Number of FD not confirmed by OFD."""
+    num: int
 
     @classmethod
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
-        return cls(tags=tag.tagdict_unpack(data))
+        return cls(num=util.b2ui(data))
+
+
+@dataclass
+class RspGetStorageRegRpt(RspBase):
+    """0x33: Get FS activation result.
+    Like ADocRegRpt
+    """
+    datime: datetime.datetime
+    inn: str
+    reg_n: str
+    tax: flag.TaxModes
+    fr_mode: flag.FRModes
+    fdoc_n: int
+    fpd: int
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        val = _data_decode(data, '<BBBBB12s20sBBII', cls)  # 47
+        try:
+            v_7 = flag.TaxModes(val[7])
+            v_8 = flag.FRModes(val[8])
+        except ValueError as __e:
+            raise exc.KpeRspUnpack(__e) from __e
+        return cls(
+            datime=util.b2dt(val[0:5]),
+            inn=util.b2s(val[5]).rstrip(),
+            reg_n=util.b2s(val[6]).rstrip(),
+            tax=v_7,
+            fr_mode=v_8,
+            fdoc_n=val[9],
+            fpd=val[10]
+        )
+
+
+@dataclass
+class RspGetStorageReRegRpt(RspBase):
+    """0x33: Get FS reactivation result.
+    Like ADocReRegRpt
+    """
+    datime: datetime.datetime
+    inn: str
+    reg_n: str
+    tax: flag.TaxModes
+    fr_mode: flag.FRModes
+    reason: Optional[const.IEnumReRegReason]
+    fdoc_n: int
+    fpd: int
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        if len(data) == 47:
+            return RspGetStorageRegRpt.from_bytes(data)
+        val = _data_decode(data, '<BBBBB12s20sBBBII', cls)  # 48
+        try:
+            v_7 = flag.TaxModes(val[7])
+            v_8 = flag.FRModes(val[8])
+            v_9 = const.IEnumReRegReason(val[9]) if val[9] else None
+        except ValueError as __e:
+            raise exc.KpeRspUnpack(__e) from __e
+        return cls(
+            datime=util.b2dt(val[0:5]),
+            inn=util.b2s(val[5]).rstrip(),
+            reg_n=util.b2s(val[6]).rstrip(),
+            tax=v_7,
+            fr_mode=v_8,
+            reason=v_9,
+            fdoc_n=val[10],
+            fpd=val[11]
+        )
+
+
+@dataclass
+class RspGetDocData(_RspSTLV):
+    """0x3A: Read document content."""
 
 
 @dataclass
 class RspGetOFDXchgStatus(RspBase):
-    """OFD exchange status (0x50)."""
+    """0x50: Get OFD exchange status."""
 
     out_count: int
     next_doc_n: int
@@ -438,20 +594,29 @@ class RspGetOFDXchgStatus(RspBase):
 
 
 @dataclass
-class RspGetDateTime(RspBase):
-    """POS date/time (0x73)."""
+class RspGetDateTime(_RspSTLV):
+    """0x73: Get POS date/time."""
 
-    datime: datetime.datetime
+
+@dataclass
+class RspGetDeviceNetParms(_RspSTLV):
+    """0x75: Get POS network settings."""
+
+
+@dataclass
+class RspGetDeviceOFDParms(_RspSTLV):
+    """0x77: Get POS OFD settings."""
+
+
+@dataclass
+class RspGetPrnLineLen(RspBase):
+    """0xBB: Get print line length (symbols)."""
+    num: int
 
     @classmethod
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
-        __tag, __val = tag.tag_unpack(data)
-        if __tag != const.IEnumTag.TAG_30000:
-            raise exc.KpeRspUnpack(f"{cls.__name__}: bad TAG: {__tag}")
-        return cls(
-            datime=__val
-        )
+        return cls(num=int(data[0]))
 
 
 @dataclass
@@ -499,9 +664,16 @@ class RspReceiptCommit(RspBase):
 # ----
 _CODE2CLASS = {
     const.IEnumCmd.GET_POS_STATUS: RspGetDeviceStatus,
+    const.IEnumCmd.GET_POS_FN: RspGetDeviceFN,
+    const.IEnumCmd.GET_POS_FW_VER: RspGetDeviceFWVer,
     const.IEnumCmd.GET_POS_MODEL: RspGetDeviceModel,
+    const.IEnumCmd.GET_FS_FN: RspGetStorageFN,
+    const.IEnumCmd.GET_FS_FW_VER: RspGetStorageFWVer,
+    const.IEnumCmd.GET_FS_EXPIRED: RspGetStorageExpired,
     const.IEnumCmd.GET_FS_STATUS: RspGetStorageStatus,
     const.IEnumCmd.GET_REG_PARMS: RspGetRegisterParms,
+    const.IEnumCmd.GET_POS_CFG_VER: RspGetDeviceCfgVer,
+    const.IEnumCmd.GET_NET_PARM: RspGetNetParms,
     const.IEnumCmd.DOC_CANCEL: RspOK,
     const.IEnumCmd.GET_CUR_SES: RspGetCurSession,
     const.IEnumCmd.SES_OPEN_BEGIN: RspOK,
@@ -509,10 +681,15 @@ _CODE2CLASS = {
     const.IEnumCmd.SES_CLOSE_BEGIN: RspOK,
     const.IEnumCmd.SES_CLOSE_COMMIT: RspSessionCloseCommit,
     const.IEnumCmd.GET_DOC_INFO: RspGetDocInfo,
+    const.IEnumCmd.GET_UNSENT_DOC_NUM: RspGetUnsentDocNum,
+    const.IEnumCmd.GET_FS_REG_RPT: RspGetStorageReRegRpt,
     const.IEnumCmd.GET_DOC_DATA: RspGetDocData,
     const.IEnumCmd.GET_OFD_XCHG_STATUS: RspGetOFDXchgStatus,
     const.IEnumCmd.SET_DATETIME: RspOK,
     const.IEnumCmd.GET_DATETIME: RspGetDateTime,
+    const.IEnumCmd.GET_POS_NET_PARM: RspGetDeviceNetParms,
+    const.IEnumCmd.GET_POS_OFD_PARM: RspGetDeviceOFDParms,
+    const.IEnumCmd.GET_PRN_LINE_LEN: RspGetPrnLineLen,
     const.IEnumCmd.COR_RCP_BEGIN: RspOK,
     const.IEnumCmd.COR_RCP_DATA: RspOK,
     const.IEnumCmd.COR_RCP_AUTOMAT: RspOK,

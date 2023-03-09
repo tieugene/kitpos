@@ -41,10 +41,40 @@ class CmdGetDeviceStatus(_CmdBase):
     cmd_id = const.IEnumCmd.GET_POS_STATUS
 
 
+class CmdGetDeviceFN(_CmdBase):
+    """0x02: Get POS factory number."""
+
+    cmd_id = const.IEnumCmd.GET_POS_FN
+
+
+class CmdGetDeviceFWVer(_CmdBase):
+    """0x03: Get POS firmware version."""
+
+    cmd_id = const.IEnumCmd.GET_POS_FW_VER
+
+
 class CmdGetDeviceModel(_CmdBase):
     """0x04: Get POS model."""
 
     cmd_id = const.IEnumCmd.GET_POS_MODEL
+
+
+class CmdGetStorageFN(_CmdBase):
+    """0x05: Get FS factory number."""
+
+    cmd_id = const.IEnumCmd.GET_FS_FN
+
+
+class CmdGetStorageFWVer(_CmdBase):
+    """0x06: Get FS firmware version."""
+
+    cmd_id = const.IEnumCmd.GET_FS_FW_VER
+
+
+class CmdGetStorageExpired(_CmdBase):
+    """0x07: Get FS date expired."""
+
+    cmd_id = const.IEnumCmd.GET_FS_EXPIRED
 
 
 class CmdGetStorageStatus(_CmdBase):
@@ -57,6 +87,18 @@ class CmdGetRegisterParms(_CmdBase):
     """0x0A: Get POS/FS registering parameters."""
 
     cmd_id = const.IEnumCmd.GET_REG_PARMS
+
+
+class CmdGetDeviceCfgVer(_CmdBase):
+    """0x0B: Get POS config version."""
+
+    cmd_id = const.IEnumCmd.GET_POS_CFG_VER
+
+
+class CmdGetNetParms(_CmdBase):
+    """0x0E: Get current network parameters."""
+
+    cmd_id = const.IEnumCmd.GET_NET_PARM
 
 
 class CmdDocCancel(_CmdBase):
@@ -107,7 +149,7 @@ class CmdSessionCloseBegin(_CmdSessionAnyBegin):
 
 
 class CmdSessionCloseCommit(_CmdBase):
-    """0x2A: Commit opening session."""
+    """0x2A: Commit closing session."""
 
     cmd_id = const.IEnumCmd.SES_CLOSE_COMMIT
 
@@ -130,6 +172,30 @@ class CmdGetDocInfo(_CmdGetDocAny):
     """0x30: Find document by its number."""
 
     cmd_id = const.IEnumCmd.GET_DOC_INFO
+
+
+class CmdGetUnsentDocNum(_CmdBase):
+    """0x32: Number of FD not confirmed by OFD."""
+
+    cmd_id = const.IEnumCmd.GET_UNSENT_DOC_NUM
+
+
+class CmdGetStorageRegRpt(_CmdBase):
+    """0x33: Get FS activation result."""
+
+    cmd_id = const.IEnumCmd.GET_FS_REG_RPT
+    num: Optional[int]  # report number (default 1)
+
+    def __init__(self, num: Optional[int] = None):
+        super().__init__()
+        self.num = num
+
+    def to_bytes(self) -> bytes:
+        """Serialize to bytes."""
+        retvalue = super().to_bytes()
+        if self.num is not None:
+            retvalue += util.ui2b1(self.num)
+        return retvalue
 
 
 class CmdGetDocData(_CmdGetDocAny):
@@ -167,6 +233,24 @@ class CmdGetDateTime(_CmdBase):
     """0x73: Get POS date/time."""
 
     cmd_id = const.IEnumCmd.GET_DATETIME
+
+
+class CmdGetDeviceNetParms(_CmdBase):
+    """0x75: Get POS network settings."""
+
+    cmd_id = const.IEnumCmd.GET_POS_NET_PARM
+
+
+class CmdGetDeviceOFDParms(_CmdBase):
+    """0x77: Get POS OFD settings."""
+
+    cmd_id = const.IEnumCmd.GET_POS_OFD_PARM
+
+
+class CmdGetPrnLineLen(_CmdBase):
+    """0xBB: Get print line length (symbols)."""
+
+    cmd_id = const.IEnumCmd.GET_PRN_LINE_LEN
 
 
 class CmdCorrReceiptBegin(_CmdBase):
