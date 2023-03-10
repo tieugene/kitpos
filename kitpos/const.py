@@ -51,6 +51,7 @@ class IEnumCmd(enum.IntEnum):
     GET_UNSENT_DOC_NUM = 0x32
     GET_FS_REG_RPT = 0x33
     GET_DOC_DATA = 0x3A         # … [Info]
+    GET_REG_DOC_DATA = 0x3B
     COR_RCP_AUTOMAT = 0x3F      # ✓ [CorRcpt]
     # RESET_MGM = 0x40
     GET_OFD_XCHG_STATUS = 0x50  # ✓ [Info]

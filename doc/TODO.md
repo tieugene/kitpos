@@ -1,9 +1,10 @@
 # TODO
 
 ## 0.0.2:
-- [ ] #32: 0x81: Get POS ctrl parms
-- [ ] #33: 0x3B: ReadRegDoc
+- [x] #32: 0x81: Get POS ctrl parms
+- [x] #33: 0x3B: ReadRegDoc
 - [ ] #27: Pretty print tags
+- [ ] #30: Autodoc commands
 - [ ] #34: FSClose (not documented):
   - [ ] GetDocByNum(6: FSCloseRpt (5.6?))
   - [ ] 0x14: CloseStorageBegin
@@ -18,7 +19,6 @@
   + [ ] strict (header, len, crc)
   + [ ] async
 - [ ] #35: Tags as objects (from_json, from_bytes, to_bytes, to_str, to_native)
-- [ ] #30: Autodoc commands
 
 ## 0.0.3:
 - [ ] Extend cmd #6 (8):

@@ -129,6 +129,13 @@ def __cmd_3a(val: Optional[str]) -> Optional[cmd.CmdGetDocData]:
     raise exc.KpeCLI("Doc number required.")
 
 
+def __cmd_3b(val: Optional[str]) -> Optional[cmd.CmdGetRegDocData]:
+    """0x3B: Read reg. document content."""
+    if val:
+        return cmd.CmdGetRegDocData(int(val))
+    raise exc.KpeCLI("Doc number required.")
+
+
 def __cmd_72(val: Optional[str]) -> Optional[cmd.CmdSetDateTime]:
     """0x72: Set POS date/time."""
     if val:
@@ -212,6 +219,7 @@ COMMANDS: Dict[str, Callable] = {  # TODO: replace some functions w/ class direc
     'GetUnsentDocNum': lambda: cmd.CmdGetUnsentDocNum(),  # 0x32: Number of FD not confirmed by OFD
     'GetStorageRegRpt': (__cmd_33, '[int]'),  # 0x33: Get FS activation result
     'GetDocData': (__cmd_3a, '<int>'),  # 0x3A: Read document content
+    'GetRegDocData': (__cmd_3b, '<int>'),  # 0x3A: Read reg. document content
     'GetOFDXchgStatus': lambda: cmd.CmdGetOFDXchgStatus(),  # 0x50: Get OFD exchange status
     'SetDateTime': (__cmd_72, '<yymmddHHMM>'),  # 0x72: Set POS date/time
     'GetDateTime': lambda: cmd.CmdGetDateTime(),  # 0x73: Get POS date/time
