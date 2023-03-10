@@ -575,6 +575,11 @@ class RspGetDocData(_RspSTLV):
 
 
 @dataclass
+class RspGetRegDocData(_RspSTLV):
+    """0x3B: Read reg. document content."""
+
+
+@dataclass
 class RspGetOFDXchgStatus(RspBase):
     """0x50: Get OFD exchange status."""
 
@@ -706,6 +711,7 @@ _CODE2CLASS = {
     const.IEnumCmd.GET_UNSENT_DOC_NUM: RspGetUnsentDocNum,
     const.IEnumCmd.GET_FS_REG_RPT: RspGetStorageReRegRpt,
     const.IEnumCmd.GET_DOC_DATA: RspGetDocData,
+    const.IEnumCmd.GET_REG_DOC_DATA: RspGetRegDocData,
     const.IEnumCmd.GET_OFD_XCHG_STATUS: RspGetOFDXchgStatus,
     const.IEnumCmd.SET_DATETIME: RspOK,
     const.IEnumCmd.GET_DATETIME: RspGetDateTime,

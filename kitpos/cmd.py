@@ -204,6 +204,16 @@ class CmdGetDocData(_CmdGetDocAny):
     cmd_id = const.IEnumCmd.GET_DOC_DATA
 
 
+class CmdGetRegDocData(_CmdGetDocAny):
+    """0x3B: Read registration document content."""
+
+    cmd_id = const.IEnumCmd.GET_REG_DOC_DATA
+
+    def to_bytes(self) -> bytes:
+        """Serialize to bytes."""
+        return super().to_bytes() + util.ui2b1(self.num)
+
+
 class CmdGetOFDXchgStatus(_CmdBase):
     """0x50: Get OFD exchange status."""
 
