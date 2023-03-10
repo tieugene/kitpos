@@ -3,6 +3,7 @@
 ## 0.0.2:
 - [x] #32: 0x81: Get POS ctrl parms
 - [x] #33: 0x3B: ReadRegDoc
+  - [ ] FIXME: 1101 tag (10.15.63.70)
 - [ ] #27: Pretty print tags
 - [ ] #30: Autodoc commands
 - [ ] #34: FSClose (not documented):
