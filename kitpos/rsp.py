@@ -59,7 +59,7 @@ class _RspStr(RspBase):
 @dataclass
 class _RspSTLV(RspBase):
     """Base for STLV responses."""
-    _tags_available: Set[const.IEnumTag]  # TODO:
+    # _tags_available: Set[const.IEnumTag]  # TODO:
     tags: Dict[const.IEnumTag, Any]
 
     @classmethod
@@ -601,33 +601,33 @@ class RspGetDateTime(_RspSTLV):
 @dataclass
 class RspGetDeviceNetParms(_RspSTLV):
     """0x75: Get POS network settings."""
-    _tags_available = {
-        const.IEnumTag.TAG_30001,
-        const.IEnumTag.TAG_30002,
-        const.IEnumTag.TAG_30003,
-        const.IEnumTag.TAG_30004
-    }
+    # _tags_available = {
+    #    const.IEnumTag.TAG_30001,
+    #    const.IEnumTag.TAG_30002,
+    #    const.IEnumTag.TAG_30003,
+    #    const.IEnumTag.TAG_30004
+    # }
 
 
 @dataclass
 class RspGetDeviceOFDParms(_RspSTLV):
     """0x77: Get POS OFD settings."""
-    _tags_available = {
-        const.IEnumTag.TAG_30005,
-        const.IEnumTag.TAG_30006,
-        const.IEnumTag.TAG_30009,
-        const.IEnumTag.TAG_30034,
-        const.IEnumTag.TAG_30040
-    }
+    # _tags_available = {
+    #    const.IEnumTag.TAG_30005,
+    #    const.IEnumTag.TAG_30006,
+    #    const.IEnumTag.TAG_30009,
+    #    const.IEnumTag.TAG_30034,
+    #    const.IEnumTag.TAG_30040
+    # }
 
 
 @dataclass
 class RspGetDeviceCtlParms(_RspSTLV):
     """0x81: Get POS controll settings."""
-    _tags_available = {
-        const.IEnumTag.TAG_30030,
-        const.IEnumTag.TAG_30032
-    }
+    # _tags_available = {
+    #    const.IEnumTag.TAG_30030,
+    #    const.IEnumTag.TAG_30032
+    # }
 
 
 @dataclass
