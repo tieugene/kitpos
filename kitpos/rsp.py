@@ -7,7 +7,7 @@ You may use this file under the terms of the GPLv3 license.
 :todo: dataclass(frozen=True)
 """
 # 1. std
-from typing import Tuple, Any, Dict, Optional
+from typing import Tuple, Any, Dict, Optional, Set
 from dataclasses import dataclass
 import struct
 import datetime
@@ -59,7 +59,7 @@ class _RspStr(RspBase):
 @dataclass
 class _RspSTLV(RspBase):
     """Base for STLV responses."""
-
+    # _tags_available: Set[const.IEnumTag]  # TODO:
     tags: Dict[const.IEnumTag, Any]
 
     @classmethod
@@ -596,16 +596,38 @@ class RspGetOFDXchgStatus(RspBase):
 @dataclass
 class RspGetDateTime(_RspSTLV):
     """0x73: Get POS date/time."""
-
+    _tags_available = {const.IEnumTag.TAG_30000}
 
 @dataclass
 class RspGetDeviceNetParms(_RspSTLV):
     """0x75: Get POS network settings."""
+    # _tags_available = {
+    #    const.IEnumTag.TAG_30001,
+    #    const.IEnumTag.TAG_30002,
+    #    const.IEnumTag.TAG_30003,
+    #    const.IEnumTag.TAG_30004
+    # }
 
 
 @dataclass
 class RspGetDeviceOFDParms(_RspSTLV):
     """0x77: Get POS OFD settings."""
+    # _tags_available = {
+    #    const.IEnumTag.TAG_30005,
+    #    const.IEnumTag.TAG_30006,
+    #    const.IEnumTag.TAG_30009,
+    #    const.IEnumTag.TAG_30034,
+    #    const.IEnumTag.TAG_30040
+    # }
+
+
+@dataclass
+class RspGetDeviceCtlParms(_RspSTLV):
+    """0x81: Get POS controll settings."""
+    # _tags_available = {
+    #    const.IEnumTag.TAG_30030,
+    #    const.IEnumTag.TAG_30032
+    # }
 
 
 @dataclass
@@ -689,6 +711,7 @@ _CODE2CLASS = {
     const.IEnumCmd.GET_DATETIME: RspGetDateTime,
     const.IEnumCmd.GET_POS_NET_PARM: RspGetDeviceNetParms,
     const.IEnumCmd.GET_POS_OFD_PARM: RspGetDeviceOFDParms,
+    const.IEnumCmd.GET_POS_CTL_PARM: RspGetDeviceCtlParms,
     const.IEnumCmd.GET_PRN_LINE_LEN: RspGetPrnLineLen,
     const.IEnumCmd.COR_RCP_BEGIN: RspOK,
     const.IEnumCmd.COR_RCP_DATA: RspOK,

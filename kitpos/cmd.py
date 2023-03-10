@@ -247,6 +247,12 @@ class CmdGetDeviceOFDParms(_CmdBase):
     cmd_id = const.IEnumCmd.GET_POS_OFD_PARM
 
 
+class CmdGetDeviceCtlParms(_CmdBase):
+    """0x81: Get POS controll settings."""
+
+    cmd_id = const.IEnumCmd.GET_POS_CTL_PARM
+
+
 class CmdGetPrnLineLen(_CmdBase):
     """0xBB: Get print line length (symbols)."""
 

@@ -217,6 +217,7 @@ COMMANDS: Dict[str, Callable] = {  # TODO: replace some functions w/ class direc
     'GetDateTime': lambda: cmd.CmdGetDateTime(),  # 0x73: Get POS date/time
     'GetDeviceNetParms': lambda: cmd.CmdGetDeviceNetParms(),  # 0x75: Get POS network settings
     'GetDeviceOFDParms': lambda: cmd.CmdGetDeviceOFDParms(),  # 0x77: Get POS OFD settings
+    'GetDeviceCtlParms': lambda: cmd.CmdGetDeviceCtlParms(),  # 0x81: 0x81: Get POS controll settings
     'GetPrnLineLen': lambda: cmd.CmdGetPrnLineLen(),  # 0xBB: Get print line length (symbols)
     'CorrReceiptBegin': lambda: cmd.CmdCorrReceiptBegin(),  # 0x25: Corr. Receipt. Step #1/4 - begin
     'CorrReceiptData': (__cmd_2e, JSON_ARG),

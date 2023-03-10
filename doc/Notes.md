@@ -86,3 +86,10 @@
 7. ReceiptCommit <24.json>
 8. SessionCloseBegin 1
 9. SessionCloseCommit
+
+## Each command:
+- const.IEnumCmd
+- cmd.Cmd...
+- cli.COMMANDS
+- rsp.RspGet...
+- rsp._CODE2CLASS
