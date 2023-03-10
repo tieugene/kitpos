@@ -58,6 +58,7 @@ class IEnumCmd(enum.IntEnum):
     GET_DATETIME = 0x73         # ✓ [Settings] (not used in C#)
     GET_POS_NET_PARM = 0x75
     GET_POS_OFD_PARM = 0x77
+    GET_POS_CTL_PARM = 0x81
     GET_PRN_LINE_LEN = 0xBB
     RESTART = 0xEF
 
@@ -151,6 +152,8 @@ class IEnumTag(_IEnumPrintable):
     TAG_30005 = 30005  # str[..15], OFD IP
     TAG_30006 = 30006  # byte[2] == uint16, IP port
     TAG_30009 = 30009  # byte[2] == uint16, Timout?
+    TAG_30030 = 30030  # bytes[1] == bool, RS-232(f)/Eth(t)
+    TAG_30032 = 30032  # bytes[2] == unit16, TCP/IP port
     TAG_30034 = 30034  # str[?], <undocumented>
     TAG_30040 = 30040  # str[..128], OFD domain name
 
