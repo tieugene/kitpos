@@ -83,7 +83,7 @@ class _RspSTLV(RspBase):
 
     def to_str(self, sep: str = ', ') -> str:
         """Get response attrs as string."""
-        return self.__dict_to_str(self.tags)
+        return self.__dict_to_str(self.tags, sep)
 
 
 @dataclass
