@@ -79,7 +79,7 @@ class _RspSTLV(RspBase):
                 else:
                     v = f"[{_RspSTLV.__dict_to_str(v, sep)}]"
             retlist.append((k, v))
-            return sep.join([f"{pre}{item[0]}={item[1]}" for item in retlist])
+        return sep.join([f"{pre}{item[0]}={item[1]}" for item in retlist])
 
     def to_str(self, sep: str = ', ') -> str:
         """Get response attrs as string."""
