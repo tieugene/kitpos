@@ -159,7 +159,7 @@ class IEnumTag(_IEnumPrintable):
     TAG_30040 = 30040  # str[..128], OFD domain name
 
 
-TagDict: Dict[IEnumTag, Any]
+TagDict = Dict[IEnumTag, Any]
 
 
 @enum.unique
