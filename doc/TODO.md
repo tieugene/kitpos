@@ -1,16 +1,13 @@
 # TODO
 
 ## 0.0.2:
-- [x] #32: 0x81: Get POS ctrl parms
-- [x] #33: 0x3B: ReadRegDoc
-  - [ ] FIXME: 1101 tag (10.15.63.70)
-- [ ] #27: Pretty print tags
-- [ ] #30: Autodoc commands
 - [ ] #34: FSClose (not documented):
   - [ ] GetDocByNum(6: FSCloseRpt (5.6?))
   - [ ] 0x14: CloseStorageBegin
   - [ ] 0x17: CloseStorageData
   - [ ] 0x15: CloseStorageCommit
+- [ ] #30: Autodoc commands
+- [ ] #35: Tags as objects (from_json, from_bytes, to_bytes, to_str, to_native)
 - [ ] Sequences:
   + [ ] SessionOpen
   + [ ] SessionClose
@@ -19,7 +16,6 @@
 - [ ] net:
   + [ ] strict (header, len, crc)
   + [ ] async
-- [ ] #35: Tags as objects (from_json, from_bytes, to_bytes, to_str, to_native)
 
 ## 0.0.3:
 - [ ] Extend cmd #6 (8):
