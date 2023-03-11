@@ -93,3 +93,7 @@
 - cli.COMMANDS
 - rsp.RspGet...
 - rsp._CODE2CLASS
+
+## Each tag:
+- const.IEnumTag
+- tag.TAG2FUNC

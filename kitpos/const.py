@@ -6,7 +6,7 @@ You may use this file under the terms of the GPLv3 license.
 """
 # 1. std
 import enum
-
+from typing import Dict, Any
 
 FRAME_HEADER = b'\xB6\x29'
 
@@ -110,6 +110,7 @@ class IEnumTag(_IEnumPrintable):
     TAG_1081 = 1081    # VLN, Payment as cashless (kop)
     TAG_1097 = 1097    # bytes[4] == uint32, Unspent FDs number
     TAG_1098 = 1098    # bytes[4] == Unixtime (y-m-d 00:00:00), Date/time of 1st unspent FD
+    TAG_1101 = 1101    # bytes[1] == enum, ReRegistering reason
     TAG_1102 = 1102    # VLN, Base sum for VAT 18%
     TAG_1103 = 1103    # VLN, Base sum for VAT 10%
     TAG_1104 = 1104    # VLN, Base sum for VAT 0%
@@ -157,6 +158,9 @@ class IEnumTag(_IEnumPrintable):
     TAG_30032 = 30032  # bytes[2] == unit16, TCP/IP port
     TAG_30034 = 30034  # str[?], <undocumented>
     TAG_30040 = 30040  # str[..128], OFD domain name
+
+
+TagDict = Dict[IEnumTag, Any]
 
 
 @enum.unique
