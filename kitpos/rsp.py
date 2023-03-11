@@ -71,8 +71,8 @@ class _RspSTLV(RspBase):
 
     @staticmethod
     def __dict_to_str(data: const.TagDict, sep: str = ', ', pre: str = '') -> str:
+        retlist = []
         for k, v in data.items():
-            retlist = []
             if k in {const.IEnumTag.TAG_1059, const.IEnumTag.TAG_1174}:  # or istypeof(v, TagDict); subtags
                 if sep == '\n':
                     v = f"[\n{_RspSTLV.__dict_to_str(v, sep, TAB)}\n]"
