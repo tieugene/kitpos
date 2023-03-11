@@ -6,7 +6,7 @@ You may use this file under the terms of the GPLv3 license.
 """
 # 1. std
 import enum
-
+from typing import Dict, Any
 
 FRAME_HEADER = b'\xB6\x29'
 
@@ -157,6 +157,9 @@ class IEnumTag(_IEnumPrintable):
     TAG_30032 = 30032  # bytes[2] == unit16, TCP/IP port
     TAG_30034 = 30034  # str[?], <undocumented>
     TAG_30040 = 30040  # str[..128], OFD domain name
+
+
+TagDict: Dict[IEnumTag, Any]
 
 
 @enum.unique

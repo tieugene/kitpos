@@ -14,6 +14,8 @@ import datetime
 import ipaddress
 # 3. local
 from kitpos import const, flag, exc, util, tag
+# x. const
+TAB = "\t"
 
 
 def _dt2str(datime: datetime.datetime) -> str:
@@ -60,12 +62,28 @@ class _RspStr(RspBase):
 class _RspSTLV(RspBase):
     """Base for STLV responses."""
     # _tags_available: Set[const.IEnumTag]  # TODO:
-    tags: Dict[const.IEnumTag, Any]
+    tags: const.TagDict
 
     @classmethod
     def from_bytes(cls, data: bytes):
         """Deserialize object."""
         return cls(tags=tag.tagdict_unpack(data))
+
+    @staticmethod
+    def __dict_to_str(data: const.TagDict, sep: str = ', ', pre: str = '') -> str:
+        for k, v in data.items():
+            retlist = []
+            if k in {const.IEnumTag.TAG_1059, const.IEnumTag.TAG_1174}:  # or istypeof(v, TagDict); subtags
+                if sep == '\n':
+                    v = f"[\n{_RspSTLV.__dict_to_str(v, sep, TAB)}\n]"
+                else:
+                    v = f"[{_RspSTLV.__dict_to_str(v, sep)}]"
+            retlist.append((k, v))
+            return sep.join([f"{pre}{item[0]}={item[1]}" for item in retlist])
+
+    def to_str(self, sep: str = ', ') -> str:
+        """Get response attrs as string."""
+        return self.__dict_to_str(self.tags)
 
 
 @dataclass
