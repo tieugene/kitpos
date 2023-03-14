@@ -1,13 +1,17 @@
 # TODO
 
 ## 0.0.2:
-- [ ] #34: FSClose (not documented):
-  - [ ] GetDocByNum(6: FSCloseRpt (5.6?))
-  - [ ] 0x14: CloseStorageBegin
-  - [ ] 0x17: CloseStorageData
-  - [ ] 0x15: CloseStorageCommit
+- [ ] #34: FSClose (3; not documented):
+  + [ ] 0x14: CloseStorageBegin
+  + [ ] 0x17: CloseStorageData
+  + [ ] 0x15: CloseStorageCommit
+- [ ] *Re*Register (4):
+  + [ ] 0x40: ResetMLM
+  + [ ] 0x12: RegisterBegin
+  + [ ] 0x16: RegisterData
+  + [ ] 0x13: RegisterCommit
 - [ ] #30: Autodoc commands
-- [ ] #35: Tags as objects (from_json, from_bytes, to_bytes, to_str, to_native)
+- [ ] #35: Tags as objects
 - [ ] Sequences:
   + [ ] SessionOpen
   + [ ] SessionClose
@@ -20,12 +24,8 @@
 ## 0.0.3:
 - [ ] Extend cmd #6 (8):
   + [ ] GetX complex (0x09, 35..36, 79)
-  + [ ] *Re*Register (4):
-    + [ ] 0x40: ResetMLM
-    - [ ] 0x12: RegisterBegin
-    - [ ] 0x16: RegisterData
-    - [ ] 0x13: RegisterCommit
 - [ ] #8: Extend cmd #7 (GetDocByNum #2):
+  + [ ] GetDocByNum(6: FSCloseRpt (5.6?))
   + [ ] 21: SattleRpt (5.7)
   + [ ]  4: BSO
   + [ ] 41: CorBSO
