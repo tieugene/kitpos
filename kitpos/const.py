@@ -33,8 +33,11 @@ class IEnumCmd(enum.IntEnum):
     GET_POS_CFG_VER = 0x0B
     GET_NET_PARM = 0x0E
     DOC_CANCEL = 0x10           # ✓ [RegFS]
+    REG_BEGIN = 0x12
+    REG_COMMIT = 0x13
     FS_CLOSE_BEGIN = 0x14
     FS_CLOSE_COMMIT = 0x15
+    REG_DATA = 0x16
     FS_CLOSE_DATA = 0x17
     RCP_AUTOMAT = 0x1F          # … [Receipt]
     GET_CUR_SES = 0x20          # ✓ [Session]
@@ -56,7 +59,7 @@ class IEnumCmd(enum.IntEnum):
     GET_DOC_DATA = 0x3A         # … [Info]
     GET_REG_DOC_DATA = 0x3B
     COR_RCP_AUTOMAT = 0x3F      # ✓ [CorRcpt]
-    # RESET_MGM = 0x40
+    RESET_MGM = 0x40
     GET_OFD_XCHG_STATUS = 0x50  # ✓ [Info]
     SET_DATETIME = 0x72         # ✓ [Settings]
     GET_DATETIME = 0x73         # ✓ [Settings] (not used in C#)
@@ -105,6 +108,7 @@ class IEnumTag(_IEnumPrintable):
     TAG_1054 = 1054    # bytes[1] == enum, IEnumReceiptType
     TAG_1055 = 1055    # byte[1] == bitmap, Tax mode (addon 7)
     TAG_1056 = 1056    # bytes[1] == bool (0/1), Crypting
+    TAG_1057 = 1057    # bytes[1] == bitmap, AgentModes (addon 7)
     TAG_1059 = 1059    # STLV (!), includes other
     TAG_1060 = 1060    # str[..256], FTS url
     TAG_1062 = 1062    # byte[1] == bimap, Tax mode, like 1055
@@ -148,7 +152,7 @@ class IEnumTag(_IEnumPrintable):
     TAG_1222 = 1222    # bytes[1] == bitmap flag (addon 7-4), optional Agent type
     TAG_1225 = 1225    # str[..64], Supplier Name
     TAG_1226 = 1226    # str[12], Supplier INN
-    # Mode = 9999      # byte[1] == bitmap flags (addon 7); Note: Terminal-FA always stay auto
+    TAG_9999 = 9999    # byte[1] == bitmap flags (addon 7); Note: Terminal-FA always stay auto
     TAG_30000 = 30000  # byte[5], DateTime
     TAG_30001 = 30001  # byte[1] == bool (0/1), DHCP
     TAG_30002 = 30002  # str[..15], IP
@@ -237,6 +241,14 @@ class IEnumADocType(_IEnumPrintable):
     SES_CLOSE_RPT = 5  # Session closing report
     FS_CLOSE_RPT = 6  # Fiscal mode close report
     OP_CONFIRM = 7  # Operator's confirmation
+
+
+@enum.unique
+class IEnumReRegType(_IEnumPrintable):
+    """Type of [re]registration."""
+    PRI = 0  # Primary registration
+    RECHARGE = 1  # Reregistration with recharge (FS change)
+    LIVE = 2  # Reregistration without FS change
 
 
 @enum.unique

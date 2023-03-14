@@ -5,9 +5,10 @@ This file is part of the kitpos project.
 You may use this file under the terms of the GPLv3 license.
 
 :todo: dataclass(frozen=True)
+:todo: extract ADoc (~150 lines)
 """
 # 1. std
-from typing import Tuple, Any, Dict, Optional, Set
+from typing import Tuple, Any, Optional
 from dataclasses import dataclass
 import struct
 import datetime
@@ -283,6 +284,23 @@ class RspGetNetParms(RspBase):
     def to_str(self, sep: str = ', ') -> str:
         """Get response attrs as string."""
         return f"ip={format(self.ip)}{sep}mask={format(self.mask)}{sep}gw={format(self.gw)}"
+
+
+@dataclass
+class RspRegCommit(RspBase):
+    """0x13: Commit Receipt (0x24)."""
+
+    fdoc_n: int  # (4) fiscal doc no
+    fpd: int  # (4)
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Deserialize object."""
+        val = _data_decode(data, '<II', cls)
+        return cls(
+            fdoc_n=val[0],
+            fpd=val[1]
+        )
 
 
 @dataclass
@@ -621,6 +639,7 @@ class RspGetDateTime(_RspSTLV):
     """0x73: Get POS date/time."""
     _tags_available = {const.IEnumTag.TAG_30000}
 
+
 @dataclass
 class RspGetDeviceNetParms(_RspSTLV):
     """0x75: Get POS network settings."""
@@ -666,7 +685,7 @@ class RspGetPrnLineLen(RspBase):
 
 @dataclass
 class RspCorrReceiptCommit(RspBase):
-    """Commit Corr. Receipt (0x26)."""
+    """0x26: Corr. Receipt Commit."""
 
     sdoc_n: int  # (2) doc number in session
     fdoc_n: int  # (4) fiscal doc no
@@ -685,7 +704,7 @@ class RspCorrReceiptCommit(RspBase):
 
 @dataclass
 class RspReceiptCommit(RspBase):
-    """Commit Receipt (0x24)."""
+    """0x24: Receipt Commit."""
 
     sdoc_n: int  # (2) doc number in session
     fdoc_n: int  # (4) fiscal doc no
@@ -720,8 +739,11 @@ _CODE2CLASS = {
     const.IEnumCmd.GET_POS_CFG_VER: RspGetDeviceCfgVer,
     const.IEnumCmd.GET_NET_PARM: RspGetNetParms,
     const.IEnumCmd.DOC_CANCEL: RspOK,
+    const.IEnumCmd.REG_BEGIN: RspOK,
+    const.IEnumCmd.REG_COMMIT: RspRegCommit,
     const.IEnumCmd.FS_CLOSE_BEGIN: _RspStub,
     const.IEnumCmd.FS_CLOSE_COMMIT: _RspStub,
+    const.IEnumCmd.REG_DATA: RspOK,
     const.IEnumCmd.FS_CLOSE_DATA: _RspStub,
     const.IEnumCmd.GET_CUR_SES: RspGetCurSession,
     const.IEnumCmd.SES_OPEN_BEGIN: RspOK,
@@ -733,6 +755,7 @@ _CODE2CLASS = {
     const.IEnumCmd.GET_FS_REG_RPT: RspGetStorageReRegRpt,
     const.IEnumCmd.GET_DOC_DATA: RspGetDocData,
     const.IEnumCmd.GET_REG_DOC_DATA: RspGetRegDocData,
+    const.IEnumCmd.RESET_MGM: RspOK,
     const.IEnumCmd.GET_OFD_XCHG_STATUS: RspGetOFDXchgStatus,
     const.IEnumCmd.SET_DATETIME: RspOK,
     const.IEnumCmd.GET_DATETIME: RspGetDateTime,

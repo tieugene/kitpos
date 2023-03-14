@@ -7,6 +7,8 @@ You may use this file under the terms of the GPLv3 license.
 # 1. std
 from typing import Optional, Dict, Callable
 import datetime
+
+import flag
 # 3. local
 from kitpos import cmd, tag, const, exc
 # x. const
@@ -90,12 +92,39 @@ ERR_TEXT = {
 }
 
 
+def __cmd_12(val: str) -> cmd.CmdRegBegin:
+    """0x12: [Re]Registration begin."""
+    if val not in {'0', '1', '2'}:
+        raise exc.KpeCLI("Registration type must be '0' (primary), '1' (recharge) or '2' (live).")
+    return cmd.CmdRegBegin(const.IEnumReRegType(int(val)))
+
+
+def __cmd_13(val: Dict) -> cmd.CmdRegCommit:
+    """0x13: [Re]Registration commit."""
+    try:
+        tax = flag.TaxModes(val['tax'])
+        reason = const.IEnumReRegReason(val['reason']) if 'reason' in val else None
+    except ValueError as __e:
+        raise exc.KpeCLI(__e) from __e
+    return cmd.CmdRegCommit(
+        inn=val['inn'],
+        reg_no=val['reg_no'],
+        tax=tax,
+        reason=reason
+    )
+
+
+def __cmd_16(val: Dict) -> cmd.CmdRegData:
+    """0x16: Closing FS data."""
+    return cmd.CmdRegData(tag.tagdict_unjson(val))
+
+
 def __cmd_17(val: Dict) -> cmd.CmdStorageCloseData:
     """0x17: Closing FS data."""
     return cmd.CmdStorageCloseData(tag.tagdict_unjson(val))
 
 
-def __cmd_21(val: Optional[str]) -> Optional[cmd.CmdSessionOpenBegin]:
+def __cmd_21(val: Optional[str]) -> cmd.CmdSessionOpenBegin:
     """0x21: Begin opening session [0 (default)|1 - skip prn]."""
     if val:
         if val not in {'0', '1'}:
@@ -104,7 +133,7 @@ def __cmd_21(val: Optional[str]) -> Optional[cmd.CmdSessionOpenBegin]:
     return cmd.CmdSessionOpenBegin()
 
 
-def __cmd_29(val: Optional[str]) -> Optional[cmd.CmdSessionCloseBegin]:
+def __cmd_29(val: Optional[str]) -> cmd.CmdSessionCloseBegin:
     """0x29: Begin closing session [0 (default)|1 - skip prn]."""
     if val:
         if val not in {'0', '1'}:
@@ -113,35 +142,35 @@ def __cmd_29(val: Optional[str]) -> Optional[cmd.CmdSessionCloseBegin]:
     return cmd.CmdSessionCloseBegin()
 
 
-def __cmd_30(val: Optional[str]) -> Optional[cmd.CmdGetDocInfo]:
+def __cmd_30(val: Optional[str]) -> cmd.CmdGetDocInfo:
     """0x30: Get document info."""
     if val:
         return cmd.CmdGetDocInfo(int(val))
     raise exc.KpeCLI("Doc number required.")
 
 
-def __cmd_33(val: Optional[str]) -> Optional[cmd.CmdGetStorageRegRpt]:
+def __cmd_33(val: Optional[str]) -> cmd.CmdGetStorageRegRpt:
     """0x33: Get FS activation result [0 (default)|1 - skip prn]."""
     if val:  # TODO: check 1..255
         return cmd.CmdGetStorageRegRpt(int(val))
     return cmd.CmdGetStorageRegRpt()
 
 
-def __cmd_3a(val: Optional[str]) -> Optional[cmd.CmdGetDocData]:
+def __cmd_3a(val: Optional[str]) -> cmd.CmdGetDocData:
     """0x3A: Read document content."""
     if val:
         return cmd.CmdGetDocData(int(val))
     raise exc.KpeCLI("Doc number required.")
 
 
-def __cmd_3b(val: Optional[str]) -> Optional[cmd.CmdGetRegDocData]:
+def __cmd_3b(val: Optional[str]) -> cmd.CmdGetRegDocData:
     """0x3B: Read reg. document content."""
     if val:
         return cmd.CmdGetRegDocData(int(val))
     raise exc.KpeCLI("Doc number required.")
 
 
-def __cmd_72(val: Optional[str]) -> Optional[cmd.CmdSetDateTime]:
+def __cmd_72(val: Optional[str]) -> cmd.CmdSetDateTime:
     """0x72: Set POS date/time."""
     if val:
         try:
@@ -215,9 +244,12 @@ COMMANDS: Dict[str, Callable] = {  # TODO: replace some functions w/ class direc
     'GetDeviceCfgVer': lambda: cmd.CmdGetDeviceCfgVer(),  # 0x0B: Get POS config version
     'GetNetParms': lambda: cmd.CmdGetNetParms(),  # 0x0E: Get current network parameters
     'DocCancel': lambda: cmd.CmdDocCancel(),  # 0x10: Cancel current document
+    'RegBegin': (__cmd_12, '<0/1/2>'),  # 0x12: [Re]Reg begin
+    'RegData': (__cmd_16, JSON_ARG),  # 0x16: [Re]Reg data
+    'RegCommit': (__cmd_13, JSON_ARG),  # 0x13: [Re]Reg commit
     'StorageCloseBegin': lambda: cmd.CmdStorageCloseBegin(),  # 0x14: Closing FS begin
-    'StorageCloseCommit': lambda: cmd.CmdStorageCloseCommit(),  # 0x15: Closing FS commit
     'StorageCloseData': (__cmd_17, JSON_ARG),  # 0x17: Closing FS data
+    'StorageCloseCommit': lambda: cmd.CmdStorageCloseCommit(),  # 0x15: Closing FS commit
     'GetCurSession': lambda: cmd.CmdGetCurSession(),  # 0x20: Get session params
     'SessionOpenBegin': (__cmd_21, '[0/1]'),  # 0x21: Begin opening session
     'SessionOpenCommit': lambda: cmd.CmdSessionOpenCommit(),  # 0x22: Commit opening session
@@ -228,6 +260,7 @@ COMMANDS: Dict[str, Callable] = {  # TODO: replace some functions w/ class direc
     'GetStorageRegRpt': (__cmd_33, '[int]'),  # 0x33: Get FS activation result
     'GetDocData': (__cmd_3a, '<int>'),  # 0x3A: Read document content
     'GetRegDocData': (__cmd_3b, '<int>'),  # 0x3A: Read reg. document content
+    'ResetMGM': lambda: cmd.CmdResetMGM(),  # 0x40: Reset MGM
     'GetOFDXchgStatus': lambda: cmd.CmdGetOFDXchgStatus(),  # 0x50: Get OFD exchange status
     'SetDateTime': (__cmd_72, '<yymmddHHMM>'),  # 0x72: Set POS date/time
     'GetDateTime': lambda: cmd.CmdGetDateTime(),  # 0x73: Get POS date/time

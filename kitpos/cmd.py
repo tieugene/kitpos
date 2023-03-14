@@ -11,7 +11,7 @@ You may use this file under the terms of the GPLv3 license.
 from typing import Optional, Iterable
 import datetime
 # 3. local
-from kitpos import const, util, tag, exc
+from kitpos import const, flag, util, tag, exc
 
 
 class _CmdBase:
@@ -127,6 +127,50 @@ class CmdDocCancel(_CmdBase):
     cmd_id = const.IEnumCmd.DOC_CANCEL
 
 
+class CmdRegBegin(_CmdBase):
+    """0x12: [Re]Registration begin."""
+
+    cmd_id = const.IEnumCmd.REG_BEGIN
+    re_type: const.IEnumReRegType
+
+    def __init__(self, re_type: const.IEnumReRegType):
+        super().__init__()
+        self.re_type = re_type
+
+    def to_bytes(self) -> bytes:
+        """Serialize to bytes."""
+        return super().to_bytes() + util.ui2b1(self.re_type.value)
+
+
+class CmdRegCommit(_CmdBase):
+    """0x13: [Re]Registration commit."""
+
+    cmd_id = const.IEnumCmd.REG_COMMIT
+    inn: str  # User INN, str[12]
+    reg_no: str  # POS registration number, str[20]
+    tax: flag.TaxModes  # Tax mode
+    reason: Optional[const.IEnumReRegReason]  # ReRegisteration reason (not for primary registration)
+
+    def __init__(self, inn: str, reg_no: str, tax: flag.TaxModes, reason: Optional[const.IEnumReRegReason] = None):
+        super().__init__()
+        self.inn = inn
+        self.reg_no = reg_no
+        self.tax = tax
+        self.reason = reason
+
+    def to_bytes(self) -> bytes:
+        """Serialize to bytes."""
+        retvalue =\
+            super().to_bytes()\
+            + util.s2b(self.inn[:12].rjust(12))\
+            + util.s2b(self.reg_no[:20].rjust(20))\
+            + self.tax.as_bytes()\
+            + util.ui2b1(self.reason.value)
+        if self.reason is not None:
+            retvalue += util.ui2b1(self.reason.value)
+        return retvalue
+
+
 class CmdStorageCloseBegin(_CmdBase):
     """0x14: Closing FS begin."""
 
@@ -134,15 +178,23 @@ class CmdStorageCloseBegin(_CmdBase):
 
 
 class CmdStorageCloseCommit(_CmdBase):
-    """0x15: losing FS commit."""
+    """0x15: Closing FS commit."""
 
     cmd_id = const.IEnumCmd.FS_CLOSE_COMMIT
+
+
+class CmdRegData(_CmdTagsOnly):
+    """0x16: [Re]Registration data."""
+
+    cmd_id = const.IEnumCmd.REG_DATA
+    _tags_required = (1048, 1009, 1187, 1021, 1203, 1036, 1057, 9999)
+    _tags_optional = (1017, 1046, 1117)  # optional for autonomous mode
 
 
 class CmdStorageCloseData(_CmdTagsOnly):
     """0x17: Closing FS data."""
 
-    cmd_id = const.IEnumCmd.FS_CLOSE_COMMIT
+    cmd_id = const.IEnumCmd.FS_CLOSE_DATA
     _tags_required = (1021, 1203)
 
 
@@ -251,6 +303,16 @@ class CmdGetRegDocData(_CmdGetDocAny):
     def to_bytes(self) -> bytes:
         """Serialize to bytes."""
         return super().to_bytes() + util.ui2b1(self.num)
+
+
+class CmdResetMGM(_CmdBase):
+    """0x40: Reset MGM."""
+
+    cmd_id = const.IEnumCmd.RESET_MGM
+
+    def to_bytes(self) -> bytes:
+        """Serialize to bytes."""
+        return super().to_bytes() + b'\x16'
 
 
 class CmdGetOFDXchgStatus(_CmdBase):
@@ -446,7 +508,10 @@ class CmdReceiptCommit(_CmdBase):
 
     def to_bytes(self) -> bytes:
         """Serialize to bytes."""
-        retvalue = super().to_bytes() + util.ui2b1(self.req_type) + util.ui2b_n(self.total, 5)
+        retvalue =\
+            super().to_bytes()\
+            + util.ui2b1(self.req_type)\
+            + util.ui2b_n(self.total, 5)
         if self.notes:
             retvalue += util.s2b(self.notes)
         return retvalue
