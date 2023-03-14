@@ -33,6 +33,9 @@ class IEnumCmd(enum.IntEnum):
     GET_POS_CFG_VER = 0x0B
     GET_NET_PARM = 0x0E
     DOC_CANCEL = 0x10           # ✓ [RegFS]
+    FS_CLOSE_BEGIN = 0x14
+    FS_CLOSE_COMMIT = 0x15
+    FS_CLOSE_DATA = 0x17
     RCP_AUTOMAT = 0x1F          # … [Receipt]
     GET_CUR_SES = 0x20          # ✓ [Session]
     SES_OPEN_BEGIN = 0x21       # ✓ [Session]
