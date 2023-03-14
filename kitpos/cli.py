@@ -90,6 +90,11 @@ ERR_TEXT = {
 }
 
 
+def __cmd_17(val: Dict) -> cmd.CmdStorageCloseData:
+    """0x17: Closing FS data."""
+    return cmd.CmdStorageCloseData(tag.tagdict_unjson(val))
+
+
 def __cmd_21(val: Optional[str]) -> Optional[cmd.CmdSessionOpenBegin]:
     """0x21: Begin opening session [0 (default)|1 - skip prn]."""
     if val:
@@ -210,6 +215,9 @@ COMMANDS: Dict[str, Callable] = {  # TODO: replace some functions w/ class direc
     'GetDeviceCfgVer': lambda: cmd.CmdGetDeviceCfgVer(),  # 0x0B: Get POS config version
     'GetNetParms': lambda: cmd.CmdGetNetParms(),  # 0x0E: Get current network parameters
     'DocCancel': lambda: cmd.CmdDocCancel(),  # 0x10: Cancel current document
+    'StorageCloseBegin': lambda: cmd.CmdStorageCloseBegin(),  # 0x14: Closing FS begin
+    'StorageCloseCommit': lambda: cmd.CmdStorageCloseCommit(),  # 0x15: Closing FS commit
+    'StorageCloseData': (__cmd_17, JSON_ARG),  # 0x17: Closing FS data
     'GetCurSession': lambda: cmd.CmdGetCurSession(),  # 0x20: Get session params
     'SessionOpenBegin': (__cmd_21, '[0/1]'),  # 0x21: Begin opening session
     'SessionOpenCommit': lambda: cmd.CmdSessionOpenCommit(),  # 0x22: Commit opening session
@@ -228,12 +236,12 @@ COMMANDS: Dict[str, Callable] = {  # TODO: replace some functions w/ class direc
     'GetDeviceCtlParms': lambda: cmd.CmdGetDeviceCtlParms(),  # 0x81: 0x81: Get POS controll settings
     'GetPrnLineLen': lambda: cmd.CmdGetPrnLineLen(),  # 0xBB: Get print line length (symbols)
     'CorrReceiptBegin': lambda: cmd.CmdCorrReceiptBegin(),  # 0x25: Corr. Receipt. Step #1/4 - begin
-    'CorrReceiptData': (__cmd_2e, JSON_ARG),
-    'CorrReceiptAutomat': (__cmd_3f, JSON_ARG),
-    'CorrReceiptCommit': (__cmd_26, JSON_ARG),
+    'CorrReceiptData': (__cmd_2e, JSON_ARG),  # 0x2E: Corr. Receipt. Step #_/4 - data
+    'CorrReceiptAutomat': (__cmd_3f, JSON_ARG),  # 0x3F: Corr. Receipt. Step #_/4 - automat
+    'CorrReceiptCommit': (__cmd_26, JSON_ARG),  # 0x26: Corr. Receipt. Step #_/4 - commit
     'ReceiptBegin': lambda: cmd.CmdReceiptBegin(),  # 0x23: Receipt. Step #1/6 - begin
-    'ReceiptItem': (__cmd_2b, JSON_ARG),
-    'ReceiptAutomat': (__cmd_1f, JSON_ARG),
-    'ReceiptPayment': (__cmd_2d, JSON_ARG),
-    'ReceiptCommit': (__cmd_24, JSON_ARG)
+    'ReceiptItem': (__cmd_2b, JSON_ARG),  # 0x2B: Receipt. Step #_/6 - item
+    'ReceiptAutomat': (__cmd_1f, JSON_ARG),  # 0x1F: Receipt. Step #_/6 - automat
+    'ReceiptPayment': (__cmd_2d, JSON_ARG),  # 0x2D: Receipt. Step #_/6 - payment
+    'ReceiptCommit': (__cmd_24, JSON_ARG)  # 0x24: Receipt. Step #_/6 - commit
 }

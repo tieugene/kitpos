@@ -3,6 +3,8 @@
 Copyright 2023 TI_Eugene <ti.eugene@gmail.com>
 This file is part of the kitpos project.
 You may use this file under the terms of the GPLv3 license.
+
+:todo: Unify tags-only commands: 0x17,
 """
 # pylint: disable=R0903
 # 1. std
@@ -33,6 +35,24 @@ class _CmdBase:
     def to_bytes(self) -> bytes:
         """Serialize to bytes."""
         return util.ui2b1(self.cmd_id.value)
+
+
+class _CmdTagsOnly(_CmdBase):
+    """Base for tags-only commands."""
+
+    _tags_required = ()
+    _tags_optional = ()
+    payload: tag.TagDict
+
+    def __init__(self, payload: tag.TagDict):
+        """:param payload: Dict of tag-value pairs."""
+        super().__init__()
+        self._chk_tags(payload, self._tags_required, self._tags_optional)
+        self.payload = payload
+
+    def to_bytes(self) -> bytes:
+        """Serialize to bytes."""
+        return super().to_bytes() + tag.tagdict_pack(self.payload)
 
 
 class CmdGetDeviceStatus(_CmdBase):
@@ -105,6 +125,25 @@ class CmdDocCancel(_CmdBase):
     """0x10: Cancel any opened document."""
 
     cmd_id = const.IEnumCmd.DOC_CANCEL
+
+
+class CmdStorageCloseBegin(_CmdBase):
+    """0x14: Closing FS begin."""
+
+    cmd_id = const.IEnumCmd.FS_CLOSE_BEGIN
+
+
+class CmdStorageCloseCommit(_CmdBase):
+    """0x15: losing FS commit."""
+
+    cmd_id = const.IEnumCmd.FS_CLOSE_COMMIT
+
+
+class CmdStorageCloseData(_CmdTagsOnly):
+    """0x17: Closing FS data."""
+
+    cmd_id = const.IEnumCmd.FS_CLOSE_COMMIT
+    _tags_required = (1021, 1203)
 
 
 class CmdGetCurSession(_CmdBase):
@@ -278,53 +317,25 @@ class CmdCorrReceiptBegin(_CmdBase):
     cmd_id = const.IEnumCmd.COR_RCP_BEGIN
 
 
-class CmdCorrReceiptData(_CmdBase):
+class CmdCorrReceiptData(_CmdTagsOnly):
     """0x2E: Corr. Receipt. Step #2/4 - send data.
 
     Response: RspOK
+    :todo: __init__: chk 1031+1081+1215+1216+1217 == sum(1102..1107)
     """
 
-    __tags = (1021, 1203, 1173, 1055, 1031, 1081, 1215, 1216, 1217, 1102, 1103, 1104, 1105, 1106, 1107, 1174)
     cmd_id = const.IEnumCmd.COR_RCP_DATA
-    payload: tag.TagDict
-
-    def __init__(self, payload: tag.TagDict):
-        """Make CmdCorrReceiptData object.
-
-        :param payload: Dict of tag-value pairs.
-        """
-        super().__init__()
-        self._chk_tags(payload, self.__tags)
-        # TODO: chk 1031+1081+1215+1216+1217 == sum(1102..1107)
-        self.payload = payload
-
-    def to_bytes(self) -> bytes:
-        """Serialize to bytes."""
-        return super().to_bytes() + tag.tagdict_pack(self.payload)
+    _tags_required = (1021, 1203, 1173, 1055, 1031, 1081, 1215, 1216, 1217, 1102, 1103, 1104, 1105, 1106, 1107, 1174)
 
 
-class CmdCorrReceiptAutomat(_CmdBase):
+class CmdCorrReceiptAutomat(_CmdTagsOnly):
     """0x3F: Corr. Receipt. Step #3/4 - send automat number.
 
     Response: RspOK
     """
 
-    __tags = (1009, 1187, 1036)
     cmd_id = const.IEnumCmd.COR_RCP_AUTOMAT
-    payload: tag.TagDict
-
-    def __init__(self, payload: tag.TagDict):
-        """Make CmdCorrReceiptAutomat object.
-
-        :param payload: Dict of tag-value pairs.
-        """
-        super().__init__()
-        self._chk_tags(payload, self.__tags)
-        self.payload = payload
-
-    def to_bytes(self) -> bytes:
-        """Serialize to bytes."""
-        return super().to_bytes() + tag.tagdict_pack(self.payload)
+    _tags_required = (1009, 1187, 1036)
 
 
 class CmdCorrReceiptCommit(_CmdBase):
@@ -368,9 +379,9 @@ class CmdReceiptItem(_CmdBase):
     Response: RspOK
     """
 
+    cmd_id = const.IEnumCmd.RCP_ITEM
     __1059_tags_required = (1030, 1079, 1023, 1199, 1214)
     __1059_tags_optional = (1212, 1222, 1171, 1225, 1226)
-    cmd_id = const.IEnumCmd.RCP_ITEM
     payload: tag.TagDict
 
     def __init__(self, payload: tag.TagDict):
@@ -389,53 +400,25 @@ class CmdReceiptItem(_CmdBase):
         return super().to_bytes() + tag.tagdict_pack(self.payload)
 
 
-class CmdReceiptAutomat(_CmdBase):
+class CmdReceiptAutomat(_CmdTagsOnly):
     """0x1F: Receipt. Step #4/6 - send automat number.
 
     Response: RspOK
     """
 
-    __tags = (1009, 1187, 1036)
     cmd_id = const.IEnumCmd.RCP_AUTOMAT
-    payload: tag.TagDict
-
-    def __init__(self, payload: tag.TagDict):
-        """Make CmdReceiptAutomat object.
-
-        :param payload: Dict of tag-value pairs.
-        """
-        super().__init__()
-        self._chk_tags(payload, self.__tags)
-        self.payload = payload
-
-    def to_bytes(self) -> bytes:
-        """Serialize to bytes."""
-        return super().to_bytes() + tag.tagdict_pack(self.payload)
+    _tags_required = (1009, 1187, 1036)
 
 
-class CmdReceiptPayment(_CmdBase):
+class CmdReceiptPayment(_CmdTagsOnly):
     """0x2D: Receipt. Step #5/6 - send payment details.
 
     Response: RspOK
     """
 
-    __tags = (1055, 1031, 1081, 1215, 1216, 1217)
-    __opts = (1021, 1203, 1008, 1192)  # ... 1228, 1227, 1085, 1086
     cmd_id = const.IEnumCmd.RCP_PAYMENT
-    payload: tag.TagDict
-
-    def __init__(self, payload: tag.TagDict):
-        """Make CmdReceiptPayment object.
-
-        :param payload: Dict of tag-value pairs.
-        """
-        super().__init__()
-        self._chk_tags(payload, self.__tags, self.__opts)
-        self.payload = payload
-
-    def to_bytes(self) -> bytes:
-        """Serialize to bytes."""
-        return super().to_bytes() + tag.tagdict_pack(self.payload)
+    _tags_required = (1055, 1031, 1081, 1215, 1216, 1217)
+    _tags_optional = (1021, 1203, 1008, 1192)  # ... 1228, 1227, 1085, 1086
 
 
 class CmdReceiptCommit(_CmdBase):
